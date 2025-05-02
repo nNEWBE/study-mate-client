@@ -1,0 +1,788 @@
+:root {
+  --primary: #00ffa5;
+  --secondary: #0f172a;
+}
+
+.description {
+  /* text-shadow: 1px 0px 0px var(--primary); */
+  font-weight: 500;
+  font-size: clamp(15px, 1.3vw, 30px);
+}
+
+.title {
+  font-size: clamp(40px, 5.5vw, 130px);
+  font-weight: 900;
+}
+
+/** Button Hover */
+
+.button {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  letter-spacing: 2px;
+}
+
+.button span {
+  position: relative;
+}
+
+.button::before {
+  content: "";
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+  transform: translate(-50%, -50%);
+  width: 0px;
+  height: 0px;
+  border-radius: 50%;
+  background: var(--primary);
+  transition:
+    width .8s,
+    height .8s;
+}
+
+.button:hover::before {
+  width: 500px;
+  height: 500px;
+}
+
+/*$ Text Hover */
+
+.char {
+  display: inline-block;
+  position: relative;
+  color: transparent;
+}
+
+.char::before,
+.char::after {
+  content: attr(data-char);
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--secondary);
+  transition: all 0.7s cubic-bezier(0.858, 0.01, 0.068, 0.99);
+  transition-delay: calc(0.03s * var(--char-index));
+}
+
+.char::after {
+  transform: translateY(-180%);
+}
+
+.button:hover .char::before {
+  transform: translateY(180%);
+}
+
+.button:hover .char::after {
+  transform: translateY(0);
+}
+
+.button {
+  @apply leading-4;
+  display: inline-block;
+}
+
+/*? Tab Transition */
+
+.slide {
+  transition: all 0.6s cubic-bezier(0.5, 0.01, 0.068, 0.99);
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  z-index: 1;
+  opacity: 0;
+  border-radius: 12px;
+  height: 29px;
+  background: var(--primary);
+  box-shadow: 0 0 5px 2px var(--primary);
+  width: 67px;
+  display: block;
+}
+
+div a:nth-child(1).active ~ .slide {
+  opacity: 1;
+  left: 2px;
+}
+
+div a:nth-child(2).active ~ .slide {
+  opacity: 1;
+  left: 88px;
+  width: 90px;
+}
+
+div a:nth-child(3).active ~ .slide {
+  opacity: 1;
+  left: 195px;
+  width: 77px;
+}
+
+div a:nth-child(4).active ~ .slide {
+  opacity: 1;
+  left: 315px;
+  width: 85px;
+}
+
+.active {
+  background: var(--primary);
+}
+
+/*? Tab Transition 02 */
+
+.side {
+  transition: all 0.4s cubic-bezier(0.5, 0.01, 0.068, 0.99);
+  position: absolute;
+  top: 0;
+  z-index: -1;
+  opacity: 0;
+  border-radius: 12px;
+  height: 30px;
+  background: var(--primary);
+  box-shadow: 0 0 5px 2px var(--primary);
+  width: 80px;
+  display: block;
+  left: 1.55rem;
+}
+
+div a:nth-child(1).active ~ .side {
+  opacity: 1;
+  left: 1.55rem;
+}
+
+div a:nth-child(2).active ~ .side {
+  opacity: 1;
+  left: 8.45rem;
+}
+
+/*# Hamburger Menu */
+
+.toggle-btn {
+  transition: all 0.4s cubic-bezier(0.8, 0.01, 0.068, 0.99);
+}
+
+.hamburger path {
+  fill: none;
+  stroke: var(--secondary);
+  stroke-linecap: round;
+}
+
+.nav-bg span {
+  display: block;
+  height: 13%;
+  width: 100vw;
+  background-color: var(--primary);
+  overflow: hidden;
+}
+
+.nav ul li {
+  overflow: hidden;
+  transition: transform 0.4s cubic-bezier(0.5, 0.01, 0.068, 0.99);
+}
+
+.nav li + li {
+  margin-top: 20px;
+}
+
+/*@ Dropdown Transition */
+
+.dropdown {
+  transition: height 0.4s cubic-bezier(0.5, 0.01, 0.068, 0.99);
+}
+
+/*! Sidebar Menu */
+
+nav {
+  position: fixed;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  z-index: 50;
+}
+
+nav .sidebar {
+  position: fixed;
+  top: 0;
+  right: -200%;
+  height: 100%;
+  width: 300px;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  box-shadow: 0 0 5px 2px var(--primary);
+  transition: all 0.8s cubic-bezier(0.5, 0.01, 0.068, 0.99);
+  border-left: 2px solid var(--secondary);
+  z-index: 50;
+}
+nav.open .sidebar {
+  right: 0;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  right: -200%;
+  height: 1000vh;
+  width: 200%;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.4s cubic-bezier(0.5, 0.01, 0.068, 0.99);
+  background: rgba(0, 255, 165, 0.2);
+  /* backdrop-filter: blur(1px); */
+  z-index: 50;
+}
+nav.open ~ .overlay {
+  opacity: 1;
+  right: 300px;
+  pointer-events: auto;
+}
+
+/*? Custom Tooltip */
+
+.ant-tooltip .ant-tooltip-inner {
+  color: var(--secondary);
+  font-weight: 600;
+  box-shadow: 0 0 5px 2px var(--primary);
+  @apply font-edu;
+  border: 2px solid var(--secondary);
+}
+
+.ant-tooltip .ant-tooltip-arrow::after {
+  box-shadow: 0 0 5px 2px var(--primary);
+  border: 2px solid var(--secondary);
+}
+
+/*? Custom Checkbox */
+
+.checkbox-wrapper {
+  margin: 1rem 0;
+  display: flex;
+  align-items: center;
+}
+.checkbox-wrapper span {
+  margin-left: 1rem;
+}
+.check-input {
+  display: none;
+}
+.checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--secondary);
+  background: var(--primary);
+  border-radius: 30%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  padding: 3px;
+  transition: 0.3s all;
+}
+.checkbox svg {
+  width: 20px;
+  height: 20px;
+}
+.check-input:checked + .checkbox {
+  background: var(--primary);
+  border: 2px solid var(--primary);
+}
+.check-input:checked + .checkbox svg path {
+  stroke-dasharray: 500;
+  stroke-dashoffset: 500;
+  stroke: var(--secondary);
+  stroke-width: 4;
+  animation: check 4s forwards;
+}
+.checkbox::before {
+  content: "";
+  background: #00ffc344;
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  display: block;
+  width: 60px;
+  height: 60px;
+  z-index: 1;
+}
+.check-input:checked + .checkbox::before {
+  animation: ripple 0.3s;
+}
+@keyframes check {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes ripple {
+  to {
+    transform: scale(0.8);
+  }
+}
+
+/*! Theme Toggle Button */
+
+.toggle-label {
+  @apply h-[25px] w-[40px] sm:h-[30px] sm:w-[60px];
+  position: relative;
+  display: block;
+  background: white;
+  border-radius: 200px;
+  box-shadow: 0 0 5px 2px var(--primary);
+  border: 2px solid var(--secondary);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.toggle-label:after {
+  content: "";
+  width: 22px;
+  @apply left-[3.3px] top-[2.5px] size-[15px] sm:left-[3px] sm:top-[2px] sm:size-[22px];
+  position: absolute;
+  background: var(--primary);
+  border-radius: 180px;
+  box-shadow: 0px 5px 3px rgba(0, 0, 0, 0.2);
+}
+.toggle-input {
+  width: 0;
+  height: 0;
+  visibility: hidden;
+}
+
+.toggle-input:checked + .toggle-label {
+  background: var(--secondary);
+}
+.toggle-input:checked + .toggle-label:after {
+  @apply left-[35px] sm:left-[55px] sm:top-[2.3px];
+  transform: translateX(-100%);
+  background: linear-gradient(180deg, #777, var(--secondary));
+}
+.toggle-label,
+.toggle-label:after {
+  transition: position 0.5s;
+}
+
+.toggle-label:active:after {
+  @apply w-[19px] sm:w-[30px];
+}
+
+.toggle-label svg {
+  position: absolute;
+  @apply top-[4.738px] text-[11px] sm:top-[4px] sm:text-[18px];
+  z-index: 100;
+}
+.toggle-label .sun {
+  left: 5px;
+  fill: var(--secondary);
+  /* transition: all 0.4s cubic-bezier(0.5, 0.01, 0.068, 0.99); */
+}
+.toggle-label .moon {
+  @apply left-[22px] sm:left-[35px];
+  fill: #fff;
+  /* transition: all 0.4s cubic-bezier(0.5, 0.01, 0.068, 0.99); */
+}
+.toggle-input:checked + .toggle-label .sun {
+  fill: var(--secondary);
+}
+.toggle-input:checked + .toggle-label .moon {
+  fill: #fff;
+}
+
+/*# Text Reveal Animation */
+
+.text-reveal > span {
+  background-image: linear-gradient(#00ffa5, #00ffa5);
+  color: transparent;
+  background-clip: text;
+  background-size: 0% 100%;
+  background-repeat: no-repeat;
+  animation: text-reveal linear forwards;
+  animation-timeline: view();
+  animation-range-start: 420px;
+  animation-range-end: contain;
+  filter: drop-shadow(1px 1px 0.7px var(--secondary));
+}
+
+@keyframes text-reveal {
+  to {
+    background-size: 100% 100%;
+  }
+}
+
+/*? 3D Card Effect */
+.threeD-effect {
+  transform: translateZ(120px);
+}
+
+/*do Border Rotate Animation */
+
+.border-rotate {
+  @apply relative overflow-hidden rounded-[10px] before:absolute before:bottom-[-50%] before:left-[-50%] before:right-[-50%] before:top-[-50%] before:animate-spin before:bg-[conic-gradient(transparent,transparent,#00ffa5)];
+}
+
+/*! Page Transition */
+
+/* .slide-in {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: var(--secondary);
+  transform-origin: bottom;
+}
+
+.slide-out {
+  pisition: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: var(--primary);
+  transform-origin: top;
+} */
+
+/*# Nav Menu Animation */
+
+.navmenu-item-container {
+  transition: all 5s;
+  position: relative;
+  z-index: 10;
+}
+
+.navigation-menu {
+  position: relative;
+  transition: all 0.3s;
+  z-index: 10;
+}
+
+.nav-slide {
+  position: absolute;
+  z-index: -50;
+  @apply -top-[10px] h-[3.5rem] w-[3.5rem] sm:-top-[17px] sm:h-[4.2rem] sm:w-[4.2rem];
+  border-radius: 50%;
+  background-color: var(--primary);
+  box-shadow: 0 0 10px 3px var(--primary);
+  border: 2px solid var(--secondary);
+  transform: scale(0);
+  transition: all 0.3s;
+}
+
+.navmenu-item-container div:nth-child(1).nav ~ .nav-slide {
+  @apply -left-[11.5px] sm:left-[4px];
+  transform: scale(1);
+}
+.navmenu-item-container div:nth-child(2).nav ~ .nav-slide {
+  @apply left-[40px] sm:left-[80px];
+  transform: scale(1);
+}
+.navmenu-item-container div:nth-child(3).nav ~ .nav-slide {
+  @apply left-[93px] sm:left-[155px];
+  transform: scale(1);
+}
+
+.navmenu-item-container div:nth-child(4).nav ~ .nav-slide {
+  @apply left-[145px] sm:left-[230px];
+  transform: scale(1);
+}
+
+.navmenu-item-container div:nth-child(5).nav ~ .nav-slide {
+  @apply left-[197px] sm:left-[305px];
+  transform: scale(1);
+}
+
+.navmenu-item-container div:nth-child(6).nav ~ .nav-slide {
+  @apply left-[248.5px] sm:left-[380px];
+  transform: scale(1);
+}
+
+.navigation-menu.nav {
+  transform: translate3d(0, -1.3em, 0);
+  @apply border-secondary;
+}
+
+.navigation-menu .icon {
+  stroke-miterlimit: 10;
+  stroke-dasharray: 400;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: transparent;
+}
+
+.navigation-menu.nav .icon {
+  animation: strok 1s reverse;
+  @apply stroke-secondary;
+}
+
+@keyframes strok {
+  100% {
+    stroke-dashoffset: 400;
+  }
+}
+
+/*@ Faq Animation */
+
+.expend {
+  background: var(--primary);
+  @apply rounded-3xl;
+}
+
+.accordion-container .accordion.expend .accordion-heading {
+  background: var(--primary);
+  @apply rounded-b-none text-secondary;
+}
+
+.accordion-container .accordion .accordion-heading .i {
+  transition: transform 0.2s 0.1s;
+}
+
+.accordion-container .accordion.expend .accordion-heading .i {
+  transform: rotate(90deg);
+}
+
+.accordion-container .accordion.expend .accordion-content {
+  display: block;
+}
+
+.accordion-container .accordion .accordion-content {
+  display: none;
+  animation: animate 0.5s cubic-bezier(0.215, 0.61, 0.355, 1) backwards;
+  line-height: 2;
+  transform-origin: top;
+}
+
+@keyframes animate {
+  0% {
+    transform: scaleY(0);
+  }
+}
+
+/*# Card Responsiveness */
+
+@media (max-width: 1180px) {
+  .responsive {
+    @apply grid-cols-2;
+  }
+}
+
+@media (max-width: 767px) {
+  .responsive {
+    @apply grid-cols-1;
+  }
+}
+
+/*$ NavMenu Animation */
+
+/* .navmenu .line::before { */
+/* content: "";
+  position: absolute;
+  height: 20px;
+  width: 70px;
+  top: -13px;
+  left: -6.5px;
+  border-radius: 20px;
+  @apply bg-white dark:bg-secondary;
+} */
+
+.navmenu .line::after {
+  content: "";
+  position: absolute;
+  height: 20px;
+  border-radius: 20px;
+  border: 2px solid var(--secondary);
+  border-top: 0px;
+  border-bottom: 0px;
+  @apply -left-[4px] -top-[13px] w-[50px] bg-white dark:bg-secondary sm:-left-[6.5px] sm:w-[70px];
+}
+
+/** Best Assignment Cards */
+
+/* .glow::before {
+  content: "";
+  position: absolute;
+  background: radial-gradient(var(--primary), transparent, transparent);
+  width: 800px;
+  height: 800px;
+  top: var(--a);
+  left: var(--b);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition:
+    0.5s,
+    top 0s,
+    left 0s;
+}
+.glow:hover::before {
+  opacity: 1;
+}
+
+.glow::after {
+  content: "";
+  inset: 5px;
+  position: absolute;
+  background: var(--secondary);
+  border-radius: 10px;
+  opacity: 1;
+} */
+
+@media (max-width: 471px) {
+  .icon-overlap {
+    display: block;
+  }
+  .icons-container {
+    @apply flex-col items-start gap-3 text-sm;
+  }
+  .gaps {
+    gap: 20px;
+  }
+}
+
+/*# Hexagon */
+
+.hexagon {
+  z-index: 10;
+  height: 200px;
+  width: 260px;
+  position: relative;
+  transition: all 0.5s;
+  @apply rounded-xl text-secondary dark:bg-[#1c2235] dark:text-white dark:hover:text-secondary;
+}
+
+.hexagon::before {
+  content: "";
+  @apply absolute bottom-1 z-[-1] mx-auto h-[12px] w-[96.5%] rounded-xl border-2 border-secondary bg-primary;
+  transition: all 0.5s;
+}
+.hexagon:hover::before {
+  height: 60%;
+}
+.hexagon::after {
+  content: "";
+  @apply absolute top-1 z-[-1] mx-auto h-[12px] w-[96.5%] rounded-md border-2 border-secondary bg-primary;
+  transition: all 0.5s;
+}
+.hexagon:hover::after {
+  height: 96%;
+}
+
+.hexagon:hover svg {
+  @apply stroke-secondary;
+}
+
+.counter-icons {
+  stroke-miterlimit: 10;
+  stroke-dasharray: 400;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: transparent;
+}
+
+.hexagon:hover svg {
+  animation: strok 1.5s reverse;
+  @apply stroke-secondary;
+}
+
+@keyframes strok {
+  100% {
+    stroke-dashoffset: 400;
+  }
+}
+
+/*! Date Picker Styles */
+
+.p-icon {
+  @apply size-6 text-xl font-bold text-secondary dark:text-white;
+}
+
+.p-button{
+  @apply relative right-2
+}
+
+.p-calendar:not(.p-calendar-disabled).p-focus > .p-inputtext {
+  box-shadow: none;
+}
+
+.p-inputtext {
+  @apply bg-transparent placeholder-secondary dark:placeholder-white px-4 py-3;
+}
+
+.p-inputwrapper {
+  @apply rounded-xl border-2 border-primary bg-primary bg-opacity-25 w-[16.5rem]  font-semibold text-secondary outline-none dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white sm:w-[20rem];
+}
+
+.p-button:focus {
+  box-shadow: none;
+}
+
+.p-datepicker {
+  @apply rounded-2xl border-2 border-secondary bg-white text-secondary shadow-[0px_0px_5px_2px] shadow-primary dark:bg-[#1c2235] dark:text-white;
+}
+
+.p-datepicker-header {
+  @apply rounded-2xl border-2 border-secondary bg-white font-dosis text-secondary shadow-[0px_0px_5px_2px] shadow-primary dark:bg-secondary dark:text-white;
+}
+
+.p-highlight {
+  @apply border-2 border-secondary bg-white font-dosis font-bold text-secondary shadow-[0px_0px_5px_2px] shadow-primary dark:bg-secondary dark:text-primary;
+}
+
+.p-datepicker table td.p-datepicker-today > span {
+  @apply bg-primary dark:bg-secondary dark:text-white;
+}
+
+.p-datepicker td > span:hover,
+.p-monthpicker > span:hover,
+.p-yearpicker > span:hover {
+  @apply bg-primary dark:bg-secondary;
+}
+
+.p-monthpicker-month:focus,
+.p-datepicker td > span:focus {
+  box-shadow: none;
+}
+
+.p-datepicker{
+  left: 37px !important;
+}
+
+
+/*! Dropdown Styles */
+
+.p-dropdown:not(.p-disabled).p-focus{
+  box-shadow: none;
+}
+
+.p-dropdown-label{
+  @apply dark:text-white text-secondary
+}
+
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item{
+  @apply  overflow-auto text-secondary dark:text-white
+}
+
+.p-dropdown-items-wrapper{
+  @apply rounded-xl
+}
+
+.p-dropdown-panel{
+  @apply dark:bg-[#1c2235] bg-white rounded-xl border-2 border-secondary shadow-primary shadow-[0px_0px_5px_2px]
+}
+
+.p-dropdown-items-wrapper .p-highlight{
+  @apply border-none shadow-none font-edu bg-primary
+}
+
+.p-dropdown-trigger svg{
+  @apply size-[22px] relative right-2
+}
+
+.p-dropdown-item{
+  @apply font-dosis font-bold
+}
+
+.p-dropdown-items .p-dropdown-item:hover{
+@apply dark:bg-secondary
+}
+
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item:not(.p-highlight):not(.p-disabled).p-focus{
+@apply dark:bg-secondary
+}

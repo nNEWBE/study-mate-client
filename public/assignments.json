@@ -1,0 +1,50 @@
+[
+  {
+    "title": "Introduction to JavaScript",
+    "description": "Master JavaScript fundamentals such as variables, functions, loops, and how to implement logic in web applications effectively.",
+    "marks": 50,
+    "photoURL": "https://www.valuehost.com.br/blog/wp-content/uploads/2020/01/original-e8278705fab1f1036f26c2419edf8f0f.jpeg.webp",
+    "difficulty": "Easy",
+    "status":"pending"
+  },
+  {
+    "title": "React Component Lifecycle",
+    "description": "Gain insight into React’s lifecycle methods, helping you optimize component behavior at different stages of their existence.",
+    "marks": 75,
+    "photoURL": "https://miro.medium.com/v2/resize:fit:950/1*i1j6yKvTIgXkaVlOWG1tzg.jpeg",
+    "difficulty": "Medium",
+    "status":"pending"
+  },
+  {
+    "title": "Laravel API Development",
+    "description": "Learn to build RESTful APIs using Laravel, including user authentication, data validation, and efficient request handling techniques.",
+    "marks": 100,
+    "photoURL": "https://techvify-software.com/wp-content/uploads/2023/06/laravel-development-service-4-scaled.jpg",
+    "difficulty": "Hard",
+    "status":"pending"
+  },
+  {
+    "title": "Responsive Web Design",
+    "description": "Create responsive websites that adapt to various screen sizes, ensuring a seamless user experience across different devices.",
+    "marks": 50,
+    "photoURL": "https://media.licdn.com/dms/image/D4D12AQEQ5S1_Wgwncw/article-cover_image-shrink_600_2000/0/1687091146256?e=2147483647&v=beta&t=i38wsVC0LU-mD1hqqQWZOhVY589vf8o4_6u9h4X5CtM",
+    "difficulty": "Easy",
+    "status":"pending"
+  },
+  {
+    "title": "Database Management MySQL",
+    "description": "Understand relational databases and use MySQL to manage data efficiently, with SQL queries and optimizations.",
+    "marks": 75,
+    "photoURL": "https://www.atulhost.com/wp-content/uploads/2024/02/mysql.jpg",
+    "difficulty": "Medium",
+    "status":"pending"
+  },
+  {
+    "title": "Data Science with Python",
+    "description": "Explore fundamental machine learning concepts, and implement algorithms using Python, regression, and clustering models.",
+    "marks": 100,
+    "photoURL": "https://www.qsstechnosoft.com/wp-content/uploads/2019/04/Python-Libraries-in-Data-Science-1.jpg",
+    "difficulty": "Hard",
+    "status":"pending"
+  }
+]
