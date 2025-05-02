@@ -1,7 +1,3 @@
-Here’s a **more professional and polished version** of your README content for the **"Study Mate"** project:
-
----
-
 # 📚 Study Mate
 
 🔗 **Live Website**: [Click Here](https://study-mate-project.netlify.app/)
