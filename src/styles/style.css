@@ -100,27 +100,33 @@
   display: block;
 }
 
-div a:nth-child(1).active ~ .slide {
+div a:nth-child(1).active~.slide {
   opacity: 1;
   left: 2px;
 }
 
-div a:nth-child(2).active ~ .slide {
+div a:nth-child(2).active~.slide {
   opacity: 1;
   left: 88px;
   width: 90px;
 }
 
-div a:nth-child(3).active ~ .slide {
+div a:nth-child(3).active~.slide {
   opacity: 1;
   left: 195px;
-  width: 77px;
+  width: 86px;
 }
 
-div a:nth-child(4).active ~ .slide {
+div a:nth-child(4).active~.slide {
   opacity: 1;
-  left: 315px;
-  width: 85px;
+  left: 294px;
+  width: 66px;
+}
+
+div a:nth-child(5).active~.slide {
+  opacity: 1;
+  left: 399px;
+  width: 62px;
 }
 
 .active {
@@ -144,12 +150,12 @@ div a:nth-child(4).active ~ .slide {
   left: 1.55rem;
 }
 
-div a:nth-child(1).active ~ .side {
+div a:nth-child(1).active~.side {
   opacity: 1;
   left: 1.55rem;
 }
 
-div a:nth-child(2).active ~ .side {
+div a:nth-child(2).active~.side {
   opacity: 1;
   left: 8.45rem;
 }
@@ -179,7 +185,7 @@ div a:nth-child(2).active ~ .side {
   transition: transform 0.4s cubic-bezier(0.5, 0.01, 0.068, 0.99);
 }
 
-.nav li + li {
+.nav li+li {
   margin-top: 20px;
 }
 
@@ -215,6 +221,7 @@ nav .sidebar {
   border-left: 2px solid var(--secondary);
   z-index: 50;
 }
+
 nav.open .sidebar {
   right: 0;
 }
@@ -232,7 +239,8 @@ nav.open .sidebar {
   /* backdrop-filter: blur(1px); */
   z-index: 50;
 }
-nav.open ~ .overlay {
+
+nav.open~.overlay {
   opacity: 1;
   right: 300px;
   pointer-events: auto;
@@ -260,12 +268,15 @@ nav.open ~ .overlay {
   display: flex;
   align-items: center;
 }
+
 .checkbox-wrapper span {
   margin-left: 1rem;
 }
+
 .check-input {
   display: none;
 }
+
 .checkbox {
   width: 20px;
   height: 20px;
@@ -279,21 +290,25 @@ nav.open ~ .overlay {
   padding: 3px;
   transition: 0.3s all;
 }
+
 .checkbox svg {
   width: 20px;
   height: 20px;
 }
-.check-input:checked + .checkbox {
+
+.check-input:checked+.checkbox {
   background: var(--primary);
   border: 2px solid var(--primary);
 }
-.check-input:checked + .checkbox svg path {
+
+.check-input:checked+.checkbox svg path {
   stroke-dasharray: 500;
   stroke-dashoffset: 500;
   stroke: var(--secondary);
   stroke-width: 4;
   animation: check 4s forwards;
 }
+
 .checkbox::before {
   content: "";
   background: #00ffc344;
@@ -305,14 +320,17 @@ nav.open ~ .overlay {
   height: 60px;
   z-index: 1;
 }
-.check-input:checked + .checkbox::before {
+
+.check-input:checked+.checkbox::before {
   animation: ripple 0.3s;
 }
+
 @keyframes check {
   to {
     stroke-dashoffset: 0;
   }
 }
+
 @keyframes ripple {
   to {
     transform: scale(0.8);
@@ -342,20 +360,23 @@ nav.open ~ .overlay {
   border-radius: 180px;
   box-shadow: 0px 5px 3px rgba(0, 0, 0, 0.2);
 }
+
 .toggle-input {
   width: 0;
   height: 0;
   visibility: hidden;
 }
 
-.toggle-input:checked + .toggle-label {
+.toggle-input:checked+.toggle-label {
   background: var(--secondary);
 }
-.toggle-input:checked + .toggle-label:after {
+
+.toggle-input:checked+.toggle-label:after {
   @apply left-[35px] sm:left-[55px] sm:top-[2.3px];
   transform: translateX(-100%);
   background: linear-gradient(180deg, #777, var(--secondary));
 }
+
 .toggle-label,
 .toggle-label:after {
   transition: position 0.5s;
@@ -370,26 +391,30 @@ nav.open ~ .overlay {
   @apply top-[4.738px] text-[11px] sm:top-[4px] sm:text-[18px];
   z-index: 100;
 }
+
 .toggle-label .sun {
   left: 5px;
   fill: var(--secondary);
   /* transition: all 0.4s cubic-bezier(0.5, 0.01, 0.068, 0.99); */
 }
+
 .toggle-label .moon {
   @apply left-[22px] sm:left-[35px];
   fill: #fff;
   /* transition: all 0.4s cubic-bezier(0.5, 0.01, 0.068, 0.99); */
 }
-.toggle-input:checked + .toggle-label .sun {
+
+.toggle-input:checked+.toggle-label .sun {
   fill: var(--secondary);
 }
-.toggle-input:checked + .toggle-label .moon {
+
+.toggle-input:checked+.toggle-label .moon {
   fill: #fff;
 }
 
 /*# Text Reveal Animation */
 
-.text-reveal > span {
+.text-reveal>span {
   background-image: linear-gradient(#00ffa5, #00ffa5);
   color: transparent;
   background-clip: text;
@@ -416,7 +441,20 @@ nav.open ~ .overlay {
 /*do Border Rotate Animation */
 
 .border-rotate {
-  @apply relative overflow-hidden rounded-[10px] before:absolute before:bottom-[-50%] before:left-[-50%] before:right-[-50%] before:top-[-50%] before:animate-spin before:bg-[conic-gradient(transparent,transparent,#00ffa5)];
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.border-rotate::before {
+  content: "";
+  position: absolute;
+  bottom: -50%;
+  left: -50%;
+  right: -50%;
+  top: -50%;
+  animation: spin 1s linear infinite;
+  background: conic-gradient(transparent, transparent, #00ffa5);
 }
 
 /*! Page Transition */
@@ -467,30 +505,32 @@ nav.open ~ .overlay {
   transition: all 0.3s;
 }
 
-.navmenu-item-container div:nth-child(1).nav ~ .nav-slide {
+.navmenu-item-container div:nth-child(1).nav~.nav-slide {
   @apply -left-[11.5px] sm:left-[4px];
   transform: scale(1);
 }
-.navmenu-item-container div:nth-child(2).nav ~ .nav-slide {
+
+.navmenu-item-container div:nth-child(2).nav~.nav-slide {
   @apply left-[40px] sm:left-[80px];
   transform: scale(1);
 }
-.navmenu-item-container div:nth-child(3).nav ~ .nav-slide {
+
+.navmenu-item-container div:nth-child(3).nav~.nav-slide {
   @apply left-[93px] sm:left-[155px];
   transform: scale(1);
 }
 
-.navmenu-item-container div:nth-child(4).nav ~ .nav-slide {
+.navmenu-item-container div:nth-child(4).nav~.nav-slide {
   @apply left-[145px] sm:left-[230px];
   transform: scale(1);
 }
 
-.navmenu-item-container div:nth-child(5).nav ~ .nav-slide {
+.navmenu-item-container div:nth-child(5).nav~.nav-slide {
   @apply left-[197px] sm:left-[305px];
   transform: scale(1);
 }
 
-.navmenu-item-container div:nth-child(6).nav ~ .nav-slide {
+.navmenu-item-container div:nth-child(6).nav~.nav-slide {
   @apply left-[248.5px] sm:left-[380px];
   transform: scale(1);
 }
@@ -628,9 +668,11 @@ nav.open ~ .overlay {
   .icon-overlap {
     display: block;
   }
+
   .icons-container {
     @apply flex-col items-start gap-3 text-sm;
   }
+
   .gaps {
     gap: 20px;
   }
@@ -652,14 +694,17 @@ nav.open ~ .overlay {
   @apply absolute bottom-1 z-[-1] mx-auto h-[12px] w-[96.5%] rounded-xl border-2 border-secondary bg-primary;
   transition: all 0.5s;
 }
+
 .hexagon:hover::before {
   height: 60%;
 }
+
 .hexagon::after {
   content: "";
   @apply absolute top-1 z-[-1] mx-auto h-[12px] w-[96.5%] rounded-md border-2 border-secondary bg-primary;
   transition: all 0.5s;
 }
+
 .hexagon:hover::after {
   height: 96%;
 }
@@ -693,11 +738,11 @@ nav.open ~ .overlay {
   @apply size-6 text-xl font-bold text-secondary dark:text-white;
 }
 
-.p-button{
+.p-button {
   @apply relative right-2
 }
 
-.p-calendar:not(.p-calendar-disabled).p-focus > .p-inputtext {
+.p-calendar:not(.p-calendar-disabled).p-focus>.p-inputtext {
   box-shadow: none;
 }
 
@@ -706,7 +751,7 @@ nav.open ~ .overlay {
 }
 
 .p-inputwrapper {
-  @apply rounded-xl border-2 border-primary bg-primary bg-opacity-25 w-[16.5rem]  font-semibold text-secondary outline-none dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white sm:w-[20rem];
+  @apply rounded-xl border-2 border-primary bg-primary bg-opacity-25 w-[16.5rem] font-semibold text-secondary outline-none dark:border-white dark:border-opacity-[0.3] dark:bg-white/20 dark:text-white sm:w-[20rem];
 }
 
 .p-button:focus {
@@ -725,64 +770,64 @@ nav.open ~ .overlay {
   @apply border-2 border-secondary bg-white font-dosis font-bold text-secondary shadow-[0px_0px_5px_2px] shadow-primary dark:bg-secondary dark:text-primary;
 }
 
-.p-datepicker table td.p-datepicker-today > span {
+.p-datepicker table td.p-datepicker-today>span {
   @apply bg-primary dark:bg-secondary dark:text-white;
 }
 
-.p-datepicker td > span:hover,
-.p-monthpicker > span:hover,
-.p-yearpicker > span:hover {
+.p-datepicker td>span:hover,
+.p-monthpicker>span:hover,
+.p-yearpicker>span:hover {
   @apply bg-primary dark:bg-secondary;
 }
 
 .p-monthpicker-month:focus,
-.p-datepicker td > span:focus {
+.p-datepicker td>span:focus {
   box-shadow: none;
 }
 
-.p-datepicker{
+.p-datepicker {
   left: 37px !important;
 }
 
 
 /*! Dropdown Styles */
 
-.p-dropdown:not(.p-disabled).p-focus{
+.p-dropdown:not(.p-disabled).p-focus {
   box-shadow: none;
 }
 
-.p-dropdown-label{
+.p-dropdown-label {
   @apply dark:text-white text-secondary
 }
 
-.p-dropdown-panel .p-dropdown-items .p-dropdown-item{
-  @apply  overflow-auto text-secondary dark:text-white
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+  @apply overflow-auto text-secondary dark:text-white
 }
 
-.p-dropdown-items-wrapper{
+.p-dropdown-items-wrapper {
   @apply rounded-xl
 }
 
-.p-dropdown-panel{
+.p-dropdown-panel {
   @apply dark:bg-[#1c2235] bg-white rounded-xl border-2 border-secondary shadow-primary shadow-[0px_0px_5px_2px]
 }
 
-.p-dropdown-items-wrapper .p-highlight{
+.p-dropdown-items-wrapper .p-highlight {
   @apply border-none shadow-none font-edu bg-primary
 }
 
-.p-dropdown-trigger svg{
+.p-dropdown-trigger svg {
   @apply size-[22px] relative right-2
 }
 
-.p-dropdown-item{
+.p-dropdown-item {
   @apply font-dosis font-bold
 }
 
-.p-dropdown-items .p-dropdown-item:hover{
-@apply dark:bg-secondary
+.p-dropdown-items .p-dropdown-item:hover {
+  @apply dark:bg-secondary
 }
 
-.p-dropdown-panel .p-dropdown-items .p-dropdown-item:not(.p-highlight):not(.p-disabled).p-focus{
-@apply dark:bg-secondary
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item:not(.p-highlight):not(.p-disabled).p-focus {
+  @apply dark:bg-secondary
 }

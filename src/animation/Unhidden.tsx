@@ -1,11 +1,13 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef, ReactElement } from "react";
 import { motion, useAnimation, useInView } from "framer-motion";
-interface Props {
-  children: JSX.Element;
+
+interface UnhiddenProps {
+  children: ReactElement;
   width?: "fit-content" | "100%";
 }
-const Unhidden = ({ children, width = "fit-content" }: Props) => {
-  const ref = useRef(null);
+
+const Unhidden = ({ children, width = "fit-content" }: UnhiddenProps): JSX.Element => {
+  const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true });
   const mainControls = useAnimation();
   const slideControls = useAnimation();
@@ -15,10 +17,10 @@ const Unhidden = ({ children, width = "fit-content" }: Props) => {
       mainControls.start("visible");
       slideControls.start("visible");
     }
-  }, [isInView]);
+  }, [isInView, mainControls, slideControls]);
 
   return (
-    <div ref={ref} style={{ position: "relative", width}}>
+    <div ref={ref} style={{ position: "relative", width }}>
       <motion.div
         variants={{
           hidden: { opacity: 0, y: 75 },
