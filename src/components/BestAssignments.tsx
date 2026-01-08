@@ -15,8 +15,9 @@ import { ToggleContext } from "../context/ToggleProvider";
 import BestCardSkeleton from "../animation/BestCardSkeleton";
 
 const BestAssignments = () => {
-  const { theme } = useContext(ToggleContext);
-  const [data, setData] = useState([]);
+  const context = useContext(ToggleContext);
+  const theme = context?.theme;
+  const [data, setData] = useState(bestAssignments);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -48,7 +49,7 @@ const BestAssignments = () => {
           <BestCardSkeleton cards={bestAssignments.length} />
         ) : (
           data.map((bs, index) => (
-            <div key={index} className="sticky top-20 pt-7 sm:top-72">
+            <div key={index} className="sticky top-20 pt-7 sm:top-72" data-cursor="card">
               <Tilt
                 glareEnable={true}
                 tiltMaxAngleY={7}

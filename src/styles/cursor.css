@@ -1,0 +1,204 @@
+/* Custom Cursor Styles */
+
+/* Hide default cursor globally */
+* {
+    cursor: none !important;
+}
+
+/* Inner cursor - the main cursor dot */
+.cursor-inner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 15px;
+    height: 15px;
+    background: transparent;
+    border: 4px solid #00ffa5;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99999;
+    mix-blend-mode: exclusion;
+    transition:
+        width 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
+        height 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
+        background 0.3s ease,
+        border 0.3s ease,
+        opacity 0.3s ease;
+    will-change: transform;
+}
+
+/* Outer cursor - the trailing ring */
+.cursor-outer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 35px;
+    height: 35px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99998;
+    mix-blend-mode: exclusion;
+    transition:
+        width 0.4s cubic-bezier(0.25, 0.1, 0.25, 1),
+        height 0.4s cubic-bezier(0.25, 0.1, 0.25, 1),
+        background 0.3s ease,
+        border 0.3s ease,
+        opacity 0.4s ease;
+    will-change: transform;
+}
+
+/* Hidden state */
+.cursor-hidden {
+    opacity: 0;
+}
+
+/* Hover state - when hovering interactive elements */
+.cursor-inner.cursor-hover {
+    width: 8px;
+    height: 8px;
+    background: #00ffa5;
+    border-color: #00ffa5;
+}
+
+.cursor-outer.cursor-hover {
+    width: 50px;
+    height: 50px;
+    background: rgba(0, 255, 165, 0.1);
+    border-color: rgba(0, 255, 165, 0.5);
+}
+
+/* Card hover state - special style when hovering cards */
+.cursor-inner.cursor-on-card {
+    width: 60px;
+    height: 60px;
+    background: rgba(0, 255, 165, 0.1);
+    border: 3px solid #00ffa5;
+    backdrop-filter: blur(4px);
+}
+
+.cursor-inner.cursor-on-card::before {
+    content: "View";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 10px;
+    font-weight: 700;
+    color: #00ffa5;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'Poppins', sans-serif;
+    mix-blend-mode: normal;
+}
+
+.cursor-outer.cursor-on-card {
+    width: 80px;
+    height: 80px;
+    background: transparent;
+    border: 2px dashed rgba(0, 255, 165, 0.4);
+    animation: cursor-rotate 4s linear infinite;
+}
+
+/* Clicking state */
+.cursor-inner.cursor-clicking {
+    transform: scale(0.8);
+}
+
+.cursor-outer.cursor-clicking {
+    transform: scale(0.9);
+}
+
+/* Rotation animation for card hover outer cursor */
+@keyframes cursor-rotate {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* Pulse animation for card hover */
+.cursor-inner.cursor-on-card::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px solid #00ffa5;
+    animation: cursor-pulse 1.5s ease-out infinite;
+}
+
+@keyframes cursor-pulse {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* Dark mode adjustments */
+.dark .cursor-inner {
+    border-color: #00ffa5;
+}
+
+.dark .cursor-outer {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.dark .cursor-inner.cursor-on-card::before {
+    color: #00ffa5;
+}
+
+/* Combined hover + card state */
+.cursor-inner.cursor-hover.cursor-on-card {
+    width: 60px;
+    height: 60px;
+}
+
+.cursor-outer.cursor-hover.cursor-on-card {
+    width: 80px;
+    height: 80px;
+}
+
+/* Responsive - hide on smaller screens */
+@media (max-width: 1023px) {
+
+    .cursor-inner,
+    .cursor-outer {
+        display: none !important;
+    }
+
+    * {
+        cursor: auto !important;
+    }
+}
+
+/* Accessibility - respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+
+    .cursor-inner,
+    .cursor-outer {
+        transition: none;
+        animation: none;
+    }
+
+    .cursor-inner.cursor-on-card::after {
+        animation: none;
+    }
+
+    .cursor-outer.cursor-on-card {
+        animation: none;
+    }
+}
