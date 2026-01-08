@@ -1,9 +1,6 @@
 /* Custom Cursor Styles */
 
-/* Hide default cursor globally */
-* {
-    cursor: none !important;
-}
+/* DO NOT hide default cursor - keep system cursor visible */
 
 /* Inner cursor - the main cursor dot */
 .cursor-inner {
@@ -172,16 +169,12 @@
     height: 80px;
 }
 
-/* Responsive - hide on smaller screens */
+/* Responsive - hide custom cursor on smaller screens */
 @media (max-width: 1023px) {
 
     .cursor-inner,
     .cursor-outer {
         display: none !important;
-    }
-
-    * {
-        cursor: auto !important;
     }
 }
 

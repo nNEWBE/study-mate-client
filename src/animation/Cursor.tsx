@@ -1,104 +1,89 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import "../styles/cursor.css";
-
-interface CursorPosition {
-  x: number;
-  y: number;
-}
-
-interface CursorState {
-  isHovering: boolean;
-  isOnCard: boolean;
-  isClicking: boolean;
-}
 
 const Cursor = (): JSX.Element | null => {
   const innerRef = useRef<HTMLDivElement>(null);
   const outerRef = useRef<HTMLDivElement>(null);
-  const requestRef = useRef<number>();
-  const previousTimeRef = useRef<number>();
+  const requestRef = useRef<number | null>(null);
 
-  const [cursorPos, setCursorPos] = useState<CursorPosition>({ x: 0, y: 0 });
-  const [targetPos, setTargetPos] = useState<CursorPosition>({ x: 0, y: 0 });
-  const [cursorState, setCursorState] = useState<CursorState>({
-    isHovering: false,
-    isOnCard: false,
-    isClicking: false,
-  });
-  const [isVisible, setIsVisible] = useState<boolean>(false);
-  const [isMobile, setIsMobile] = useState<boolean>(false);
+  // Store positions as refs for better performance (no re-renders)
+  const mousePos = useRef({ x: 0, y: 0 });
+  const innerPos = useRef({ x: 0, y: 0 });
+  const outerPos = useRef({ x: 0, y: 0 });
+  const isVisible = useRef(false);
+  const isHovering = useRef(false);
+  const isOnCard = useRef(false);
+  const isClicking = useRef(false);
 
-  // Check if device is mobile
-  useEffect(() => {
-    const checkMobile = (): void => {
-      setIsMobile(window.innerWidth < 1024 || "ontouchstart" in window);
-    };
+  // Check if device is mobile/tablet
+  const isMobile = typeof window !== 'undefined' &&
+    (window.innerWidth < 1024 || 'ontouchstart' in window);
 
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
+  // Animation loop using requestAnimationFrame
+  const animate = useCallback(() => {
+    if (!innerRef.current || !outerRef.current) {
+      requestRef.current = requestAnimationFrame(animate);
+      return;
+    }
 
-    return () => window.removeEventListener("resize", checkMobile);
+    // Lerp factors - higher = faster following
+    const innerLerp = 0.25;
+    const outerLerp = 0.12;
+
+    // Calculate new positions with lerp
+    innerPos.current.x += (mousePos.current.x - innerPos.current.x) * innerLerp;
+    innerPos.current.y += (mousePos.current.y - innerPos.current.y) * innerLerp;
+
+    outerPos.current.x += (mousePos.current.x - outerPos.current.x) * outerLerp;
+    outerPos.current.y += (mousePos.current.y - outerPos.current.y) * outerLerp;
+
+    // Apply transforms directly to DOM (no React state = no re-renders)
+    innerRef.current.style.transform = `translate3d(${innerPos.current.x}px, ${innerPos.current.y}px, 0) translate(-50%, -50%)`;
+    outerRef.current.style.transform = `translate3d(${outerPos.current.x}px, ${outerPos.current.y}px, 0) translate(-50%, -50%)`;
+
+    requestRef.current = requestAnimationFrame(animate);
   }, []);
 
-  // Mouse move handler
-  const handleMouseMove = useCallback((e: MouseEvent): void => {
-    setTargetPos({ x: e.clientX, y: e.clientY });
-    if (!isVisible) setIsVisible(true);
-  }, [isVisible]);
+  // Mouse move handler - just update the target position
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    mousePos.current.x = e.clientX;
+    mousePos.current.y = e.clientY;
+
+    if (!isVisible.current && innerRef.current && outerRef.current) {
+      isVisible.current = true;
+      innerRef.current.classList.remove('cursor-hidden');
+      outerRef.current.classList.remove('cursor-hidden');
+    }
+  }, []);
 
   // Mouse enter/leave handlers
-  const handleMouseEnter = useCallback((): void => {
-    setIsVisible(true);
-  }, []);
-
-  const handleMouseLeave = useCallback((): void => {
-    setIsVisible(false);
+  const handleMouseLeave = useCallback(() => {
+    if (innerRef.current && outerRef.current) {
+      isVisible.current = false;
+      innerRef.current.classList.add('cursor-hidden');
+      outerRef.current.classList.add('cursor-hidden');
+    }
   }, []);
 
   // Click handlers
-  const handleMouseDown = useCallback((): void => {
-    setCursorState(prev => ({ ...prev, isClicking: true }));
+  const handleMouseDown = useCallback(() => {
+    isClicking.current = true;
+    innerRef.current?.classList.add('cursor-clicking');
+    outerRef.current?.classList.add('cursor-clicking');
   }, []);
 
-  const handleMouseUp = useCallback((): void => {
-    setCursorState(prev => ({ ...prev, isClicking: false }));
+  const handleMouseUp = useCallback(() => {
+    isClicking.current = false;
+    innerRef.current?.classList.remove('cursor-clicking');
+    outerRef.current?.classList.remove('cursor-clicking');
   }, []);
-
-  // Smooth animation using requestAnimationFrame
-  const animate = useCallback((time: number): void => {
-    if (previousTimeRef.current !== undefined) {
-      // Lerp factor for smooth trailing (lower = smoother, higher = faster)
-      const innerLerp = 0.35;
-      const outerLerp = 0.15;
-
-      setCursorPos(prev => ({
-        x: prev.x + (targetPos.x - prev.x) * innerLerp,
-        y: prev.y + (targetPos.y - prev.y) * innerLerp,
-      }));
-
-      // Apply positions to DOM elements directly for better performance
-      if (innerRef.current) {
-        const innerX = cursorPos.x + (targetPos.x - cursorPos.x) * innerLerp;
-        const innerY = cursorPos.y + (targetPos.y - cursorPos.y) * innerLerp;
-        innerRef.current.style.transform = `translate3d(${innerX}px, ${innerY}px, 0) translate(-50%, -50%)`;
-      }
-
-      if (outerRef.current) {
-        const outerX = cursorPos.x + (targetPos.x - cursorPos.x) * outerLerp;
-        const outerY = cursorPos.y + (targetPos.y - cursorPos.y) * outerLerp;
-        outerRef.current.style.transform = `translate3d(${outerX}px, ${outerY}px, 0) translate(-50%, -50%)`;
-      }
-    }
-
-    previousTimeRef.current = time;
-    requestRef.current = requestAnimationFrame(animate);
-  }, [targetPos, cursorPos]);
 
   // Start animation loop
   useEffect(() => {
     if (isMobile) return;
 
     requestRef.current = requestAnimationFrame(animate);
+
     return () => {
       if (requestRef.current) {
         cancelAnimationFrame(requestRef.current);
@@ -106,84 +91,94 @@ const Cursor = (): JSX.Element | null => {
     };
   }, [animate, isMobile]);
 
-  // Setup event listeners
+  // Setup global event listeners
   useEffect(() => {
     if (isMobile) return;
 
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseenter", handleMouseEnter);
+    document.addEventListener("mousemove", handleMouseMove, { passive: true });
     document.addEventListener("mouseleave", handleMouseLeave);
     document.addEventListener("mousedown", handleMouseDown);
     document.addEventListener("mouseup", handleMouseUp);
 
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseenter", handleMouseEnter);
       document.removeEventListener("mouseleave", handleMouseLeave);
       document.removeEventListener("mousedown", handleMouseDown);
       document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isMobile, handleMouseMove, handleMouseEnter, handleMouseLeave, handleMouseDown, handleMouseUp]);
+  }, [isMobile, handleMouseMove, handleMouseLeave, handleMouseDown, handleMouseUp]);
 
   // Setup hover detection for interactive elements and cards
   useEffect(() => {
     if (isMobile) return;
 
-    const interactiveElements = document.querySelectorAll(
-      'a, button, input, textarea, select, [role="button"], .link, h1'
-    );
-
-    const cardElements = document.querySelectorAll(
-      '[class*="card"], [class*="Card"], .tilt, [data-cursor="card"]'
-    );
-
-    const handleInteractiveEnter = (): void => {
-      setCursorState(prev => ({ ...prev, isHovering: true }));
+    const handleInteractiveEnter = () => {
+      isHovering.current = true;
+      innerRef.current?.classList.add('cursor-hover');
+      outerRef.current?.classList.add('cursor-hover');
     };
 
-    const handleInteractiveLeave = (): void => {
-      setCursorState(prev => ({ ...prev, isHovering: false }));
+    const handleInteractiveLeave = () => {
+      isHovering.current = false;
+      innerRef.current?.classList.remove('cursor-hover');
+      outerRef.current?.classList.remove('cursor-hover');
     };
 
-    const handleCardEnter = (): void => {
-      setCursorState(prev => ({ ...prev, isOnCard: true }));
+    const handleCardEnter = () => {
+      isOnCard.current = true;
+      innerRef.current?.classList.add('cursor-on-card');
+      outerRef.current?.classList.add('cursor-on-card');
     };
 
-    const handleCardLeave = (): void => {
-      setCursorState(prev => ({ ...prev, isOnCard: false }));
+    const handleCardLeave = () => {
+      isOnCard.current = false;
+      innerRef.current?.classList.remove('cursor-on-card');
+      outerRef.current?.classList.remove('cursor-on-card');
     };
 
-    interactiveElements.forEach(el => {
-      el.addEventListener("mouseenter", handleInteractiveEnter);
-      el.addEventListener("mouseleave", handleInteractiveLeave);
-    });
+    // Function to setup listeners on elements
+    const setupListeners = () => {
+      const interactiveElements = document.querySelectorAll(
+        'a, button, input, textarea, select, [role="button"], .link, h1'
+      );
 
-    cardElements.forEach(el => {
-      el.addEventListener("mouseenter", handleCardEnter);
-      el.addEventListener("mouseleave", handleCardLeave);
-    });
+      const cardElements = document.querySelectorAll('[data-cursor="card"]');
 
-    // Use MutationObserver to handle dynamically added elements
+      interactiveElements.forEach(el => {
+        el.addEventListener("mouseenter", handleInteractiveEnter);
+        el.addEventListener("mouseleave", handleInteractiveLeave);
+      });
+
+      cardElements.forEach(el => {
+        el.addEventListener("mouseenter", handleCardEnter);
+        el.addEventListener("mouseleave", handleCardLeave);
+      });
+    };
+
+    // Initial setup
+    setupListeners();
+
+    // Use MutationObserver for dynamically added elements
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         mutation.addedNodes.forEach((node) => {
           if (node instanceof Element) {
             // Check for cards
-            if (node.matches('[class*="card"], [class*="Card"], .tilt, [data-cursor="card"]')) {
+            if (node.matches?.('[data-cursor="card"]')) {
               node.addEventListener("mouseenter", handleCardEnter);
               node.addEventListener("mouseleave", handleCardLeave);
             }
             // Check for interactive elements
-            if (node.matches('a, button, input, textarea, select, [role="button"], .link, h1')) {
+            if (node.matches?.('a, button, input, textarea, select, [role="button"], .link, h1')) {
               node.addEventListener("mouseenter", handleInteractiveEnter);
               node.addEventListener("mouseleave", handleInteractiveLeave);
             }
             // Check children
-            node.querySelectorAll('[class*="card"], [class*="Card"], .tilt, [data-cursor="card"]').forEach(el => {
+            node.querySelectorAll?.('[data-cursor="card"]').forEach(el => {
               el.addEventListener("mouseenter", handleCardEnter);
               el.addEventListener("mouseleave", handleCardLeave);
             });
-            node.querySelectorAll('a, button, input, textarea, select, [role="button"], .link, h1').forEach(el => {
+            node.querySelectorAll?.('a, button, input, textarea, select, [role="button"], .link, h1').forEach(el => {
               el.addEventListener("mouseenter", handleInteractiveEnter);
               el.addEventListener("mouseleave", handleInteractiveLeave);
             });
@@ -195,14 +190,6 @@ const Cursor = (): JSX.Element | null => {
     observer.observe(document.body, { childList: true, subtree: true });
 
     return () => {
-      interactiveElements.forEach(el => {
-        el.removeEventListener("mouseenter", handleInteractiveEnter);
-        el.removeEventListener("mouseleave", handleInteractiveLeave);
-      });
-      cardElements.forEach(el => {
-        el.removeEventListener("mouseenter", handleCardEnter);
-        el.removeEventListener("mouseleave", handleCardLeave);
-      });
       observer.disconnect();
     };
   }, [isMobile]);
@@ -215,17 +202,13 @@ const Cursor = (): JSX.Element | null => {
       {/* Inner cursor - follows mouse closely */}
       <div
         ref={innerRef}
-        className={`cursor-inner ${!isVisible ? "cursor-hidden" : ""} ${cursorState.isHovering ? "cursor-hover" : ""
-          } ${cursorState.isOnCard ? "cursor-on-card" : ""} ${cursorState.isClicking ? "cursor-clicking" : ""
-          }`}
+        className="cursor-inner cursor-hidden"
       />
 
       {/* Outer cursor - trails behind */}
       <div
         ref={outerRef}
-        className={`cursor-outer ${!isVisible ? "cursor-hidden" : ""} ${cursorState.isHovering ? "cursor-hover" : ""
-          } ${cursorState.isOnCard ? "cursor-on-card" : ""} ${cursorState.isClicking ? "cursor-clicking" : ""
-          }`}
+        className="cursor-outer cursor-hidden"
       />
     </>
   );
