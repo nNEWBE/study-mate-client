@@ -24,7 +24,7 @@ const Tasks = () => {
     setData(data);
     setTimeout(() => {
       setIsLoading(false);
-    }, 5000);
+    }, 1000);
   };
 
   useEffect(() => {
@@ -83,13 +83,13 @@ const Tasks = () => {
   //   }
   // };
 
-  const handleDelete = async (id,email,name) => {
+  const handleDelete = async (id: string, email: string, name: string) => {
     console.log(id)
-    if(!user){
+    if (!user) {
       navigate("/account")
       return toast.error("Login to delete this assignment")
     }
-    else if(user?.email !== email && user?.displayName!==name)
+    else if (user?.email !== email && user?.displayName !== name)
       return toast.error("Only author can delete assignment")
 
     try {
@@ -137,7 +137,7 @@ const Tasks = () => {
           },
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       toast.error(error.message);
     }

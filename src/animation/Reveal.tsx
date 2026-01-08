@@ -1,5 +1,5 @@
-import { useEffect, useRef, ReactElement } from "react";
-import { motion, useAnimation, useInView } from "framer-motion";
+import { useRef, ReactElement } from "react";
+import { motion, useInView } from "framer-motion";
 
 interface RevealProps {
   children: ReactElement;
@@ -8,39 +8,22 @@ interface RevealProps {
 
 const Reveal = ({ children, width = "fit-content" }: RevealProps): JSX.Element => {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true });
-  const mainControls = useAnimation();
-  const slideControls = useAnimation();
-
-  useEffect(() => {
-    if (isInView) {
-      mainControls.start("visible");
-      slideControls.start("visible");
-    }
-  }, [isInView, mainControls, slideControls]);
+  const isInView = useInView(ref, { once: true, amount: 0.3 });
 
   return (
     <div ref={ref} style={{ position: "relative", width, overflow: "hidden" }}>
       <motion.div
-        variants={{
-          hidden: { opacity: 0, y: 75 },
-          visible: { opacity: 1, y: 0 },
-        }}
-        initial="hidden"
-        animate={mainControls}
-        transition={{ duration: 0.7, delay: 0.25, ease: "easeInOut" }}
+        initial={{ opacity: 0, y: 40 }}
+        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
       >
         {children}
       </motion.div>
 
       <motion.div
-        variants={{
-          hidden: { left: 0 },
-          visible: { left: "100%" },
-        }}
-        initial="hidden"
-        animate={slideControls}
-        transition={{ duration: 0.7, ease: "easeIn" }}
+        initial={{ left: 0 }}
+        animate={isInView ? { left: "100%" } : { left: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
         style={{
           position: "absolute",
           top: 4,
@@ -49,7 +32,7 @@ const Reveal = ({ children, width = "fit-content" }: RevealProps): JSX.Element =
           right: 0,
           background: "#00ffa5",
         }}
-      ></motion.div>
+      />
     </div>
   );
 };

@@ -453,7 +453,7 @@ nav.open~.overlay {
   left: -50%;
   right: -50%;
   top: -50%;
-  animation: spin 1s linear infinite;
+  animation: spin 3s linear infinite;
   background: conic-gradient(transparent, transparent, #00ffa5);
 }
 

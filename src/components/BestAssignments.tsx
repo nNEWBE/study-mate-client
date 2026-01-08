@@ -22,7 +22,7 @@ const BestAssignments = () => {
 
   useEffect(() => {
     setData(bestAssignments)
-    setTimeout(() => setIsLoading(false), 7000);
+    setTimeout(() => setIsLoading(false), 1500);
   }, [])
 
   return (
@@ -51,12 +51,9 @@ const BestAssignments = () => {
           data.map((bs, index) => (
             <div key={index} className="sticky top-20 pt-7 sm:top-72" data-cursor="card">
               <Tilt
-                glareEnable={true}
-                tiltMaxAngleY={7}
-                tiltMaxAngleX={7}
-                glareMaxOpacity={theme ? 0.3 : 0.2}
-                glareColor={theme ? "white" : "#00ffa5"}
-                glarePosition="all"
+                glareEnable={false}
+                tiltMaxAngleY={5}
+                tiltMaxAngleX={5}
                 glareBorderRadius="10px"
                 className="relative mx-auto flex flex-col justify-between gap-5 overflow-hidden rounded-xl border-2 border-secondary bg-white p-5 shadow-[0px_0px_5px_2px] shadow-primary dark:bg-secondary sm:h-[17rem] sm:flex-row lg:h-[20rem] lg:w-[60rem]"
               >

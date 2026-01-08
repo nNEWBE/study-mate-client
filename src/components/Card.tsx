@@ -33,12 +33,9 @@ const Card = ({ d, handleDelete }: CardProps): JSX.Element => {
   return (
     <div data-cursor="card">
       <Tilt
-        glareEnable={true}
-        tiltMaxAngleY={7}
-        tiltMaxAngleX={7}
-        glareMaxOpacity={theme ? 0.3 : 0.2}
-        glareColor={theme ? "white" : "#00ffa5"}
-        glarePosition="all"
+        glareEnable={false}
+        tiltMaxAngleY={5}
+        tiltMaxAngleX={5}
         glareBorderRadius="10px"
         className="flex flex-col justify-between rounded-2xl border-2 border-secondary bg-transparent px-2.5 py-1 pt-2 shadow-[0px_0px_5px_2px] shadow-primary backdrop-blur-[20px]"
       >

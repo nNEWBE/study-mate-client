@@ -6,13 +6,12 @@ import NavMenu from "../components/NavMenu";
 import Create from "../components/Create";
 import BestAssignments from "../components/BestAssignments";
 
+
 const Home = (): JSX.Element => {
   return (
     <motion.div
       initial={{ translateX: "100%" }}
-      animate={{
-        translateX: "0%",
-      }}
+      animate={{ translateX: "0%" }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
     >
       <NavMenu />

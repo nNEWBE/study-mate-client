@@ -5,6 +5,8 @@ import Footer from "../components/Footer";
 import Aos from "aos";
 import "aos/dist/aos.css";
 
+import TopLoadingBar from "../components/TopLoadingBar";
+
 const Main = (): JSX.Element => {
   useEffect(() => {
     Aos.init();
@@ -12,6 +14,7 @@ const Main = (): JSX.Element => {
 
   return (
     <div className="dark:bg-secondary">
+      <TopLoadingBar />
       <Navbar />
       <Outlet />
       <Footer />

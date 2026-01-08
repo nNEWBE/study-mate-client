@@ -17,7 +17,7 @@ const Features = () => {
   const [data, setData] = useState([]);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const {user}=useAuth();
+  const { user } = useAuth();
 
   const getData = async () => {
     const { data } = await axios(
@@ -26,7 +26,7 @@ const Features = () => {
     setData(data);
     setTimeout(() => {
       setIsLoading(false);
-    }, 5000);
+    }, 1000);
   };
 
   useEffect(() => {
