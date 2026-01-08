@@ -7,6 +7,8 @@ import "aos/dist/aos.css";
 
 import TopLoadingBar from "../components/TopLoadingBar";
 
+import Cursor from "../animation/Cursor";
+
 const Main = (): JSX.Element => {
   useEffect(() => {
     Aos.init();
@@ -14,6 +16,7 @@ const Main = (): JSX.Element => {
 
   return (
     <div className="dark:bg-secondary">
+      <Cursor />
       <TopLoadingBar />
       <Navbar />
       <Outlet />

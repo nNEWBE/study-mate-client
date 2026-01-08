@@ -7,8 +7,15 @@ import logo1 from "../../public/Logo_01.json";
 import logo2 from "../../public/Logo_02.json";
 import { IoDocumentText, IoLogOut, IoMoon, IoSunny } from "react-icons/io5";
 import Button from "../animation/Button";
-import { useContext } from "react";
-import { ToggleContext } from "../context/ToggleProvider";
+import { useToggle } from "../context/ToggleProvider";
+
+interface DrawerProps {
+  navRef: React.RefObject<HTMLElement>;
+  drawer: boolean;
+  setDrawer: (drawer: boolean) => void;
+  handleNavLogout: () => void;
+  handleTheme: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
 
 const Drawer = ({
   navRef,
@@ -16,18 +23,18 @@ const Drawer = ({
   setDrawer,
   handleNavLogout,
   handleTheme,
-}) => {
+}: DrawerProps) => {
   const { user } = useAuth();
-  const { theme } = useContext(ToggleContext);
+  const { theme } = useToggle();
 
   const handleOverlay = () => {
     setDrawer(!drawer);
-    navRef.current.classList.remove("open");
+    navRef.current?.classList.remove("open");
   };
 
   const handleDrawer = () => {
     setDrawer(!drawer);
-    navRef.current.classList.toggle("open");
+    navRef.current?.classList.toggle("open");
   };
 
   return (
@@ -60,7 +67,7 @@ const Drawer = ({
               <img
                 className="size-[45px] rounded-full border-2 border-secondary object-cover shadow-[0_0_5px_2px] shadow-primary"
                 referrerPolicy="no-referrer"
-                src={user?.photoURL}
+                src={user?.photoURL || undefined}
                 alt="User"
               />
               <span className="absolute bottom-0 right-0 h-4 w-4 rounded-full border-2 border-secondary bg-[#00ffa5] dark:border-secondary"></span>

@@ -15,12 +15,12 @@ import {
 } from "react-icons/fa";
 import Reveal from "../animation/Reveal";
 import Button from "../animation/Button";
-import { ToggleContext } from "../context/ToggleProvider";
+import { useToggle } from "../context/ToggleProvider";
 import "../styles/style.css";
 import Swal from "sweetalert2";
 
 const Contact = () => {
-    const { theme } = useContext(ToggleContext);
+    const { theme } = useToggle();
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -29,11 +29,11 @@ const Contact = () => {
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleChange = (e) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsSubmitting(true);
 

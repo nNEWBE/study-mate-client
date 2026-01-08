@@ -10,7 +10,7 @@ const Banner = () => {
   return (
     <div
       id="Home"
-      className="flex min-h-[calc(100vh-105px)] items-start bg-white dark:bg-secondary"
+      className="relative flex min-h-[calc(100vh-105px)] items-center bg-white dark:bg-secondary lg:items-start 2xl:pt-24 lg:pt-8"
     >
       {/* style=
       {{
@@ -20,8 +20,8 @@ const Banner = () => {
         backgroundSize: "100vw",
       }} */}
 
-      <div className="mx-auto w-[90%] items-center justify-between sm:h-[calc(100vh-250px)] md:flex lg:h-full">
-        <div>
+      <div className="mx-auto w-[90%] max-w-[90rem] items-center justify-between md:flex">
+        <div className="md:w-1/2">
           <Reveal>
             <h1 className="title font-dosis text-secondary dark:text-white">
               Welcome To<span className="text-primary">.</span>
@@ -50,7 +50,7 @@ const Banner = () => {
             </Link>
           </div>
         </div>
-        <div className="relative top-0 mt-4 flex items-center justify-center sm:top-5 sm:mt-0 md:w-full md:justify-end">
+        <div className="mt-10 flex items-center justify-center md:mt-0 md:w-1/2 md:justify-end">
           <LottieFiles
             animation={animation}
             className="w-[280px] lg:w-[400px]"
@@ -58,7 +58,9 @@ const Banner = () => {
         </div>
       </div>
       <div className="absolute bottom-0 z-10 w-full">
-        <Wave></Wave>
+        <Reveal width="100%" overlay={false}>
+          <Wave></Wave>
+        </Reveal>
       </div>
     </div>
   );

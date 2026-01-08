@@ -1,7 +1,26 @@
 import PropTypes from "prop-types";
 import { Tooltip } from "antd";
 
-const SocialIcons = ({ Icons }) => {
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      "ion-icon": any;
+    }
+  }
+}
+
+interface SocialIconData {
+  name: string;
+  title: string;
+  to?: string;
+  svg?: string;
+}
+
+interface SocialIconsProps {
+  Icons: SocialIconData[];
+}
+
+const SocialIcons = ({ Icons }: SocialIconsProps) => {
   return (
     <div className="text-secondary">
       {Icons.map((icon) => (

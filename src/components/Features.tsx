@@ -13,8 +13,24 @@ import toast from "react-hot-toast";
 import useAuth from "../hooks/useAuth";
 import Swal from "sweetalert2";
 
+interface Assignment {
+  _id: string;
+  title: string;
+  photoURL: string;
+  marks: string;
+  description: string;
+  difficulty: string;
+  date: string;
+  person: {
+    name: string;
+    email: string;
+    photo: string;
+  };
+  status: string;
+}
+
 const Features = () => {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<Assignment[]>([]);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
@@ -33,7 +49,7 @@ const Features = () => {
     getData();
   }, [user]);
 
-  const handleDelete = async (id, email, name) => {
+  const handleDelete = async (id: string, email: string, name: string) => {
     if (!user) {
       navigate("/account");
       return toast.error("Login to delete this assignment");
@@ -87,7 +103,7 @@ const Features = () => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      toast.error((error as Error).message);
     }
   };
 
@@ -109,56 +125,62 @@ const Features = () => {
   // }, []);
 
   return (
-    <div
-      id="Features"
-      className="mx-auto w-[90%] bg-white pt-32 dark:bg-secondary"
-    >
-      <div className="flex justify-center">
-        <Reveal>
-          <TextScramble>Assignments Section</TextScramble>
-        </Reveal>
-      </div>
-
-      <div className="relative mx-auto sm:w-3/4 lg:w-[45%]">
-        <Unhidden>
-          <TextReveal>
-            Stay organized by tracking assignment deadlines, setting reminders,
-            and monitoring your teams progress.
-          </TextReveal>
-        </Unhidden>
-      </div>
-
-      <div className="responsive mx-2 mt-20 grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-10 lg:grid-cols-3">
-        {isLoading ? (
-          <CardSkeleton cards={6} />
-        ) : (
-          data
-            .slice(0, 6)
-            .map((d, index) => (
-              <Card handleDelete={handleDelete} d={d} key={index} />
-            ))
-        )}
-      </div>
-
-      <div className="relative mt-5 h-[15rem]">
-        <div className="absolute top-16 flex w-full justify-center">
-          <div className="z-10 mx-auto mt-2 w-[10rem]">
-            <Link to={"/tasks"}>
-              <Button str="View All" shadow={true} />
-            </Link>
-          </div>
+    <div className="w-full bg-white pt-32 dark:bg-secondary">
+      <div
+        id="Features"
+        className="max-w-[90rem] mx-auto w-[90%]"
+      >
+        <div className="flex justify-center">
+          <Reveal>
+            <TextScramble>Assignments Section</TextScramble>
+          </Reveal>
         </div>
 
-        <div className="absolute top-0 h-[15rem] w-full overflow-y-hidden opacity-30">
-          <div className="responsive mx-2 mt-5 grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-10 lg:grid-cols-3">
-            {isLoading ? (
-              <CardSkeleton cards={3} />
-            ) : (
-              data.slice(0, 3).map((d, index) => <Card d={d} key={index} />)
-            )}
-          </div>
+        <div className="relative mx-auto sm:w-3/4 lg:w-[45%]">
+          <Unhidden>
+            <TextReveal>
+              Stay organized by tracking assignment deadlines, setting reminders,
+              and monitoring your teams progress.
+            </TextReveal>
+          </Unhidden>
         </div>
-        <div className="absolute top-0 z-[1] h-[15rem] w-full bg-[linear-gradient(180deg,_rgba(255,255,255,0)_0%,_rgba(255,255,255,.7)_50%,_rgba(255,255,255,1))] transition-colors duration-0 dark:bg-[linear-gradient(180deg,_rgba(255,255,255,0)_0%,_rgba(15,23,42,.7)_50%,_rgba(15,23,42,1))]"></div>
+
+        <div className="responsive mx-2 mt-20 grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-10 lg:grid-cols-3">
+          {isLoading ? (
+            <CardSkeleton cards={6} />
+          ) : (
+            data
+              .slice(0, 6)
+              .map((d, index) => (
+                <Card handleDelete={handleDelete} d={d} key={index} />
+              ))
+          )}
+        </div>
+
+        <div className="relative mt-5 h-[15rem]">
+          <div className="absolute top-16 flex w-full justify-center">
+            <div className="z-10 mx-auto mt-2 w-[10rem]">
+              <Link to={"/tasks"}>
+                <Button str="View All" shadow={true} />
+              </Link>
+            </div>
+          </div>
+
+          <div className="absolute top-0 h-[15rem] w-full overflow-y-hidden opacity-30">
+            <div className="responsive mx-2 mt-5 grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-10 lg:grid-cols-3">
+              {isLoading ? (
+                <CardSkeleton cards={3} />
+              ) : (
+                data
+                  .slice(0, 3)
+                  .map((d, index) => (
+                    <Card handleDelete={handleDelete} d={d} key={index} />
+                  ))
+              )}
+            </div>
+          </div>
+          <div className="absolute top-0 z-[1] h-[15rem] w-full bg-[linear-gradient(180deg,_rgba(255,255,255,0)_0%,_rgba(255,255,255,.7)_50%,_rgba(255,255,255,1))] transition-colors duration-0 dark:bg-[linear-gradient(180deg,_rgba(255,255,255,0)_0%,_rgba(15,23,42,.7)_50%,_rgba(15,23,42,1))]"></div>
+        </div>
       </div>
     </div>
   );

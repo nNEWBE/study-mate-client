@@ -81,6 +81,7 @@
 .button {
   @apply leading-4;
   display: inline-block;
+  white-space: nowrap;
 }
 
 /*? Tab Transition */
@@ -100,30 +101,30 @@
   display: block;
 }
 
-div a:nth-child(1).active~.slide {
+a:nth-child(1).active~.slide {
   opacity: 1;
   left: 2px;
 }
 
-div a:nth-child(2).active~.slide {
+a:nth-child(2).active~.slide {
   opacity: 1;
   left: 88px;
   width: 90px;
 }
 
-div a:nth-child(3).active~.slide {
+a:nth-child(3).active~.slide {
   opacity: 1;
   left: 195px;
   width: 86px;
 }
 
-div a:nth-child(4).active~.slide {
+a:nth-child(4).active~.slide {
   opacity: 1;
   left: 294px;
   width: 66px;
 }
 
-div a:nth-child(5).active~.slide {
+a:nth-child(5).active~.slide {
   opacity: 1;
   left: 399px;
   width: 62px;
@@ -379,7 +380,7 @@ nav.open~.overlay {
 
 .toggle-label,
 .toggle-label:after {
-  transition: position 0.5s;
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .toggle-label:active:after {
@@ -442,19 +443,32 @@ nav.open~.overlay {
 
 .border-rotate {
   position: relative;
-  overflow: hidden;
   border-radius: 10px;
+  background: linear-gradient(#0f172a, #0f172a) padding-box,
+    linear-gradient(var(--rotate), #00ffa5, transparent 40%) border-box;
+  border: 3px solid transparent;
+  animation: border-spin 2s linear infinite;
 }
 
-.border-rotate::before {
-  content: "";
-  position: absolute;
-  bottom: -50%;
-  left: -50%;
-  right: -50%;
-  top: -50%;
-  animation: spin 3s linear infinite;
-  background: conic-gradient(transparent, transparent, #00ffa5);
+.dark .border-rotate {
+  background: linear-gradient(#0f172a, #0f172a) padding-box,
+    linear-gradient(var(--rotate), #00ffa5, transparent 40%) border-box;
+}
+
+@property --rotate {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes border-spin {
+  0% {
+    --rotate: 0deg;
+  }
+
+  100% {
+    --rotate: 360deg;
+  }
 }
 
 /*! Page Transition */
@@ -568,7 +582,7 @@ nav.open~.overlay {
 
 .accordion-container .accordion.expend .accordion-heading {
   background: var(--primary);
-  @apply rounded-b-none text-secondary;
+  @apply rounded-b-none text-secondary !important;
 }
 
 .accordion-container .accordion .accordion-heading .i {

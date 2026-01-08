@@ -15,9 +15,24 @@ import { useState } from "react";
 import AnimatedModal from "../animation/AnimatedModal";
 import { AnimatePresence } from "framer-motion";
 
+interface AssignmentData {
+  title: string;
+  description: string;
+  photoURL: string;
+  difficulty: string;
+  marks: string;
+  date: string;
+  status: string;
+  person: {
+    name: string;
+    email: string;
+    photo: string;
+  };
+}
+
 const ViewDetails = () => {
   const [modalOpen, setModalOpen] = useState(false);
-  const data = useLoaderData();
+  const data = useLoaderData() as AssignmentData;
   const close = () => setModalOpen(false);
   const open = () => setModalOpen(true);
 
@@ -148,7 +163,7 @@ const ViewDetails = () => {
       </div>
       <AnimatePresence initial={false} >
         {modalOpen && (
-          <AnimatedModal modalOpen={modalOpen} handleClose={close} />
+          <AnimatedModal handleClose={close} />
         )}
       </AnimatePresence>
     </div>

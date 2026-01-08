@@ -10,15 +10,37 @@ import { MdError } from "react-icons/md";
 import { useForm } from "react-hook-form";
 import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
-import { ToggleContext } from "../context/ToggleProvider";
 import { useContext, useState } from "react";
+import { useToggle } from "../context/ToggleProvider";
 import { HiOutlineDocumentChartBar } from "react-icons/hi2";
 import { useLoaderData, useNavigate } from "react-router-dom";
 
-const UpdateAssignment = () => {
-  const { _id, title, photoURL, description, marks, difficulty, person, date: d } = useLoaderData();
+interface AssignmentData {
+  _id: string;
+  title: string;
+  photoURL: string;
+  description: string;
+  marks: string;
+  difficulty: string;
+  person: {
+    email: string;
+    name: string;
+    photo: string;
+  };
+  date: string;
+}
 
-  const formatToFullDate = (dateString) => {
+interface UpdateFormInputs {
+  title: string;
+  photo: string;
+  marks: string;
+  description: string;
+}
+
+const UpdateAssignment = () => {
+  const { _id, title, photoURL, description, marks, difficulty, person, date: d } = useLoaderData() as AssignmentData;
+
+  const formatToFullDate = (dateString: string) => {
     const [year, month, day] = dateString.split("/");
     const date = new Date(`${year}-${month}-${day}`);
 
@@ -26,14 +48,14 @@ const UpdateAssignment = () => {
   };
 
   const fullDate = formatToFullDate(d);
-  const [date, setDate] = useState(fullDate);
+  const [date, setDate] = useState<Date | null | undefined>(fullDate);
   const navigate = useNavigate();
-  const { theme } = useContext(ToggleContext);
-  const [selectedDifficulty, setSelectedDifficulty] = useState({
+  const { theme } = useToggle();
+  const [selectedDifficulty, setSelectedDifficulty] = useState<{ name: string } | null>({
     name: difficulty,
   });
 
-  console.log(selectedDifficulty.name)
+  console.log(selectedDifficulty?.name)
 
   const difficulties = [
     { name: "Easy" },
@@ -45,9 +67,9 @@ const UpdateAssignment = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm<UpdateFormInputs>(); // Typed useForm
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: UpdateFormInputs) => { // Typed data
     const title = data.title;
     const photoURL = data.photo;
     const marks = data.marks;
@@ -57,7 +79,7 @@ const UpdateAssignment = () => {
       title,
       photoURL,
       marks,
-      date: date.toLocaleDateString("en-US"),
+      date: date?.toLocaleDateString("en-US"),
       description,
       difficulty: selectedDifficulty?.name,
       person: {
@@ -76,7 +98,7 @@ const UpdateAssignment = () => {
       console.log(data);
       toast.success("Assignment updated successfully!");
       navigate("/tasks");
-    } catch (err) {
+    } catch (err: any) {
       console.log(err);
       toast.error(err.message);
     }
@@ -172,8 +194,8 @@ const UpdateAssignment = () => {
             <Calendar
               id="buttondisplay"
               value={date}
-              onChange={(e) => setDate(e.value)}
-              placeholder={date}
+              onChange={(e) => setDate(e.value as Date | null | undefined)}
+              placeholder={date ? date.toLocaleDateString("en-US") : "Select Date"}
               dateFormat="yy/mm/dd"
               showIcon
             />
@@ -276,7 +298,6 @@ const UpdateAssignment = () => {
               },
             })}
             defaultValue={description}
-            type="text"
             className="mx-auto w-[16.5rem] rounded-xl border-2 border-primary bg-primary bg-opacity-25 px-4 py-3 pr-12 font-semibold text-secondary placeholder-secondary outline-none dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white dark:placeholder-white sm:w-[20rem] md:w-[41.3rem] lg:w-[42.5rem]"
             placeholder="Description"
           ></textarea>
@@ -305,7 +326,7 @@ const UpdateAssignment = () => {
           </div>
         </div>
       </form>
-    </motion.div>
+    </motion.div >
   );
 };
 

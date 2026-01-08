@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
 export interface ToggleContextType {
   theme: boolean | null;
@@ -9,39 +9,39 @@ export interface ToggleContextType {
 
 export const ToggleContext = createContext<ToggleContextType | null>(null);
 
+export const useToggle = (): ToggleContextType => {
+  const context = useContext(ToggleContext);
+  if (!context) {
+    throw new Error("useToggle must be used within a ToggleProvider");
+  }
+  return context;
+};
+
 interface ToggleProviderProps {
   children: ReactNode;
 }
 
 const ToggleProvider = ({ children }: ToggleProviderProps): JSX.Element => {
-  const [theme, setTheme] = useState<boolean | null>(null);
+  const [theme, setTheme] = useState<boolean | null>(() => {
+    if (typeof window !== "undefined") {
+      const userTheme = localStorage.getItem("theme");
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      // Return true for dark, false for light
+      return userTheme === "dark" || (!userTheme && systemTheme);
+    }
+    return false;
+  });
   const [overflow, setOverflow] = useState<boolean>(false);
 
   useEffect(() => {
-    const userTheme = localStorage.getItem("theme");
-    const systemTheme = window.matchMedia(
-      "(prefers-color-scheme: dark)",
-    ).matches;
     const html = document.documentElement.classList;
-
-    if (userTheme === "dark" || (!userTheme && systemTheme)) {
+    if (theme) {
       html.add("dark");
-      setTheme(true);
-      return;
-    }
-    setTheme(false);
-  }, []);
-
-  useEffect(() => {
-    const html = document.documentElement.classList;
-
-    if (html.contains("dark")) {
+      localStorage.setItem("theme", "dark");
+    } else {
       html.remove("dark");
       localStorage.setItem("theme", "light");
-      return;
     }
-    html.add("dark");
-    localStorage.setItem("theme", "dark");
   }, [theme]);
 
   return (

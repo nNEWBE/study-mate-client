@@ -1,7 +1,17 @@
 import PropTypes from "prop-types";
 import Reveal from "../animation/Reveal"
 
-const Item = ({ Links, title }) => {
+interface LinkItem {
+  name: string;
+  link: string;
+}
+
+interface ItemProps {
+  Links: LinkItem[];
+  title: string;
+}
+
+const Item = ({ Links, title }: ItemProps) => {
   return (
     <ul>
       <Reveal>

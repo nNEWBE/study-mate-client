@@ -10,56 +10,56 @@ import LottieFiles from "../animation/LottieFiles";
 import { motion } from "framer-motion";
 
 const Account = () => {
-  const loginRef = useRef();
-  const registerRef = useRef();
-  const loginLogoRef = useRef();
-  const registerLogoRef = useRef();
-  const loginFormRef = useRef();
-  const registerFormRef = useRef();
+  const loginRef = useRef<HTMLAnchorElement>(null);
+  const registerRef = useRef<HTMLAnchorElement>(null);
+  const loginLogoRef = useRef<HTMLDivElement>(null);
+  const registerLogoRef = useRef<HTMLDivElement>(null);
+  const loginFormRef = useRef<HTMLFormElement>(null);
+  const registerFormRef = useRef<HTMLFormElement>(null);
 
   const handleButton1 = () => {
-    registerRef.current.classList?.remove("bg-primary", "active");
-    registerRef.current.classList?.add("bg-white");
+    registerRef.current?.classList.remove("bg-primary", "active");
+    registerRef.current?.classList.add("bg-white");
 
-    loginRef.current.classList?.remove("bg-white");
-    loginRef.current.classList?.add("bg-primary", "active");
+    loginRef.current?.classList.remove("bg-white");
+    loginRef.current?.classList.add("bg-primary", "active");
 
-    registerLogoRef.current.classList?.remove("lg:flex");
-    registerLogoRef.current.classList?.add("translate-x-[-100%]");
-    loginLogoRef.current.classList?.remove("translate-x-[-100%]");
-    loginLogoRef.current.classList?.add(
+    registerLogoRef.current?.classList.remove("lg:flex");
+    registerLogoRef.current?.classList.add("translate-x-[-100%]");
+    loginLogoRef.current?.classList.remove("translate-x-[-100%]");
+    loginLogoRef.current?.classList.add(
       "lg:flex",
       "animate__animated",
       "animate__fadeInLeft",
     );
 
-    loginFormRef.current.classList?.remove("hidden", "translate-x-[100%]");
-    registerFormRef.current.classList?.add("hidden", "translate-x-[100%]");
-    loginFormRef.current.classList?.add(
+    loginFormRef.current?.classList.remove("hidden", "translate-x-[100%]");
+    registerFormRef.current?.classList.add("hidden", "translate-x-[100%]");
+    loginFormRef.current?.classList.add(
       "animate__animated",
       "animate__fadeInRight",
     );
   };
 
   const handleButton2 = () => {
-    loginRef.current.classList?.remove("bg-primary", "active");
-    loginRef.current.classList?.add("bg-white");
+    loginRef.current?.classList.remove("bg-primary", "active");
+    loginRef.current?.classList.add("bg-white");
 
-    registerRef.current.classList?.remove("bg-white");
-    registerRef.current.classList?.add("bg-primary", "active");
+    registerRef.current?.classList.remove("bg-white");
+    registerRef.current?.classList.add("bg-primary", "active");
 
-    loginLogoRef.current.classList?.remove("lg:flex");
-    loginLogoRef.current.classList?.add("translate-x-[-100%]");
-    registerLogoRef.current.classList?.remove("translate-x-[-100%]");
-    registerLogoRef.current.classList?.add(
+    loginLogoRef.current?.classList.remove("lg:flex");
+    loginLogoRef.current?.classList.add("translate-x-[-100%]");
+    registerLogoRef.current?.classList.remove("translate-x-[-100%]");
+    registerLogoRef.current?.classList.add(
       "lg:flex",
       "animate__animated",
       "animate__fadeInLeft",
     );
 
-    registerFormRef.current.classList?.remove("hidden", "translate-x-[100%]");
-    loginFormRef.current.classList?.add("hidden", "translate-x-[100%]");
-    registerFormRef.current.classList?.add(
+    registerFormRef.current?.classList.remove("hidden", "translate-x-[100%]");
+    loginFormRef.current?.classList.add("hidden", "translate-x-[100%]");
+    registerFormRef.current?.classList.add(
       "animate__animated",
       "animate__fadeInRight",
     );

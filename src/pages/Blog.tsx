@@ -16,9 +16,9 @@ import "../styles/style.css";
 const Blog = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("All");
-    const [savedPosts, setSavedPosts] = useState([]);
-    const [likedPosts, setLikedPosts] = useState([]);
-    const [expandedPost, setExpandedPost] = useState(null);
+    const [savedPosts, setSavedPosts] = useState<number[]>([]);
+    const [likedPosts, setLikedPosts] = useState<number[]>([]);
+    const [expandedPost, setExpandedPost] = useState<number | null>(null);
 
     const categories = [
         "All",
@@ -145,13 +145,13 @@ const Blog = () => {
 
     const featuredPosts = blogPosts.filter((post) => post.featured);
 
-    const toggleSaved = (id) => {
+    const toggleSaved = (id: number) => {
         setSavedPosts((prev) =>
             prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
         );
     };
 
-    const toggleLiked = (id) => {
+    const toggleLiked = (id: number) => {
         setLikedPosts((prev) =>
             prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
         );
@@ -254,7 +254,7 @@ const Blog = () => {
                                     type="text"
                                     placeholder="Search articles..."
                                     value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                                     className="w-full rounded-xl border-2 border-secondary bg-white py-3 pl-12 pr-4 font-poppins text-secondary outline-none transition-all duration-300 placeholder:text-secondary/50 focus:shadow-[0_0_15px_2px] focus:shadow-primary/50 dark:border-white/30 dark:bg-secondary/50 dark:text-white dark:placeholder:text-white/50"
                                 />
                                 <IoSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-xl text-secondary/50 dark:text-white/50" />
@@ -270,8 +270,8 @@ const Blog = () => {
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
                                     className={`rounded-xl border-2 px-4 py-2 font-edu font-bold transition-all duration-300 ${selectedCategory === category
-                                            ? "border-primary bg-primary text-secondary shadow-[0_0_10px_2px] shadow-primary/50"
-                                            : "border-secondary bg-transparent text-secondary hover:border-primary hover:bg-primary/10 dark:border-white/30 dark:text-white"
+                                        ? "border-primary bg-primary text-secondary shadow-[0_0_10px_2px] shadow-primary/50"
+                                        : "border-secondary bg-transparent text-secondary hover:border-primary hover:bg-primary/10 dark:border-white/30 dark:text-white"
                                         }`}
                                 >
                                     {category}

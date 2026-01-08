@@ -1,12 +1,11 @@
 import { IoSunny } from "react-icons/io5";
 import { IoMoon } from "react-icons/io5";
 import "../styles/style.css";
-import { useContext } from "react";
-import { ToggleContext } from "../context/ToggleProvider";
+import { useToggle } from "../context/ToggleProvider";
 
 const Services = () => {
-  const { theme, setTheme } = useContext(ToggleContext);
-  const handleTheme = (e) => {
+  const { theme, setTheme } = useToggle();
+  const handleTheme = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isDark = e.target.checked;
     setTheme(isDark);
   };

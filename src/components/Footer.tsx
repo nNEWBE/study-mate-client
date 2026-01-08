@@ -8,12 +8,11 @@ import Button from "../animation/Button";
 import "../styles/style.css";
 import "boxicons";
 import Reveal from "../animation/Reveal";
-import { useContext } from "react";
-import { ToggleContext } from "../context/ToggleProvider";
+import { useToggle } from "../context/ToggleProvider";
 import LottieFiles from "../animation/LottieFiles";
 
 const Footer = () => {
-  const { theme } = useContext(ToggleContext);
+  const { theme } = useToggle();
   return (
     <footer className="z-10 w-full bg-white text-white dark:bg-secondary" id="Contact">
       <div className="sticky top-0 z-10 flex flex-col items-center border-y-2 border-y-black px-9 py-5 shadow-[0_0_5px_2px] shadow-primary backdrop-blur-xl backdrop-filter sm:flex-row sm:justify-between">
@@ -57,7 +56,10 @@ const Footer = () => {
           <Button str={"Subscribe"} shadow={true}></Button>
         </div>
       </div>
-      <ItemsContainer />
+      <div className="max-w-[90rem] mx-auto">
+        <ItemsContainer />
+      </div>
+
       <div className="mb-10 flex flex-col items-center gap-5 md:hidden">
         <div className="relative">
           <input
@@ -77,19 +79,24 @@ const Footer = () => {
           <Button str={"Subscribe"} shadow={true}></Button>
         </div>
       </div>
-      <div className="grid lg:w-full w-[95%] mx-auto items-center grid-cols-1 gap-16 pb-8 pt-2 text-center font-edu text-sm text-secondary dark:text-white sm:grid-cols-2 lg:grid-cols-3">
-        <div className="grid gap-3 font-bold sm:grid-cols-1 lg:col-span-2 lg:grid-cols-2">
+
+      <div className="mx-auto flex max-w-[90rem] flex-col items-center justify-center gap-8 pb-8 pt-2 text-center font-edu text-sm text-secondary dark:text-white lg:flex-row lg:justify-between lg:px-8">
+        <div className="flex flex-col items-center gap-3 font-bold sm:flex-row sm:gap-8">
           <a className="flex justify-center text-center">
             <Reveal>
-              © 2024 Study Mate{" "}
-              <span className="text-2xl font-bold text-primary"> . </span> All
-              rights reserved.
+              <span>
+                © 2024 Study Mate{" "}
+                <span className="text-2xl font-bold text-primary"> . </span> All
+                rights reserved.
+              </span>
             </Reveal>
           </a>
           <a className="flex justify-center text-center">
             <Reveal>
-              Terms <span className="text-2xl font-bold text-primary"> . </span>{" "}
-              Privacy Policy
+              <span>
+                Terms <span className="text-2xl font-bold text-primary"> . </span>{" "}
+                Privacy Policy
+              </span>
             </Reveal>
           </a>
         </div>

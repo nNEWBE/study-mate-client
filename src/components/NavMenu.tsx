@@ -6,40 +6,49 @@ import { RxHamburgerMenu } from "react-icons/rx";
 const NavMenu = () => {
   const [activeLink, setActiveLink] = useState("Hero");
   const [cross, setCross] = useState(true);
-  const cancelRef = useRef();
-  const hiddenRef = useRef();
-  const hiddenRe2 = useRef();
-  const moveRef = useRef();
+  const cancelRef = useRef<HTMLDivElement>(null);
+  const hiddenRef = useRef<HTMLDivElement>(null);
+  const hiddenRe2 = useRef<HTMLSpanElement>(null);
+  const moveRef = useRef<HTMLDivElement>(null);
+
   const handleCancel = () => {
+    const hiddenEl = hiddenRef.current;
+    const cancelEl = cancelRef.current;
+    const hiddenRe2El = hiddenRe2.current;
+    const moveEl = moveRef.current;
+
+    if (!hiddenEl || !cancelEl || !hiddenRe2El || !moveEl) return;
+
     setCross(!cross);
-    hiddenRef.current.classList.toggle("hidden");
-    hiddenRef.current.classList.toggle("flex");
+    hiddenEl.classList.toggle("hidden");
+    hiddenEl.classList.toggle("flex");
 
-    if (cancelRef.current.classList.contains("w-[50px]")) {
+    if (cancelEl.classList.contains("w-[50px]")) {
       setTimeout(() => {
-        hiddenRe2.current.classList.toggle("hidden");
+        hiddenRe2El.classList.toggle("hidden");
       }, 200);
-    } else hiddenRe2.current.classList.toggle("hidden");
+    } else hiddenRe2El.classList.toggle("hidden");
 
-    cancelRef.current.classList.toggle("w-[40px]");
-    cancelRef.current.classList.toggle("w-[20rem]");
-    cancelRef.current.classList.toggle("h-20");
-    cancelRef.current.classList.toggle("h-[40px]");
-    cancelRef.current.classList.toggle("sm:w-[30rem]");
-    cancelRef.current.classList.toggle("right-10");
-    cancelRef.current.classList.toggle("shadow-[0px_0px_10px_3px]");
-    cancelRef.current.classList.toggle("shadow-primary");
+    cancelEl.classList.toggle("w-[40px]");
+    cancelEl.classList.toggle("w-[20rem]");
+    cancelEl.classList.toggle("h-20");
+    cancelEl.classList.toggle("h-[40px]");
+    cancelEl.classList.toggle("sm:w-[30rem]");
+    cancelEl.classList.toggle("right-10");
+    cancelEl.classList.toggle("shadow-[0px_0px_10px_3px]");
+    cancelEl.classList.toggle("shadow-primary");
 
-    moveRef.current.classList.toggle("-right-[43%]");
-    moveRef.current.classList.toggle("sm:-right-[44%]");
-    moveRef.current.classList.toggle("right-1");
-    moveRef.current.classList.toggle("sm:right-1");
-    moveRef.current.classList.toggle("rotate-180");
-    moveRef.current.classList.toggle("rotate-0");
+    moveEl.classList.toggle("-right-[43%]");
+    moveEl.classList.toggle("sm:-right-[44%]");
+    moveEl.classList.toggle("right-1");
+    moveEl.classList.toggle("sm:right-1");
+    moveEl.classList.toggle("rotate-180");
+    moveEl.classList.toggle("rotate-0");
   };
 
-  const scrollToSection = (sectionId) => {
+  const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
+    if (!element) return;
     if (element.id === "Home") {
       const scrollToY =
         element.getBoundingClientRect().top + window.scrollY - 105;

@@ -1,0 +1,215 @@
+src/components/DatePicker.tsx(17,36): error TS2345: Argument of type 'Nullable<Date>' is not assignable to parameter of type 'SetStateAction<null>'.
+  Type 'undefined' is not assignable to type 'SetStateAction<null>'.
+src/components/Drawer.tsx(14,3): error TS7031: Binding element 'navRef' implicitly has an 'any' type.
+src/components/Drawer.tsx(15,3): error TS7031: Binding element 'drawer' implicitly has an 'any' type.
+src/components/Drawer.tsx(16,3): error TS7031: Binding element 'setDrawer' implicitly has an 'any' type.
+src/components/Drawer.tsx(17,3): error TS7031: Binding element 'handleNavLogout' implicitly has an 'any' type.
+src/components/Drawer.tsx(18,3): error TS7031: Binding element 'handleTheme' implicitly has an 'any' type.
+src/components/Drawer.tsx(21,11): error TS2339: Property 'theme' does not exist on type 'ToggleContextType | null'.
+src/components/Drawer.tsx(63,17): error TS2322: Type 'string | null | undefined' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+src/components/Item.tsx(4,17): error TS7031: Binding element 'Links' implicitly has an 'any' type.
+src/components/Item.tsx(4,24): error TS7031: Binding element 'title' implicitly has an 'any' type.
+src/components/Item.tsx(13,19): error TS7006: Parameter 'link' implicitly has an 'any' type.
+src/components/Login.tsx(18,18): error TS7031: Binding element 'loginFormRef' implicitly has an 'any' type.
+src/components/Login.tsx(21,11): error TS2339: Property 'theme' does not exist on type 'ToggleContextType | null'.
+src/components/Login.tsx(25,21): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/components/Login.tsx(38,27): error TS7006: Parameter 'data' implicitly has an 'any' type.
+src/components/Login.tsx(61,17): error TS18046: 'error' is of type 'unknown'.
+src/components/Login.tsx(61,40): error TS18046: 'error' is of type 'unknown'.
+src/components/Login.tsx(66,36): error TS7006: Parameter 'socialProvider' implicitly has an 'any' type.
+src/components/Login.tsx(85,17): error TS18046: 'error' is of type 'unknown'.
+src/components/Login.tsx(85,40): error TS18046: 'error' is of type 'unknown'.
+src/components/Login.tsx(129,19): error TS2322: Type 'string | FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined' is not assignable to type 'ReactNode'.
+  Type 'FieldError' is not assignable to type 'ReactNode'.
+    Type 'FieldError' is missing the following properties from type 'ReactPortal': children, props, key
+src/components/Login.tsx(174,19): error TS2322: Type 'string | FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined' is not assignable to type 'ReactNode'.
+  Type 'FieldError' is not assignable to type 'ReactNode'.
+    Type 'FieldError' is missing the following properties from type 'ReactPortal': children, props, key
+src/components/NavMenu.tsx(15,5): error TS18048: 'hiddenRef.current' is possibly 'undefined'.
+src/components/NavMenu.tsx(16,5): error TS18048: 'hiddenRef.current' is possibly 'undefined'.
+src/components/NavMenu.tsx(18,9): error TS18048: 'cancelRef.current' is possibly 'undefined'.
+src/components/NavMenu.tsx(20,9): error TS18048: 'hiddenRe2.current' is possibly 'undefined'.
+src/components/NavMenu.tsx(22,12): error TS18048: 'hiddenRe2.current' is possibly 'undefined'.
+src/components/NavMenu.tsx(24,5): error TS18048: 'cancelRef.current' is possibly 'undefined'.
+src/components/NavMenu.tsx(25,5): error TS18048: 'cancelRef.current' is possibly 'undefined'.
+src/components/NavMenu.tsx(26,5): error TS18048: 'cancelRef.current' is possibly 'undefined'.
+src/components/NavMenu.tsx(27,5): error TS18048: 'cancelRef.current' is possibly 'undefined'.
+src/components/NavMenu.tsx(28,5): error TS18048: 'cancelRef.current' is possibly 'undefined'.
+src/components/NavMenu.tsx(29,5): error TS18048: 'cancelRef.current' is possibly 'undefined'.
+src/components/NavMenu.tsx(30,5): error TS18048: 'cancelRef.current' is possibly 'undefined'.
+src/components/NavMenu.tsx(31,5): error TS18048: 'cancelRef.current' is possibly 'undefined'.
+src/components/NavMenu.tsx(33,5): error TS18048: 'moveRef.current' is possibly 'undefined'.
+src/components/NavMenu.tsx(34,5): error TS18048: 'moveRef.current' is possibly 'undefined'.
+src/components/NavMenu.tsx(35,5): error TS18048: 'moveRef.current' is possibly 'undefined'.
+src/components/NavMenu.tsx(36,5): error TS18048: 'moveRef.current' is possibly 'undefined'.
+src/components/NavMenu.tsx(37,5): error TS18048: 'moveRef.current' is possibly 'undefined'.
+src/components/NavMenu.tsx(38,5): error TS18048: 'moveRef.current' is possibly 'undefined'.
+src/components/NavMenu.tsx(41,28): error TS7006: Parameter 'sectionId' implicitly has an 'any' type.
+src/components/NavMenu.tsx(43,9): error TS18047: 'element' is possibly 'null'.
+src/components/NavMenu.tsx(45,9): error TS18047: 'element' is possibly 'null'.
+src/components/NavMenu.tsx(49,9): error TS18047: 'element' is possibly 'null'.
+src/components/NavMenu.tsx(82,9): error TS2322: Type 'MutableRefObject<undefined>' is not assignable to type 'LegacyRef<HTMLDivElement> | undefined'.
+  Type 'MutableRefObject<undefined>' is not assignable to type 'RefObject<HTMLDivElement>'.
+    Types of property 'current' are incompatible.
+      Type 'undefined' is not assignable to type 'HTMLDivElement | null'.
+src/components/NavMenu.tsx(86,11): error TS2322: Type 'MutableRefObject<undefined>' is not assignable to type 'LegacyRef<HTMLDivElement> | undefined'.
+  Type 'MutableRefObject<undefined>' is not assignable to type 'RefObject<HTMLDivElement>'.
+    Types of property 'current' are incompatible.
+      Type 'undefined' is not assignable to type 'HTMLDivElement | null'.
+src/components/NavMenu.tsx(100,11): error TS2322: Type 'MutableRefObject<undefined>' is not assignable to type 'LegacyRef<HTMLDivElement> | undefined'.
+  Type 'MutableRefObject<undefined>' is not assignable to type 'RefObject<HTMLDivElement>'.
+    Types of property 'current' are incompatible.
+      Type 'undefined' is not assignable to type 'HTMLDivElement | null'.
+src/components/NavMenu.tsx(109,17): error TS2322: Type 'MutableRefObject<undefined>' is not assignable to type 'LegacyRef<HTMLSpanElement> | undefined'.
+  Type 'MutableRefObject<undefined>' is not assignable to type 'RefObject<HTMLSpanElement>'.
+    Types of property 'current' are incompatible.
+      Type 'undefined' is not assignable to type 'HTMLSpanElement | null'.
+src/components/Register.tsx(14,21): error TS7031: Binding element 'registerFormRef' implicitly has an 'any' type.
+src/components/Register.tsx(16,11): error TS2339: Property 'theme' does not exist on type 'ToggleContextType | null'.
+src/components/Register.tsx(27,27): error TS7006: Parameter 'data' implicitly has an 'any' type.
+src/components/Register.tsx(37,15): error TS2345: Argument of type '{ photoURL: any; displayName: any; email: any; emailVerified?: boolean | undefined; isAnonymous?: boolean | undefined; metadata?: UserMetadata | undefined; providerData?: UserInfo[] | undefined; ... 9 more ...; uid?: string | undefined; }' is not assignable to parameter of type 'SetStateAction<User | null>'.
+  Type '{ photoURL: any; displayName: any; email: any; emailVerified?: boolean | undefined; isAnonymous?: boolean | undefined; metadata?: UserMetadata | undefined; providerData?: UserInfo[] | undefined; ... 9 more ...; uid?: string | undefined; }' is not assignable to type 'User'.
+    Types of property 'emailVerified' are incompatible.
+      Type 'boolean | undefined' is not assignable to type 'boolean'.
+        Type 'undefined' is not assignable to type 'boolean'.
+src/components/Register.tsx(55,17): error TS18046: 'error' is of type 'unknown'.
+src/components/Register.tsx(55,40): error TS18046: 'error' is of type 'unknown'.
+src/components/Register.tsx(102,19): error TS2322: Type 'string | FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined' is not assignable to type 'ReactNode'.
+  Type 'FieldError' is not assignable to type 'ReactNode'.
+    Type 'FieldError' is missing the following properties from type 'ReactPortal': children, props, key
+src/components/Register.tsx(137,19): error TS2322: Type 'string | FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined' is not assignable to type 'ReactNode'.
+  Type 'FieldError' is not assignable to type 'ReactNode'.
+    Type 'FieldError' is missing the following properties from type 'ReactPortal': children, props, key
+src/components/Register.tsx(172,19): error TS2322: Type 'string | FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined' is not assignable to type 'ReactNode'.
+  Type 'FieldError' is not assignable to type 'ReactNode'.
+    Type 'FieldError' is missing the following properties from type 'ReactPortal': children, props, key
+src/components/Register.tsx(218,19): error TS2322: Type 'string | FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined' is not assignable to type 'ReactNode'.
+  Type 'FieldError' is not assignable to type 'ReactNode'.
+    Type 'FieldError' is missing the following properties from type 'ReactPortal': children, props, key
+src/components/Services.tsx(8,11): error TS2339: Property 'theme' does not exist on type 'ToggleContextType | null'.
+src/components/Services.tsx(8,18): error TS2339: Property 'setTheme' does not exist on type 'ToggleContextType | null'.
+src/components/Services.tsx(9,24): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/components/SocialIcons.tsx(4,24): error TS7031: Binding element 'Icons' implicitly has an 'any' type.
+src/components/SocialIcons.tsx(7,19): error TS7006: Parameter 'icon' implicitly has an 'any' type.
+src/components/SocialIcons.tsx(10,13): error TS2339: Property 'ion-icon' does not exist on type 'JSX.IntrinsicElements'.
+src/components/SocialIcons.tsx(10,40): error TS2339: Property 'ion-icon' does not exist on type 'JSX.IntrinsicElements'.
+src/layout/Account.tsx(21,5): error TS18048: 'registerRef.current' is possibly 'undefined'.
+src/layout/Account.tsx(22,5): error TS18048: 'registerRef.current' is possibly 'undefined'.
+src/layout/Account.tsx(24,5): error TS18048: 'loginRef.current' is possibly 'undefined'.
+src/layout/Account.tsx(25,5): error TS18048: 'loginRef.current' is possibly 'undefined'.
+src/layout/Account.tsx(27,5): error TS18048: 'registerLogoRef.current' is possibly 'undefined'.
+src/layout/Account.tsx(28,5): error TS18048: 'registerLogoRef.current' is possibly 'undefined'.
+src/layout/Account.tsx(29,5): error TS18048: 'loginLogoRef.current' is possibly 'undefined'.
+src/layout/Account.tsx(30,5): error TS18048: 'loginLogoRef.current' is possibly 'undefined'.
+src/layout/Account.tsx(36,5): error TS18048: 'loginFormRef.current' is possibly 'undefined'.
+src/layout/Account.tsx(37,5): error TS18048: 'registerFormRef.current' is possibly 'undefined'.
+src/layout/Account.tsx(38,5): error TS18048: 'loginFormRef.current' is possibly 'undefined'.
+src/layout/Account.tsx(45,5): error TS18048: 'loginRef.current' is possibly 'undefined'.
+src/layout/Account.tsx(46,5): error TS18048: 'loginRef.current' is possibly 'undefined'.
+src/layout/Account.tsx(48,5): error TS18048: 'registerRef.current' is possibly 'undefined'.
+src/layout/Account.tsx(49,5): error TS18048: 'registerRef.current' is possibly 'undefined'.
+src/layout/Account.tsx(51,5): error TS18048: 'loginLogoRef.current' is possibly 'undefined'.
+src/layout/Account.tsx(52,5): error TS18048: 'loginLogoRef.current' is possibly 'undefined'.
+src/layout/Account.tsx(53,5): error TS18048: 'registerLogoRef.current' is possibly 'undefined'.
+src/layout/Account.tsx(54,5): error TS18048: 'registerLogoRef.current' is possibly 'undefined'.
+src/layout/Account.tsx(60,5): error TS18048: 'registerFormRef.current' is possibly 'undefined'.
+src/layout/Account.tsx(61,5): error TS18048: 'loginFormRef.current' is possibly 'undefined'.
+src/layout/Account.tsx(62,5): error TS18048: 'registerFormRef.current' is possibly 'undefined'.
+src/layout/Account.tsx(83,13): error TS2322: Type 'MutableRefObject<undefined>' is not assignable to type 'LegacyRef<HTMLDivElement> | undefined'.
+  Type 'MutableRefObject<undefined>' is not assignable to type 'RefObject<HTMLDivElement>'.
+    Types of property 'current' are incompatible.
+      Type 'undefined' is not assignable to type 'HTMLDivElement | null'.
+src/layout/Account.tsx(90,13): error TS2322: Type 'MutableRefObject<undefined>' is not assignable to type 'LegacyRef<HTMLDivElement> | undefined'.
+  Type 'MutableRefObject<undefined>' is not assignable to type 'RefObject<HTMLDivElement>'.
+    Types of property 'current' are incompatible.
+      Type 'undefined' is not assignable to type 'HTMLDivElement | null'.
+src/layout/Account.tsx(99,17): error TS2322: Type 'MutableRefObject<undefined>' is not assignable to type 'LegacyRef<HTMLAnchorElement> | undefined'.
+  Type 'MutableRefObject<undefined>' is not assignable to type 'RefObject<HTMLAnchorElement>'.
+    Types of property 'current' are incompatible.
+      Type 'undefined' is not assignable to type 'HTMLAnchorElement | null'.
+src/layout/Account.tsx(107,17): error TS2322: Type 'MutableRefObject<undefined>' is not assignable to type 'LegacyRef<HTMLAnchorElement> | undefined'.
+  Type 'MutableRefObject<undefined>' is not assignable to type 'RefObject<HTMLAnchorElement>'.
+    Types of property 'current' are incompatible.
+      Type 'undefined' is not assignable to type 'HTMLAnchorElement | null'.
+src/layout/CreateAssignments.tsx(31,11): error TS2339: Property 'theme' does not exist on type 'ToggleContextType | null'.
+src/layout/CreateAssignments.tsx(56,39): error TS2339: Property 'name' does not exist on type 'never'.
+src/layout/CreateAssignments.tsx(76,19): error TS18046: 'err' is of type 'unknown'.
+src/layout/CreateAssignments.tsx(149,15): error TS2322: Type 'string | null | undefined' is not assignable to type 'string | number | readonly string[] | undefined'.
+  Type 'null' is not assignable to type 'string | number | readonly string[] | undefined'.
+src/layout/CreateAssignments.tsx(169,40): error TS2345: Argument of type 'Nullable<Date>' is not assignable to parameter of type 'SetStateAction<Date>'.
+  Type 'undefined' is not assignable to type 'SetStateAction<Date>'.
+src/layout/CreateAssignments.tsx(170,15): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(props: CalendarProps): Calendar', gave the following error.
+    Type 'Date' is not assignable to type 'string'.
+  Overload 2 of 2, '(props: CalendarProps, context: any): Calendar', gave the following error.
+    Type 'Date' is not assignable to type 'string'.
+src/layout/CreateAssignments.tsx(290,13): error TS2322: Type '{ type: string; className: string; placeholder: string; onChange: ChangeHandler; onBlur: ChangeHandler; ref: RefCallBack; name: "description"; ... 6 more ...; disabled?: boolean | undefined; }' is not assignable to type 'DetailedHTMLProps<TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement>'.
+  Property 'type' does not exist on type 'DetailedHTMLProps<TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement>'.
+src/layout/UpdateAssignment.tsx(19,11): error TS2339: Property '_id' does not exist on type 'unknown'.
+src/layout/UpdateAssignment.tsx(19,16): error TS2339: Property 'title' does not exist on type 'unknown'.
+src/layout/UpdateAssignment.tsx(19,23): error TS2339: Property 'photoURL' does not exist on type 'unknown'.
+src/layout/UpdateAssignment.tsx(19,33): error TS2339: Property 'description' does not exist on type 'unknown'.
+src/layout/UpdateAssignment.tsx(19,46): error TS2339: Property 'marks' does not exist on type 'unknown'.
+src/layout/UpdateAssignment.tsx(19,53): error TS2339: Property 'difficulty' does not exist on type 'unknown'.
+src/layout/UpdateAssignment.tsx(19,65): error TS2339: Property 'person' does not exist on type 'unknown'.
+src/layout/UpdateAssignment.tsx(19,73): error TS2339: Property 'date' does not exist on type 'unknown'.
+src/layout/UpdateAssignment.tsx(21,29): error TS7006: Parameter 'dateString' implicitly has an 'any' type.
+src/layout/UpdateAssignment.tsx(31,11): error TS2339: Property 'theme' does not exist on type 'ToggleContextType | null'.
+src/layout/UpdateAssignment.tsx(50,27): error TS7006: Parameter 'data' implicitly has an 'any' type.
+src/layout/UpdateAssignment.tsx(81,19): error TS18046: 'err' is of type 'unknown'.
+src/layout/UpdateAssignment.tsx(139,23): error TS2322: Type 'string | FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined' is not assignable to type 'ReactNode'.
+  Type 'FieldError' is not assignable to type 'ReactNode'.
+    Type 'FieldError' is missing the following properties from type 'ReactPortal': children, props, key
+src/layout/UpdateAssignment.tsx(175,40): error TS2345: Argument of type 'Nullable<Date>' is not assignable to parameter of type 'SetStateAction<Date>'.
+  Type 'undefined' is not assignable to type 'SetStateAction<Date>'.
+src/layout/UpdateAssignment.tsx(176,15): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(props: CalendarProps): Calendar', gave the following error.
+    Type 'Date' is not assignable to type 'string'.
+  Overload 2 of 2, '(props: CalendarProps, context: any): Calendar', gave the following error.
+    Type 'Date' is not assignable to type 'string'.
+src/layout/UpdateAssignment.tsx(219,23): error TS2322: Type 'string | FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined' is not assignable to type 'ReactNode'.
+  Type 'FieldError' is not assignable to type 'ReactNode'.
+    Type 'FieldError' is missing the following properties from type 'ReactPortal': children, props, key
+src/layout/UpdateAssignment.tsx(256,23): error TS2322: Type 'string | FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined' is not assignable to type 'ReactNode'.
+  Type 'FieldError' is not assignable to type 'ReactNode'.
+    Type 'FieldError' is missing the following properties from type 'ReactPortal': children, props, key
+src/layout/UpdateAssignment.tsx(279,13): error TS2322: Type '{ defaultValue: any; type: string; className: string; placeholder: string; onChange: ChangeHandler; onBlur: ChangeHandler; ref: RefCallBack; ... 7 more ...; disabled?: boolean | undefined; }' is not assignable to type 'DetailedHTMLProps<TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement>'.
+  Property 'type' does not exist on type 'DetailedHTMLProps<TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement>'.
+src/layout/UpdateAssignment.tsx(289,21): error TS2322: Type 'string | FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined' is not assignable to type 'ReactNode'.
+  Type 'FieldError' is not assignable to type 'ReactNode'.
+    Type 'FieldError' is missing the following properties from type 'ReactPortal': children, props, key
+src/layout/ViewDetails.tsx(28,26): error TS18046: 'data' is of type 'unknown'.
+src/layout/ViewDetails.tsx(34,24): error TS18046: 'data' is of type 'unknown'.
+src/layout/ViewDetails.tsx(40,16): error TS18046: 'data' is of type 'unknown'.
+src/layout/ViewDetails.tsx(41,16): error TS18046: 'data' is of type 'unknown'.
+src/layout/ViewDetails.tsx(53,18): error TS18046: 'data' is of type 'unknown'.
+src/layout/ViewDetails.tsx(71,12): error TS18046: 'data' is of type 'unknown'.
+src/layout/ViewDetails.tsx(83,12): error TS18046: 'data' is of type 'unknown'.
+src/layout/ViewDetails.tsx(95,12): error TS18046: 'data' is of type 'unknown'.
+src/layout/ViewDetails.tsx(118,16): error TS18046: 'data' is of type 'unknown'.
+src/layout/ViewDetails.tsx(131,16): error TS18046: 'data' is of type 'unknown'.
+src/layout/ViewDetails.tsx(137,20): error TS18046: 'data' is of type 'unknown'.
+src/layout/ViewDetails.tsx(138,20): error TS18046: 'data' is of type 'unknown'.
+src/layout/ViewDetails.tsx(151,26): error TS2322: Type '{ modalOpen: true; handleClose: () => void; }' is not assignable to type 'IntrinsicAttributes & AnimatedModalProps'.
+  Property 'modalOpen' does not exist on type 'IntrinsicAttributes & AnimatedModalProps'.
+src/pages/Blog.tsx(148,26): error TS7006: Parameter 'id' implicitly has an 'any' type.
+src/pages/Blog.tsx(149,23): error TS2345: Argument of type '(prev: never[]) => any[]' is not assignable to parameter of type 'SetStateAction<never[]>'.
+  Type '(prev: never[]) => any[]' is not assignable to type '(prevState: never[]) => never[]'.
+    Type 'any[]' is not assignable to type 'never[]'.
+      Type 'any' is not assignable to type 'never'.
+src/pages/Blog.tsx(150,27): error TS2345: Argument of type 'any' is not assignable to parameter of type 'never'.
+src/pages/Blog.tsx(154,26): error TS7006: Parameter 'id' implicitly has an 'any' type.
+src/pages/Blog.tsx(155,23): error TS2345: Argument of type '(prev: never[]) => any[]' is not assignable to parameter of type 'SetStateAction<never[]>'.
+  Type '(prev: never[]) => any[]' is not assignable to type '(prevState: never[]) => never[]'.
+    Type 'any[]' is not assignable to type 'never[]'.
+      Type 'any' is not assignable to type 'never'.
+src/pages/Blog.tsx(156,27): error TS2345: Argument of type 'any' is not assignable to parameter of type 'never'.
+src/pages/Blog.tsx(403,74): error TS2345: Argument of type 'number' is not assignable to parameter of type 'never'.
+src/pages/Blog.tsx(438,57): error TS2345: Argument of type 'number | null' is not assignable to parameter of type 'SetStateAction<null>'.
+  Type 'number' is not assignable to type 'SetStateAction<null>'.
+src/pages/Blog.tsx(471,78): error TS2345: Argument of type 'number' is not assignable to parameter of type 'never'.
+src/pages/Blog.tsx(477,96): error TS2345: Argument of type 'number' is not assignable to parameter of type 'never'.
+src/pages/Contact.tsx(23,13): error TS2339: Property 'theme' does not exist on type 'ToggleContextType | null'.
+src/pages/Contact.tsx(32,27): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/pages/Contact.tsx(36,27): error TS7006: Parameter 'e' implicitly has an 'any' type.

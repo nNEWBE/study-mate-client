@@ -9,11 +9,22 @@ import useAuth from "../hooks/useAuth";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import { ToggleContext } from "../context/ToggleProvider";
+import { useToggle } from "../context/ToggleProvider";
 
-const Register = ({ registerFormRef }) => {
+interface RegisterInputs {
+  name: string;
+  email: string;
+  photo: string;
+  password: string;
+}
+
+interface RegisterProps {
+  registerFormRef: React.RefObject<HTMLFormElement>;
+}
+
+const Register = ({ registerFormRef }: RegisterProps) => {
   const [see, setSee] = useState(false);
-  const { theme } = useContext(ToggleContext);
+  const { theme } = useToggle();
   const navigate = useNavigate();
   const location = useLocation();
   const { user, createUser, updateUserProfile, setUser } = useAuth();
@@ -22,19 +33,20 @@ const Register = ({ registerFormRef }) => {
     reset,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm<RegisterInputs>();
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: RegisterInputs) => {
     const email = data.email;
     const password = data.password;
     const name = data.name;
     const image = data.photo;
 
     try {
-      // eslint-disable-next-line no-unused-vars
       const result = await createUser(email, password);
       await updateUserProfile(name, image);
-      setUser({ ...user, photoURL: image, displayName: name, email: email });
+      if (result.user) {
+        setUser({ ...result.user, photoURL: image, displayName: name, email: email });
+      }
       navigate(location?.state ? location.state : "/");
       reset();
       Swal.fire({
@@ -51,7 +63,7 @@ const Register = ({ registerFormRef }) => {
           title: "font-poppins",
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       const e = error.message.slice(9, error.message.length);
       toast.error(`${e}`);
     }
@@ -99,7 +111,7 @@ const Register = ({ registerFormRef }) => {
             className="flex h-[1.5rem] items-center gap-1 text-sm text-red-500"
           >
             <MdError />
-            <span>{errors.name.message}</span>
+            <span>{errors.name?.message}</span>
           </div>
         ) : (
           <div className="h-[1.5rem]"></div>
@@ -134,7 +146,7 @@ const Register = ({ registerFormRef }) => {
             className="flex h-[1.5rem] items-center gap-1 text-sm text-red-500"
           >
             <MdError />
-            <span>{errors.email.message}</span>
+            <span>{errors.email?.message}</span>
           </div>
         ) : (
           <div className="h-[1.5rem]"></div>
@@ -169,7 +181,7 @@ const Register = ({ registerFormRef }) => {
             className="flex h-[1.5rem] items-center gap-1 text-sm text-red-500"
           >
             <MdError />
-            <span>{errors.photo.message}</span>
+            <span>{errors.photo?.message}</span>
           </div>
         ) : (
           <div className="h-[1.5rem]"></div>
@@ -215,7 +227,7 @@ const Register = ({ registerFormRef }) => {
             className="flex h-[1.5rem] items-center gap-1 text-sm text-red-500"
           >
             <MdError />
-            <span>{errors.password.message}</span>
+            <span>{errors.password?.message}</span>
           </div>
         ) : (
           <div className="h-[1.5rem]"></div>

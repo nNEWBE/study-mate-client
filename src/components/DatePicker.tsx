@@ -3,7 +3,7 @@ import { useState } from "react";
 import "../styles/style.css"
 
 const DatePicker = () => {
-  const [date, setDate] = useState(null);
+  const [date, setDate] = useState<Date | null>(null);
 
   return (
     <div className="flex h-screen items-center justify-center">
@@ -14,7 +14,7 @@ const DatePicker = () => {
         <Calendar
           id="buttondisplay"
           value={date}
-          onChange={(e) => setDate(e.value)}
+          onChange={(e) => setDate(e.value as Date | null)}
           placeholder="Date"
           showIcon
         />

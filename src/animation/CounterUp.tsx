@@ -57,7 +57,7 @@ const CounterUp = (): JSX.Element => {
                     start={0}
                     end={cd.number}
                     duration={5}
-                    delay={0}
+                    delay={index}
                     preserveValue
                   />
                 ) : null}

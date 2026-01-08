@@ -1,8 +1,8 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { IoDocumentText, IoMoon, IoSunny } from "react-icons/io5";
 import { Link as Route, useNavigate } from "react-router-dom";
 import { gsap, Power2 } from "gsap";
-import { ToggleContext } from "../context/ToggleProvider";
+import { useToggle } from "../context/ToggleProvider";
 import { IoLogOut } from "react-icons/io5";
 import { NavLink } from "react-router-dom";
 import logo1 from "../../public/Logo_01.json";
@@ -10,6 +10,7 @@ import logo2 from "../../public/Logo_02.json";
 import Headroom from "react-headroom";
 import Button from "../animation/Button";
 import Unhidden from "../animation/Unhidden";
+
 import useAuth from "../hooks/useAuth";
 import Swal from "sweetalert2";
 import Drawer from "./Drawer";
@@ -19,11 +20,11 @@ import "../styles/style.css";
 gsap.registerPlugin();
 
 const Navbar = () => {
-  const ref = useRef();
-  const navRef = useRef();
-  const dropdownRef = useRef();
+  const ref = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { theme, setTheme, setOverflow } = useContext(ToggleContext);
+  const { theme, setTheme, setOverflow } = useToggle();
   const [visible, setVisible] = useState(false);
   const [drawer, setDrawer] = useState(false);
   const [nav, setNav] = useState(false);
@@ -32,16 +33,18 @@ const Navbar = () => {
 
   const handleDrawer = () => {
     setDrawer(!drawer);
-    navRef.current.classList.toggle("open");
+    navRef.current?.classList.toggle("open");
   };
 
-  const handleTheme = (e) => {
+  const handleTheme = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isDark = e.target.checked;
     setTheme(isDark);
   };
 
   const handleDropdown = () => {
     setDropdown(!dropdown);
+
+    if (!dropdownRef.current) return;
 
     dropdownRef.current.classList.toggle("h-0");
     dropdownRef.current.classList.toggle("h-[350px]");
@@ -50,8 +53,8 @@ const Navbar = () => {
       dropdownRef.current.classList.contains("border-2")
     ) {
       setTimeout(() => {
-        dropdownRef.current.classList.toggle("border-2");
-        dropdownRef.current.classList.toggle("shadow-[0_0_5px_2px]");
+        dropdownRef.current?.classList.toggle("border-2");
+        dropdownRef.current?.classList.toggle("shadow-[0_0_5px_2px]");
       }, 400);
     } else {
       dropdownRef.current.classList.toggle("border-2");
@@ -87,6 +90,7 @@ const Navbar = () => {
 
   const bar = useRef(gsap.timeline({ paused: true }));
   const t1 = useRef(gsap.timeline({ paused: true }));
+  /* Removed unused GSAP stagger logic */
 
   useEffect(() => {
     bar.current
@@ -116,6 +120,14 @@ const Navbar = () => {
         "start",
       )
       .reverse();
+
+    gsap.from(".navs", {
+      opacity: 0,
+      y: -250,
+      duration: 1,
+      ease: Power2.easeOut,
+      stagger: 0.1,
+    });
 
     t1.current
       .to(".container", {
@@ -242,10 +254,10 @@ const Navbar = () => {
       className="relative z-[51] h-[105px] bg-white dark:bg-secondary"
     >
       <Headroom pin={visible}>
-        <div className="flex items-center justify-between overflow-hidden border-2 border-x-0 border-t-0 border-b-secondary bg-transparent px-5 py-5 shadow-[0_0_5px_2px] shadow-primary backdrop-blur-3xl lg:px-8">
+        <div className="mx-auto flex  items-center justify-between overflow-hidden border-2 border-x-0 border-t-0 border-b-secondary bg-transparent px-5 py-5 shadow-[0_0_5px_2px] shadow-primary backdrop-blur-3xl lg:px-8">
           <Route
             to="/"
-            className="flex w-[190px] cursor-pointer items-center rounded-xl border-2 border-secondary bg-white font-dosis text-2xl font-medium text-secondary shadow-[0_0_5px_2px] shadow-primary"
+            className="navs flex w-[190px] cursor-pointer items-center rounded-xl border-2 border-secondary bg-white font-dosis text-2xl font-medium text-secondary shadow-[0_0_5px_2px] shadow-primary"
           >
             <LottieFiles
               animation={logo1}
@@ -261,34 +273,37 @@ const Navbar = () => {
           </Route>
 
           <div className="relative flex items-center gap-7">
-            <ul className="hidden items-center font-edu font-medium lg:flex">
-              <Unhidden>
-                {user
-                  ? navItems.map((item) => (
+            <ul className="hidden items-center font-edu font-medium lg:flex relative">
+              {/* Desktop Nav Items with Reveal Animation */}
+              {user
+                ? navItems.map((item) => (
+                  <NavLink
+                    to={item.to}
+                    key={item.id}
+                    className={({ isActive }) =>
+                      `navs relative z-10 mr-4 cursor-pointer rounded-xl border-2 border-secondary bg-white px-3 font-bold text-secondary shadow-[0_0_5px_2px] shadow-primary ${isActive ? "active" : ""}`
+                    }
+                  >
+                    <span>{item.name}</span>
+                  </NavLink>
+                ))
+                : navItems
+                  .filter((item) => item.name !== "Create")
+                  .map((item) => (
                     <NavLink
                       to={item.to}
                       key={item.id}
-                      className="navs relative z-10 mr-4 cursor-pointer rounded-xl border-2 border-secondary bg-white px-3 font-bold text-secondary shadow-[0_0_5px_2px] shadow-primary"
+                      className={({ isActive }) =>
+                        `navs relative z-10 mr-4 cursor-pointer rounded-xl border-2 border-secondary bg-white px-3 font-bold text-secondary shadow-[0_0_5px_2px] shadow-primary ${isActive ? "active" : ""}`
+                      }
                     >
-                      {item.name}
+                      <span>{item.name}</span>
                     </NavLink>
-                  ))
-                  : navItems
-                    .filter((item) => item.name !== "Create")
-                    .map((item) => (
-                      <NavLink
-                        to={item.to}
-                        key={item.id}
-                        className="navs relative z-10 mr-4 cursor-pointer rounded-xl border-2 border-secondary bg-white px-3 font-bold text-secondary shadow-[0_0_5px_2px] shadow-primary"
-                      >
-                        {item.name}
-                      </NavLink>
-                    ))}
-                <a className="slide"></a>
-              </Unhidden>
+                  ))}
+              <a className="slide"></a>
             </ul>
             <div className="hidden items-center gap-2 lg:flex">
-              <div className="relative bottom-3 right-2">
+              <div className="navs relative bottom-3 right-2">
                 <input
                   onChange={handleTheme}
                   checked={theme === null ? false : theme}
@@ -304,19 +319,19 @@ const Navbar = () => {
               {user ? (
                 <div
                   onClick={handleDropdown}
-                  className="relative w-14 cursor-pointer"
+                  className="navs relative w-14 cursor-pointer"
                 >
                   <img
                     className="size-[55px] rounded-full border-2 border-secondary object-cover shadow-[0_0_5px_2px] shadow-primary"
                     referrerPolicy="no-referrer"
-                    src={user?.photoURL}
+                    src={user?.photoURL || undefined}
                     alt="User"
                   />
                   <span className="dark:border-scondary absolute bottom-0 right-0 h-4 w-4 rounded-full border-2 border-secondary bg-[#00ffa5]"></span>
                   <span className="absolute bottom-0 right-0 h-4 w-4 animate-ping rounded-full bg-[#00ffa5]"></span>
                 </div>
               ) : (
-                <Route to="/account">
+                <Route to="/account" className="navs">
                   <Button str={"Sign Up"} shadow={true}></Button>
                 </Route>
               )}
@@ -363,7 +378,7 @@ const Navbar = () => {
                 <img
                   className="size-[45px] rounded-full border-2 border-secondary object-cover shadow-[0_0_5px_2px] shadow-primary"
                   referrerPolicy="no-referrer"
-                  src={user?.photoURL}
+                  src={user?.photoURL || undefined}
                   alt="User"
                 />
                 <span className="absolute bottom-0 right-0 h-4 w-4 rounded-full border-2 border-secondary bg-[#00ffa5] dark:border-secondary"></span>
@@ -424,7 +439,7 @@ const Navbar = () => {
               <img
                 className="rounded-full border-2 border-secondary shadow-[0_0_5px_2px] shadow-primary"
                 referrerPolicy="no-referrer"
-                src={user?.photoURL}
+                src={user?.photoURL || undefined}
                 alt="User"
               />
             </div>
@@ -497,7 +512,9 @@ const Navbar = () => {
                 ))}
                 {user ? (
                   <li>
-                    <Route className="inline-block"></Route>
+                    <div className="inline-block text-xl cursor-pointer" onClick={handleNavLogout}>
+                      <Button str={"Logout"} shadow={false}></Button>
+                    </div>
                   </li>
                 ) : (
                   <li>

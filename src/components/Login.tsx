@@ -13,16 +13,25 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import "animate.css";
 import toast from "react-hot-toast";
-import { ToggleContext } from "../context/ToggleProvider";
+import { useToggle } from "../context/ToggleProvider";
 
-const Login = ({ loginFormRef }) => {
+interface LoginInputs {
+  email: string;
+  password: string;
+}
+
+interface LoginProps {
+  loginFormRef: React.RefObject<HTMLFormElement>;
+}
+
+const Login = ({ loginFormRef }: LoginProps) => {
   const [see, setSee] = useState(false);
   const [checked, setChecked] = useState(true);
-  const { theme } = useContext(ToggleContext);
+  const { theme } = useToggle();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const onChange = (e) => {
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log("checked = ", e.target.checked);
     setChecked(e.target.checked);
   };
@@ -33,9 +42,9 @@ const Login = ({ loginFormRef }) => {
     reset,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm<LoginInputs>();
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: LoginInputs) => {
     const email = data.email;
     const password = data.password;
 
@@ -57,13 +66,13 @@ const Login = ({ loginFormRef }) => {
           title: "font-poppins",
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       const e = error.message.slice(9, error.message.length);
       toast.error(`${e}`);
     }
   };
 
-  const handleSocialLogin = async (socialProvider) => {
+  const handleSocialLogin = async (socialProvider: () => Promise<any>) => {
     try {
       await socialProvider();
       navigate(location?.state ? location.state : "/");
@@ -81,7 +90,7 @@ const Login = ({ loginFormRef }) => {
           title: "font-poppins",
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       const e = error.message.slice(9, error.message.length);
       toast.error(`${e}`);
     }
@@ -126,7 +135,7 @@ const Login = ({ loginFormRef }) => {
             className="flex h-[1.5rem] items-center gap-1 text-sm text-red-500"
           >
             <MdError />
-            <span>{errors.email.message}</span>
+            <span>{errors.email?.message}</span>
           </div>
         ) : (
           <div className="h-[1.5rem]"></div>
@@ -171,7 +180,7 @@ const Login = ({ loginFormRef }) => {
             className="flex h-[1.5rem] items-center gap-1 text-sm text-red-500"
           >
             <MdError />
-            <span>{errors.password.message}</span>
+            <span>{errors.password?.message}</span>
           </div>
         ) : (
           <div className="h-[1.5rem]"></div>

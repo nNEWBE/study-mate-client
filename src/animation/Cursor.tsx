@@ -1,10 +1,12 @@
 import { useEffect, useRef } from "react";
 import "../styles/cursor.css";
+import { useLocation } from "react-router-dom";
 
 const Cursor = (): JSX.Element | null => {
   const innerRef = useRef<HTMLDivElement>(null);
   const outerRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number>(0);
+  const location = useLocation();
 
   // Mouse position
   const mouseX = useRef(0);
@@ -22,6 +24,16 @@ const Cursor = (): JSX.Element | null => {
   // Check if device is mobile
   const isMobile = typeof window !== 'undefined' &&
     (window.innerWidth < 1024 || 'ontouchstart' in window);
+
+  // Reset cursor on route change
+  useEffect(() => {
+    const inner = innerRef.current;
+    const outer = outerRef.current;
+    if (inner && outer) {
+      inner.classList.remove("cursor-on-card", "cursor-hidden");
+      outer.classList.remove("cursor-on-card", "cursor-hidden");
+    }
+  }, [location]);
 
   useEffect(() => {
     if (isMobile) return;
@@ -77,43 +89,99 @@ const Cursor = (): JSX.Element | null => {
     document.addEventListener("mouseleave", onMouseLeave);
     document.addEventListener("visibilitychange", onVisibilityChange);
 
-    // Hover effects - setup once, no MutationObserver
-    const setupHoverEffects = () => {
-      const interactiveSelector = "a, button, input, textarea, select, [role='button'], h1";
+    // Event Delegation for Hover Effects
+    const onMouseOver = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target) return;
 
-      document.querySelectorAll(interactiveSelector).forEach(el => {
-        el.addEventListener("mouseenter", () => {
-          inner.classList.add("cursor-hover");
-          outer.classList.add("cursor-hover");
-        });
-        el.addEventListener("mouseleave", () => {
-          inner.classList.remove("cursor-hover");
-          outer.classList.remove("cursor-hover");
-        });
-      });
+      // Check for Card
+      // We check for card FIRST to ensure card style is applicable in that zone
+      const card = target.closest("[data-cursor='card']");
 
-      document.querySelectorAll("[data-cursor='card']").forEach(el => {
-        el.addEventListener("mouseenter", () => {
-          inner.classList.add("cursor-on-card");
-          outer.classList.add("cursor-on-card");
-        });
-        el.addEventListener("mouseleave", () => {
-          inner.classList.remove("cursor-on-card");
-          outer.classList.remove("cursor-on-card");
-        });
-      });
+      // Check for Interactive Elements (which should HIDE custom cursor)
+      const interactiveSelector = "a, button, input, textarea, select, [role='button'], label";
+      const interactive = target.closest(interactiveSelector);
+
+      // Special handling: The Card View Link is technically interactive (it's an <a>), 
+      // but we WANT the custom cursor there (Card View Mode).
+      const isCardViewLink = target.closest(".card-view-link");
+
+      if (card && isCardViewLink) {
+        // If we are on the card view link, SHOW View Cursor
+        inner.classList.add("cursor-on-card");
+        outer.classList.add("cursor-on-card");
+        inner.classList.remove("cursor-hidden");
+        outer.classList.remove("cursor-hidden");
+      } else if (interactive) {
+        // If interactive (and NOT the card view link), HIDE custom cursor
+        // This allows system cursor to take over for buttons/other links
+        inner.classList.add("cursor-hidden");
+        outer.classList.add("cursor-hidden");
+        inner.classList.remove("cursor-on-card");
+        outer.classList.remove("cursor-on-card");
+      } else if (card) {
+        // Inside card, but not on an interactive element (e.g. text description)
+        // Keep View Cursor logic if we want strict "on card" = View
+        // Or just default. Let's assume on card surface = View Cursor, unless separate button
+        // But user said "in the clickable items like buttons the custom cursor will not show"
+        // The previous code had "on-card" for the whole card.
+        // Let's restore "on-card" for the whole card, BUT override if "interactive" (other than view link)
+        inner.classList.add("cursor-on-card");
+        outer.classList.add("cursor-on-card");
+        inner.classList.remove("cursor-hidden");
+        outer.classList.remove("cursor-hidden");
+      }
     };
 
-    // Setup after a short delay to let page render
-    setTimeout(setupHoverEffects, 500);
+    const onMouseOut = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const related = e.relatedTarget as HTMLElement;
+
+      // Handle Card Leave
+      const card = target.closest("[data-cursor='card']");
+      // Handle Interactive Leave
+      const interactiveSelector = "a, button, input, textarea, select, [role='button'], label";
+      const interactive = target.closest(interactiveSelector);
+
+      // We need to be careful. MouseOut fires when leaving children too.
+      // Easiest is to let MouseOver handle the state on entry of new element, 
+      // but we need to reset if we really leave.
+
+      // If we are leaving the window, or moving to something that isn't interactive/card
+      // We rely on the MouseOver of the *new* element to set state. 
+      // EXCEPT if we move to "nothing" (non-interactive body).
+
+      // Simplified: Just remove classes if we are NOT in those zones anymore.
+      // But checking "related" (the element we went TO) is better.
+
+      if (!related) return;
+
+      const goingToCard = related.closest("[data-cursor='card']");
+      const goingToInteractive = related.closest(interactiveSelector);
+
+      if (!goingToCard) {
+        inner.classList.remove("cursor-on-card");
+        outer.classList.remove("cursor-on-card");
+      }
+
+      if (!goingToInteractive) {
+        inner.classList.remove("cursor-hidden");
+        outer.classList.remove("cursor-hidden");
+      }
+    };
+
+    document.addEventListener("mouseover", onMouseOver);
+    document.addEventListener("mouseout", onMouseOut);
 
     return () => {
       cancelAnimationFrame(rafRef.current);
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseleave", onMouseLeave);
       document.removeEventListener("visibilitychange", onVisibilityChange);
+      document.removeEventListener("mouseover", onMouseOver);
+      document.removeEventListener("mouseout", onMouseOut);
     };
-  }, [isMobile]);
+  }, [isMobile, location]); // Re-bind if necessary, though mainly location effect handles reset
 
   if (isMobile) return null;
 

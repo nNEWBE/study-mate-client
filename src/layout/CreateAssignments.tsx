@@ -6,33 +6,42 @@ import Button from "../animation/Button";
 import useAuth from "../hooks/useAuth";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { motion } from "framer-motion";
 import { MdError } from "react-icons/md";
 import { useContext, useState } from "react";
-import { ToggleContext } from "../context/ToggleProvider";
+import { useToggle } from "../context/ToggleProvider";
 import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
 import { HiOutlineDocumentChartBar } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 
+type FormInputs = {
+  title: string;
+  difficulty: string;
+  photo: string;
+  marks: string;
+  description: string;
+};
+
 const CreateAssignments = () => {
   const { user } = useAuth();
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState<Date | null>(new Date());
   const navigate = useNavigate();
-  const { theme } = useContext(ToggleContext);
-  console.log(date.toLocaleDateString("en-US"));
+  const { theme } = useToggle();
+  console.log(date?.toLocaleDateString("en-US"));
 
-  const [selectedDifficulty, setSelectedDifficulty] = useState(null);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<{ name: string } | null>(null);
   const difficulties = [{ name: "Easy" }, { name: "Medium" }, { name: "Hard" }];
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
-  } = useForm();
+  } = useForm<FormInputs>();
 
-  const onSubmit = async (data) => {
+  const onSubmit: SubmitHandler<FormInputs> = async (data) => {
     const title = data.title;
     const photoURL = data.photo;
     const marks = data.marks;
@@ -42,7 +51,7 @@ const CreateAssignments = () => {
       title,
       photoURL,
       marks,
-      date: date.toLocaleDateString("en-US"),
+      date: date?.toLocaleDateString("en-US"),
       description,
       difficulty: selectedDifficulty?.name,
       person: {
@@ -62,7 +71,7 @@ const CreateAssignments = () => {
       console.log(data);
       toast.success("Assignment created successfully!");
       navigate("/tasks");
-    } catch (err) {
+    } catch (err: any) {
       console.log(err);
       toast.error(err.message);
     }
@@ -137,7 +146,7 @@ const CreateAssignments = () => {
           <div className="relative w-[16.6rem] sm:w-[20rem]">
             <input
               disabled
-              defaultValue={user?.email}
+              defaultValue={user?.email || ""}
               type="email"
               placeholder="Email"
               className="mx-auto w-[16.6rem] cursor-not-allowed select-none rounded-xl border-2 border-primary bg-primary bg-opacity-25 px-4 py-3 pr-12 font-semibold text-secondary placeholder-secondary outline-none dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white dark:placeholder-white sm:w-[20rem]"
@@ -157,8 +166,8 @@ const CreateAssignments = () => {
             <Calendar
               id="buttondisplay"
               value={date}
-              onChange={(e) => setDate(e.value)}
-              placeholder={date}
+              onChange={(e) => setDate(e.value as Date | null)}
+              placeholder={date?.toLocaleDateString("en-US")}
               dateFormat="yy/mm/dd"
               showIcon
             />
@@ -174,7 +183,10 @@ const CreateAssignments = () => {
               })}
               inputId="dd-city"
               value={selectedDifficulty}
-              onChange={(e) => setSelectedDifficulty(e.value)}
+              onChange={(e) => {
+                setSelectedDifficulty(e.value);
+                setValue("difficulty", e.value?.name, { shouldValidate: true });
+              }}
               options={difficulties}
               optionLabel="name"
               className="w-full"
@@ -275,7 +287,6 @@ const CreateAssignments = () => {
                 message: "Enter assigment description",
               },
             })}
-            type="text"
             className="mx-auto w-[16.5rem] rounded-xl border-2 border-primary bg-primary bg-opacity-25 px-4 py-3 pr-12 font-semibold text-secondary placeholder-secondary outline-none dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white dark:placeholder-white sm:w-[20rem] md:w-[41.3rem] lg:w-[42.5rem]"
             placeholder="Description"
           ></textarea>
