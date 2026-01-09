@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState, ReactNode } from "react";
-import auth from "../firebase/firebase";
+import auth from "../config/firebase";
 import {
   GoogleAuthProvider,
   GithubAuthProvider,

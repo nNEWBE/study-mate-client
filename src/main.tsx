@@ -6,7 +6,7 @@ import AuthProvider from "./context/AuthProvider";
 import ToggleProvider from "./context/ToggleProvider";
 
 import { AnimatePresence } from "framer-motion";
-import Toast from "./animation/Toast";
+import Toast from "./components/ui/Toast";
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
 import "primeicons/primeicons.css";

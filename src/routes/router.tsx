@@ -1,14 +1,14 @@
 import { createBrowserRouter } from "react-router-dom";
 import Main from "../pages/Main";
-import Home from "../home/Home";
-import Account from "../layout/Account";
-import ScrollToTop from "../animation/ScrollToTop";
-import Error from "../error/Error";
-import Tasks from "../layout/Tasks";
-import CreateAssignments from "../layout/CreateAssignments";
-import PrivateRoute from "../private/PrivateRoute";
-import UpdateAssignment from "../layout/UpdateAssignment";
-import ViewDetails from "../layout/ViewDetails";
+import Home from "../pages/Home";
+import Account from "../pages/Account";
+import ScrollToTop from "../lib/ScrollToTop";
+import Error from "../pages/Error";
+import Tasks from "../pages/Tasks";
+import CreateAssignments from "../pages/CreateAssignments";
+import PrivateRoute from "./PrivateRoute";
+import UpdateAssignment from "../pages/UpdateAssignment";
+import ViewDetails from "../pages/ViewDetails";
 import Contact from "../pages/Contact";
 import Blog from "../pages/Blog";
 

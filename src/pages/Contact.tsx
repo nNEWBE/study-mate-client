@@ -14,7 +14,7 @@ import {
     FaDiscord,
 } from "react-icons/fa";
 import Reveal from "../animation/Reveal";
-import Button from "../animation/Button";
+import Button from "../components/ui/Button";
 import { useToggle } from "../context/ToggleProvider";
 import "../styles/style.css";
 import Swal from "sweetalert2";
