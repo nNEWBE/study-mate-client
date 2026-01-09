@@ -94,9 +94,14 @@ const Cursor = (): JSX.Element | null => {
       const target = e.target as HTMLElement;
       if (!target) return;
 
+      // Check for no-cursor zone (like icon containers)
+      const noCursor = target.closest("[data-cursor='none']");
+
       // Check for Card
-      // We check for card FIRST to ensure card style is applicable in that zone
       const card = target.closest("[data-cursor='card']");
+
+      // Check for Category
+      const category = target.closest("[data-cursor='category']");
 
       // Check for Interactive Elements (which should HIDE custom cursor)
       const interactiveSelector = "a, button, input, textarea, select, [role='button'], label";
@@ -106,62 +111,58 @@ const Cursor = (): JSX.Element | null => {
       // but we WANT the custom cursor there (Card View Mode).
       const isCardViewLink = target.closest(".card-view-link");
 
-      if (card && isCardViewLink) {
-        // If we are on the card view link, SHOW View Cursor
-        inner.classList.add("cursor-on-card");
-        outer.classList.add("cursor-on-card");
-        inner.classList.remove("cursor-hidden");
-        outer.classList.remove("cursor-hidden");
-      } else if (interactive) {
-        // If interactive (and NOT the card view link), HIDE custom cursor
-        // This allows system cursor to take over for buttons/other links
+      // Remove all cursor states first
+      const removeAllStates = () => {
+        inner.classList.remove("cursor-on-card", "cursor-on-category", "cursor-hidden");
+        outer.classList.remove("cursor-on-card", "cursor-on-category", "cursor-hidden");
+      };
+
+      if (noCursor) {
+        // If hovering on a no-cursor zone (icon), hide custom cursor
+        removeAllStates();
         inner.classList.add("cursor-hidden");
         outer.classList.add("cursor-hidden");
-        inner.classList.remove("cursor-on-card");
-        outer.classList.remove("cursor-on-card");
-      } else if (card) {
-        // Inside card, but not on an interactive element (e.g. text description)
-        // Keep View Cursor logic if we want strict "on card" = View
-        // Or just default. Let's assume on card surface = View Cursor, unless separate button
-        // But user said "in the clickable items like buttons the custom cursor will not show"
-        // The previous code had "on-card" for the whole card.
-        // Let's restore "on-card" for the whole card, BUT override if "interactive" (other than view link)
+      } else if (category) {
+        // If hovering on a tech category card (not on icon)
+        removeAllStates();
+        inner.classList.add("cursor-on-category");
+        outer.classList.add("cursor-on-category");
+      } else if (card && isCardViewLink) {
+        // If we are on the card view link, SHOW View Cursor
+        removeAllStates();
         inner.classList.add("cursor-on-card");
         outer.classList.add("cursor-on-card");
-        inner.classList.remove("cursor-hidden");
-        outer.classList.remove("cursor-hidden");
+      } else if (interactive) {
+        // If interactive (and NOT the card view link), HIDE custom cursor
+        removeAllStates();
+        inner.classList.add("cursor-hidden");
+        outer.classList.add("cursor-hidden");
+      } else if (card) {
+        // Inside card, but not on an interactive element
+        removeAllStates();
+        inner.classList.add("cursor-on-card");
+        outer.classList.add("cursor-on-card");
       }
     };
 
     const onMouseOut = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
       const related = e.relatedTarget as HTMLElement;
-
-      // Handle Card Leave
-      const card = target.closest("[data-cursor='card']");
-      // Handle Interactive Leave
-      const interactiveSelector = "a, button, input, textarea, select, [role='button'], label";
-      const interactive = target.closest(interactiveSelector);
-
-      // We need to be careful. MouseOut fires when leaving children too.
-      // Easiest is to let MouseOver handle the state on entry of new element, 
-      // but we need to reset if we really leave.
-
-      // If we are leaving the window, or moving to something that isn't interactive/card
-      // We rely on the MouseOver of the *new* element to set state. 
-      // EXCEPT if we move to "nothing" (non-interactive body).
-
-      // Simplified: Just remove classes if we are NOT in those zones anymore.
-      // But checking "related" (the element we went TO) is better.
 
       if (!related) return;
 
       const goingToCard = related.closest("[data-cursor='card']");
+      const goingToCategory = related.closest("[data-cursor='category']");
+      const interactiveSelector = "a, button, input, textarea, select, [role='button'], label";
       const goingToInteractive = related.closest(interactiveSelector);
 
       if (!goingToCard) {
         inner.classList.remove("cursor-on-card");
         outer.classList.remove("cursor-on-card");
+      }
+
+      if (!goingToCategory) {
+        inner.classList.remove("cursor-on-category");
+        outer.classList.remove("cursor-on-category");
       }
 
       if (!goingToInteractive) {

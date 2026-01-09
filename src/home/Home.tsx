@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import NavMenu from "../components/NavMenu";
 import Create from "../components/Create";
 import BestAssignments from "../components/BestAssignments";
+import HowItWorks from "../components/HowItWorks";
+import StudyCategories from "../components/StudyCategories";
 
 
 const Home = (): JSX.Element => {
@@ -16,8 +18,10 @@ const Home = (): JSX.Element => {
     >
       <NavMenu />
       <Banner />
+      <HowItWorks />
       <Create />
       <Features />
+      <StudyCategories />
       <BestAssignments />
       <Faq />
     </motion.div>
