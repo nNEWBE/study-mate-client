@@ -84,6 +84,7 @@ const CreateAssignments = () => {
       }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
       className="mx-auto w-[90%] bg-white py-32 dark:bg-secondary"
+      data-cursor="create"
     >
       <div className="flex justify-center">
         <Reveal>

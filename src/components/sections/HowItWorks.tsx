@@ -133,7 +133,10 @@ const HowItWorks = () => {
                             >
                                 {/* Desktop Connection Line (Segmented) */}
                                 {index < steps.length - 1 && (
-                                    <div className="absolute left-[calc(50%+4.5rem)] top-12 hidden h-1 w-[calc(100%-7rem)] -translate-y-1/2 items-center lg:flex">
+                                    <div
+                                        data-cursor="none"
+                                        className="absolute left-[calc(50%+4.5rem)] top-12 hidden h-1 w-[calc(100%-7rem)] -translate-y-1/2 items-center lg:flex"
+                                    >
 
                                         {/* Start Circle */}
                                         <motion.div
@@ -163,7 +166,7 @@ const HowItWorks = () => {
                                     </div>
                                 )}
                                 {/* Step Number Circle */}
-                                <div className="relative mb-10">
+                                <div className="relative mb-10" data-cursor="none">
                                     <motion.div
                                         whileHover={{ scale: 1.1, rotate: 360 }}
                                         transition={{ duration: 0.5 }}
@@ -197,6 +200,7 @@ const HowItWorks = () => {
                                 <motion.div
                                     whileHover={{ y: -5 }}
                                     className="w-full rounded-2xl border-2 border-secondary shadow-[0px_0px_5px_2px] shadow-primary bg-white/50 p-6 backdrop-blur-sm transition-all duration-300 dark:border-white/10 dark:bg-secondary/50"
+                                    data-cursor="step"
                                 >
                                     <h3 className="mb-3 font-dosis text-2xl font-bold text-secondary dark:text-white">
                                         {step.title}

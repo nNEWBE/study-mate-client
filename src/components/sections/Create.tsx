@@ -32,7 +32,10 @@ const Create = () => {
             </TextReveal>
           </Unhidden>
         </div>
-        <div className="flex items-center rounded-xl mb-3 border-2 border-secondary bg-[linear-gradient(115deg,_rgba(255,255,255,0)_10%,_rgba(0,255,165,.5),_rgba(0,255,165,1))] shadow-[0px_0px_7px_2px] shadow-primary sm:h-[400px]">
+        <div
+          data-cursor="create"
+          className="flex items-center rounded-xl mb-3 border-2 border-secondary bg-[linear-gradient(115deg,_rgba(255,255,255,0)_10%,_rgba(0,255,165,.5),_rgba(0,255,165,1))] shadow-[0px_0px_7px_2px] shadow-primary sm:h-[400px]"
+        >
           <div className="flex flex-col justify-between p-10 sm:flex-row sm:items-center sm:px-10 sm:py-5 lg:px-24 lg:py-5">
             <div className="flex justify-center">
               <LottieFiles

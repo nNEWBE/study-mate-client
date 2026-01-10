@@ -30,8 +30,8 @@ const Cursor = (): JSX.Element | null => {
     const inner = innerRef.current;
     const outer = outerRef.current;
     if (inner && outer) {
-      inner.classList.remove("cursor-on-card", "cursor-hidden");
-      outer.classList.remove("cursor-on-card", "cursor-hidden");
+      inner.classList.remove("cursor-on-card", "cursor-on-category", "cursor-on-step", "cursor-on-create", "cursor-hidden");
+      outer.classList.remove("cursor-on-card", "cursor-on-category", "cursor-on-step", "cursor-on-create", "cursor-hidden");
     }
   }, [location]);
 
@@ -103,6 +103,12 @@ const Cursor = (): JSX.Element | null => {
       // Check for Category
       const category = target.closest("[data-cursor='category']");
 
+      // Check for Step
+      const step = target.closest("[data-cursor='step']");
+
+      // Check for Create form
+      const create = target.closest("[data-cursor='create']");
+
       // Check for Interactive Elements (which should HIDE custom cursor)
       const interactiveSelector = "a, button, input, textarea, select, [role='button'], label";
       const interactive = target.closest(interactiveSelector);
@@ -113,8 +119,8 @@ const Cursor = (): JSX.Element | null => {
 
       // Remove all cursor states first
       const removeAllStates = () => {
-        inner.classList.remove("cursor-on-card", "cursor-on-category", "cursor-hidden");
-        outer.classList.remove("cursor-on-card", "cursor-on-category", "cursor-hidden");
+        inner.classList.remove("cursor-on-card", "cursor-on-category", "cursor-on-step", "cursor-on-create", "cursor-hidden");
+        outer.classList.remove("cursor-on-card", "cursor-on-category", "cursor-on-step", "cursor-on-create", "cursor-hidden");
       };
 
       if (noCursor) {
@@ -122,11 +128,6 @@ const Cursor = (): JSX.Element | null => {
         removeAllStates();
         inner.classList.add("cursor-hidden");
         outer.classList.add("cursor-hidden");
-      } else if (category) {
-        // If hovering on a tech category card (not on icon)
-        removeAllStates();
-        inner.classList.add("cursor-on-category");
-        outer.classList.add("cursor-on-category");
       } else if (card && isCardViewLink) {
         // If we are on the card view link, SHOW View Cursor
         removeAllStates();
@@ -137,6 +138,21 @@ const Cursor = (): JSX.Element | null => {
         removeAllStates();
         inner.classList.add("cursor-hidden");
         outer.classList.add("cursor-hidden");
+      } else if (category) {
+        // If hovering on a tech category card (not on icon)
+        removeAllStates();
+        inner.classList.add("cursor-on-category");
+        outer.classList.add("cursor-on-category");
+      } else if (step) {
+        // If hovering on a step card
+        removeAllStates();
+        inner.classList.add("cursor-on-step");
+        outer.classList.add("cursor-on-step");
+      } else if (create) {
+        // If hovering on create assignment section
+        removeAllStates();
+        inner.classList.add("cursor-on-create");
+        outer.classList.add("cursor-on-create");
       } else if (card) {
         // Inside card, but not on an interactive element
         removeAllStates();
@@ -152,6 +168,8 @@ const Cursor = (): JSX.Element | null => {
 
       const goingToCard = related.closest("[data-cursor='card']");
       const goingToCategory = related.closest("[data-cursor='category']");
+      const goingToStep = related.closest("[data-cursor='step']");
+      const goingToCreate = related.closest("[data-cursor='create']");
       const interactiveSelector = "a, button, input, textarea, select, [role='button'], label";
       const goingToInteractive = related.closest(interactiveSelector);
 
@@ -164,6 +182,17 @@ const Cursor = (): JSX.Element | null => {
         inner.classList.remove("cursor-on-category");
         outer.classList.remove("cursor-on-category");
       }
+
+      if (!goingToStep) {
+        inner.classList.remove("cursor-on-step");
+        outer.classList.remove("cursor-on-step");
+      }
+
+      if (!goingToCreate) {
+        inner.classList.remove("cursor-on-create");
+        outer.classList.remove("cursor-on-create");
+      }
+
 
       if (!goingToInteractive) {
         inner.classList.remove("cursor-hidden");
