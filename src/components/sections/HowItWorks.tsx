@@ -72,13 +72,25 @@ const HowItWorks = () => {
         },
     };
 
-    const lineVariants = {
-        hidden: { scaleX: 0 },
+    const dashedContainerVariants = {
+        hidden: { opacity: 0 },
         visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.08,
+                delayChildren: 0.5,
+            },
+        },
+    };
+
+    const dashedSegmentVariants = {
+        hidden: { opacity: 0, scaleX: 0 },
+        visible: {
+            opacity: 1,
             scaleX: 1,
             transition: {
-                duration: 0.8,
-                ease: "easeInOut",
+                duration: 0.5,
+                ease: "easeOut",
             },
         },
     };
@@ -111,14 +123,6 @@ const HowItWorks = () => {
                     animate={inView ? "visible" : "hidden"}
                     className="relative"
                 >
-                    {/* Connection Line - Desktop */}
-                    <div className="absolute left-0 right-0 top-[4.5rem] hidden lg:block">
-                        <motion.div
-                            variants={lineVariants}
-                            className="mx-auto h-[2px] w-[70%] origin-left rounded-full shadow-[0px_0px_5px_2px] shadow-primary/50 bg-secondary dark:bg-primary dark:border-primary"
-                        />
-                    </div>
-
                     {/* Steps Grid */}
                     <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
                         {steps.map((step, index) => (
@@ -127,6 +131,37 @@ const HowItWorks = () => {
                                 variants={itemVariants}
                                 className="group relative flex flex-col items-center text-center"
                             >
+                                {/* Desktop Connection Line (Segmented) */}
+                                {index < steps.length - 1 && (
+                                    <div className="absolute left-[calc(50%+4.5rem)] top-12 hidden h-1 w-[calc(100%-7rem)] -translate-y-1/2 items-center lg:flex">
+
+                                        {/* Start Circle */}
+                                        <motion.div
+                                            initial={{ scale: 0 }}
+                                            animate={inView ? { scale: 1 } : { scale: 0 }}
+                                            transition={{ duration: 0.3, delay: 0.5 + (index * 0.3) }}
+                                            className="absolute -left-1 z-10 h-3 w-3 rounded-full border-2 border-secondary bg-white dark:border-primary dark:bg-secondary shadow-[0_0_10px_2px] shadow-primary"
+                                        />
+
+                                        {/* The Line Segment */}
+                                        <div className="relative h-[2px] w-full bg-gray-200 dark:bg-gray-700">
+                                            <motion.div
+                                                initial={{ scaleX: 0 }}
+                                                animate={inView ? { scaleX: 1 } : { scaleX: 0 }}
+                                                transition={{ duration: 0.8, delay: 0.5 + (index * 0.3) + 0.2, ease: "easeInOut" }}
+                                                className="absolute inset-0 origin-left shadow-[0_0_10px_2px] shadow-primary bg-secondary dark:bg-primary"
+                                            />
+                                        </div>
+
+                                        {/* End Circle */}
+                                        <motion.div
+                                            initial={{ scale: 0 }}
+                                            animate={inView ? { scale: 1 } : { scale: 0 }}
+                                            transition={{ duration: 0.3, delay: 0.5 + (index * 0.3) + 1 }} // Appears after line fills
+                                            className="absolute -right-1 z-10 h-3 w-3 rounded-full border-2 border-secondary bg-white dark:border-primary shadow-[0_0_10px_2px] shadow-primary dark:bg-secondary"
+                                        />
+                                    </div>
+                                )}
                                 {/* Step Number Circle */}
                                 <div className="relative mb-10">
                                     <motion.div
