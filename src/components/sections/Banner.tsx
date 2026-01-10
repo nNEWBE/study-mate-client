@@ -6,25 +6,19 @@ import { Link } from "react-scroll";
 import Wave from "../../svg/Wave";
 import LottieFiles from "../ui/LottieFiles";
 
+import CharReveal from "../../animation/CharReveal";
+
 const Banner = () => {
   return (
     <div
       id="Home"
       className="relative flex min-h-[calc(100vh-105px)] items-center bg-white dark:bg-secondary lg:items-start 2xl:pt-24 lg:pt-8"
     >
-      {/* style=
-      {{
-        background: `url(${wave})`,
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "bottom",
-        backgroundSize: "100vw",
-      }} */}
-
       <div className="mx-auto w-[90%] max-w-[90rem] items-center justify-between md:flex">
         <div className="md:w-1/2">
           <Reveal>
-            <h1 className="title font-dosis text-secondary dark:text-white">
-              Welcome To<span className="text-primary">.</span>
+            <h1 className="title mb-5 font-dosis text-secondary dark:text-white">
+              <CharReveal>Welcome To.</CharReveal>
             </h1>
           </Reveal>
 
@@ -62,7 +56,7 @@ const Banner = () => {
           <Wave></Wave>
         </Reveal>
       </div>
-    </div>
+    </div >
   );
 };
 
