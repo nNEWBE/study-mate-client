@@ -39,7 +39,7 @@ const categories: Category[] = [
         title: "Backend",
         count: 76,
         color: "from-green-500 to-emerald-400",
-        borderColor: "#22c55e",
+        borderColor: "#00ffa5",
     },
     {
         id: 3,
@@ -183,9 +183,9 @@ const StudyCategories = () => {
                                     {category.title}
                                 </h3>
 
-                                <div className="relative inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 font-edu text-xs font-semibold text-primary">
+                                <div className="relative inline-flex text-secondary dark:text-primary items-center gap-1 rounded-full dark:bg-primary/10 bg-primary/30 px-3 py-1 font-edu text-xs font-semibold">
                                     <span>{category.count}</span>
-                                    <span className="text-primary/70">assignments</span>
+                                    <span >assignments</span>
                                 </div>
 
                                 <motion.div

@@ -1,4 +1,6 @@
 import PropTypes from "prop-types";
+import { motion } from "framer-motion";
+import { FaChevronRight } from "react-icons/fa";
 import Reveal from "../../../animation/Reveal"
 
 interface LinkItem {
@@ -23,12 +25,24 @@ const Item = ({ Links, title }: ItemProps) => {
       {Links.map((link) => (
         <li key={link.name} className="font-edu font-semibold">
           <Reveal>
-            <a
-              className="cursor-pointer text-xs leading-5 text-gray-500 duration-300 hover:text-[#00ffa5] sm:text-sm sm:leading-6"
+            <motion.a
+              className="group flex w-fit cursor-pointer items-center text-xs leading-5 text-gray-500 duration-300 hover:text-[#00ffa5] sm:text-sm sm:leading-6"
               href={link.link}
+              initial="initial"
+              whileHover="hovered"
             >
-              {link.name}
-            </a>
+              <motion.span
+                variants={{
+                  initial: { width: 0, opacity: 0, x: -10 },
+                  hovered: { width: "auto", opacity: 1, x: 0 },
+                }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="flex items-center overflow-hidden"
+              >
+                <FaChevronRight className="mr-1 text-[#00ffa5]" />
+              </motion.span>
+              <span>{link.name}</span>
+            </motion.a>
           </Reveal>
         </li>
       ))}
