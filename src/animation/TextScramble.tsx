@@ -5,7 +5,7 @@ interface TextScrambleProps {
 }
 
 const TextScramble = ({ children: text }: TextScrambleProps): JSX.Element => {
-  const [scrambled, setScrambled] = useState<string>("");
+  const [scrambled, setScrambled] = useState<{ char: string; isScrambled: boolean }[] | null>(null);
   const textRef = useRef<HTMLHeadingElement>(null);
   const hasAnimated = useRef(false);
 
@@ -19,26 +19,26 @@ const TextScramble = ({ children: text }: TextScrambleProps): JSX.Element => {
     hasAnimated.current = true;
 
     let iteration = 0;
-    const maxIterations = 6; // Reduced from 10
 
     const animate = () => {
-      const newText = text
-        .split("")
-        .map((char, index) => {
-          if (index < iteration) return text[index];
-          return getRandomChar();
-        })
-        .join("");
+      const currentOutput = text.split("").map((char, index) => {
+        if (index < iteration) {
+          return { char: text[index], isScrambled: false };
+        }
+        return { char: getRandomChar(), isScrambled: true };
+      });
 
-      setScrambled(newText);
+      setScrambled(currentOutput);
 
       if (iteration < text.length) {
-        iteration += 1;
+        iteration += 0.5;
         requestAnimationFrame(animate);
+      } else {
+        setScrambled(text.split("").map(c => ({ char: c, isScrambled: false })));
       }
     };
 
-    animate();
+    requestAnimationFrame(animate);
   }, [text]);
 
   useEffect(() => {
@@ -71,7 +71,18 @@ const TextScramble = ({ children: text }: TextScrambleProps): JSX.Element => {
       ref={textRef}
       className="font-dosis text-4xl mb-7 sm:text-5xl font-bold text-secondary text-center dark:text-white"
     >
-      {scrambled || text}
+      {scrambled ? (
+        scrambled.map((item, index) => (
+          <span
+            key={index}
+            className={item.isScrambled ? "blur-[2px] transition-all duration-200 transform-gpu" : ""}
+          >
+            {item.char}
+          </span>
+        ))
+      ) : (
+        text
+      )}
       <span className="text-5xl text-primary">.</span>
     </h1>
   );
