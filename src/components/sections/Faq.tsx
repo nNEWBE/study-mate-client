@@ -39,7 +39,7 @@ const Faq = () => {
         </div>
         <div className="relative mx-auto mb-10 font-semibold sm:w-3/4 md:mb-14 lg:w-1/2">
           <Unhidden>
-            <TextReveal>
+            <TextReveal className="text-center">
               Find answers on submitting, managing, and checking assignments
               seamlessly on our online study platform.
             </TextReveal>

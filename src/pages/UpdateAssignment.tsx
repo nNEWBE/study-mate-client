@@ -120,7 +120,7 @@ const UpdateAssignment = () => {
 
       <div className="relative mx-auto sm:w-3/4 lg:w-[45%]">
         <Unhidden>
-          <TextReveal>
+          <TextReveal className="text-center">
             Update assignments seamlessly on the platform for efficient online
             study management and enhanced student engagement.
           </TextReveal>

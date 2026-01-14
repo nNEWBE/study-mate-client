@@ -94,7 +94,7 @@ const CreateAssignments = () => {
 
       <div className="relative mx-auto sm:w-3/4 lg:w-[45%]">
         <Unhidden>
-          <TextReveal>
+          <TextReveal className="text-center">
             Create assignments effortlessly by filling in the title,
             description, thumbnail, due date, and difficulty level.
           </TextReveal>

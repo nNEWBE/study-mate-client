@@ -26,7 +26,7 @@ const Create = () => {
         </div>
         <div className="relative mx-auto mb-16 sm:w-3/4 lg:w-[45%]">
           <Unhidden>
-            <TextReveal>
+            <TextReveal className="text-center">
               Create assignments effortlessly with customizable options,
               deadlines, and detailed instructions for students.
             </TextReveal>

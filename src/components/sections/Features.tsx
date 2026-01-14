@@ -138,7 +138,7 @@ const Features = () => {
 
         <div className="relative mx-auto sm:w-3/4 lg:w-[45%]">
           <Unhidden>
-            <TextReveal>
+            <TextReveal className="text-center">
               Stay organized by tracking assignment deadlines, setting reminders,
               and monitoring your teams progress.
             </TextReveal>

@@ -1,4 +1,5 @@
 import Banner from "../components/sections/Banner";
+import UserReviews from "../components/sections/UserReviews";
 import Faq from "../components/sections/Faq";
 import Features from "../components/sections/Features";
 import { motion } from "framer-motion";
@@ -23,6 +24,7 @@ const Home = (): JSX.Element => {
       <Features />
       <StudyCategories />
       <BestAssignments />
+      <UserReviews />
       <Faq />
     </motion.div>
   );

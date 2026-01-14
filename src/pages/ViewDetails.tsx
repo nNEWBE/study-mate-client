@@ -46,7 +46,7 @@ const ViewDetails = () => {
 
       <div className="relative mx-auto sm:w-3/4 lg:w-[45%]">
         <Unhidden>
-          <TextReveal>{data.description}</TextReveal>
+          <TextReveal className="text-center">{data.description}</TextReveal>
         </Unhidden>
       </div>
 

@@ -25,13 +25,11 @@ const TextReveal = ({ children, className }: TextRevealProps): JSX.Element => {
       y: "120%",
       opacity: 0,
       rotate: 5,
-      filter: "blur(4px)"
     },
     visible: {
       y: "0%",
       opacity: 1,
       rotate: 0,
-      filter: "blur(0px)",
       transition: {
         duration: 0.6,
         ease: [0.2, 0.65, 0.3, 0.9], // Smooth cubic bezier
@@ -41,7 +39,7 @@ const TextReveal = ({ children, className }: TextRevealProps): JSX.Element => {
 
   return (
     <motion.div
-      className={`font-edu sm:text-xl text-lg font-semibold text-center leading-relaxed text-secondary dark:text-white ${className || ""}`}
+      className={`font-edu sm:text-xl text-lg font-semibold leading-relaxed text-secondary dark:text-white ${className || ""}`}
       variants={containerVariants}
       initial="hidden"
       whileInView="visible"

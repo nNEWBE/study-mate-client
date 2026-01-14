@@ -38,7 +38,7 @@ const BestAssignments = () => {
 
             <div className="relative mx-auto sm:w-3/4 lg:w-[45%]">
               <Unhidden>
-                <TextReveal>
+                <TextReveal className="text-center">
                   Explore top-rated assignments showcasing exceptional research,
                   coding skills, and innovative solutions.
                 </TextReveal>

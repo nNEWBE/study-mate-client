@@ -75,7 +75,7 @@ const TextScramble = ({ children: text }: TextScrambleProps): JSX.Element => {
         scrambled.map((item, index) => (
           <span
             key={index}
-            className={item.isScrambled ? "blur-[2px] transition-all duration-200 transform-gpu" : ""}
+            className={item.isScrambled ? "opacity-60 transition-all duration-200 transform-gpu" : ""}
           >
             {item.char}
           </span>
