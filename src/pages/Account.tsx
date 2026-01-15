@@ -5,7 +5,6 @@ import { useRef, useState, useEffect } from "react";
 import "animate.css";
 import Login from "../features/auth/Login";
 import Register from "../features/auth/Register";
-import Bg from "../svg/Bg";
 import LottieFiles from "../components/ui/LottieFiles";
 import { motion } from "framer-motion";
 
@@ -108,25 +107,25 @@ const Account = () => {
         translateX: "0%",
       }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="relative flex h-screen w-full items-center justify-center overflow-hidden bg-white py-10"
+      className="relative flex items-center justify-center overflow-hidden bg-white dark:bg-secondary py-10"
     >
-      <div className="absolute inset-0">
-        <Bg></Bg>
-      </div>
-      <div className="flex h-[580px] w-[90%] items-center justify-center rounded-xl sm:h-[650px] sm:w-3/4">
-        <div className="flex size-full overflow-hidden rounded-3xl border-2 border-primary bg-primary bg-opacity-10 shadow-2xl backdrop-blur-[20px] backdrop-filter dark:border-white dark:border-opacity-[0.3] dark:bg-transparent sm:size-[90%]">
+      {/* Background glow effects - clean & simple like About/Contact pages */}
+      <div className="pointer-events-none absolute -right-20 -top-20 h-96 w-96 rounded-full bg-primary/20 blur-3xl dark:bg-primary/10" />
+      <div className="pointer-events-none absolute -bottom-20 -left-20 h-80 w-80 rounded-full bg-primary/15 blur-3xl dark:bg-primary/8" />
+      <div className="flex mx-auto w-[90%] max-w-7xl h-[580px] items-center justify-center rounded-xl sm:h-[650px] sm:w-3/4">
+        <div className="flex size-full overflow-hidden rounded-3xl border-2 border-primary bg-primary bg-opacity-10 backdrop-blur-[20px] backdrop-filter dark:border-white dark:border-opacity-[0.3] dark:bg-transparent sm:size-[90%]">
           <div
             ref={loginLogoRef}
-            className="animate__animated animate__fadeInLeft col-1 hidden h-full w-1/2 flex-col items-center justify-center rounded-[22.5px_30%_20%_22.5px] border-2 border-primary bg-primary bg-opacity-10 shadow-xl dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] lg:flex"
+            className="animate__animated animate__fadeInLeft col-1 hidden h-full w-1/2 flex-col items-center justify-center rounded-[22.5px_30%_20%_22.5px] border-r-2 border-primary bg-primary bg-opacity-10 dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] lg:flex"
           >
-            <LottieFiles animation={login} className="w-[120%]" />
+            <LottieFiles animation={login} className="w-full" />
           </div>
 
           <div
             ref={registerLogoRef}
-            className="col-1 hidden h-full w-1/2 translate-x-[-100%] flex-col items-center justify-center rounded-[22.5px_30%_20%_22.5px] border-2 border-primary bg-primary bg-opacity-10 shadow-xl dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)]"
+            className="col-1 hidden h-full w-1/2 translate-x-[-100%] flex-col items-center justify-center rounded-[22.5px_30%_20%_22.5px] border-r-2 border-primary bg-primary bg-opacity-10 dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)]"
           >
-            <LottieFiles animation={register} className="full" />
+            <LottieFiles animation={register} className="w-[83%] mx-auto" />
           </div>
 
           <div className="col-2 w-full text-secondary lg:w-1/2">
@@ -157,7 +156,7 @@ const Account = () => {
               />
             </div>
 
-            <div className="flex items-center justify-center">
+            <div className="mx-auto flex w-full max-w-[400px] items-center justify-center px-4">
               <Login loginFormRef={loginFormRef}></Login>
               <Register registerFormRef={registerFormRef}></Register>
             </div>

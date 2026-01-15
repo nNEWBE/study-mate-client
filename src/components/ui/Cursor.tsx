@@ -109,6 +109,26 @@ const Cursor = (): JSX.Element | null => {
       // Check for Create form
       const create = target.closest("[data-cursor='create']");
 
+      // Check for Modal Color Context
+      const modalContext = target.closest("[data-modal-color]");
+      const modalColor = modalContext?.getAttribute("data-modal-color");
+
+      // Apply dynamic modal color if present
+      if (modalColor) {
+        inner.style.backgroundColor = modalColor;
+        inner.style.boxShadow = `0 0 10px ${modalColor}`;
+        outer.style.borderColor = modalColor;
+        outer.style.backgroundColor = `${modalColor}10`; // Low opacity
+        outer.style.boxShadow = `0 0 20px ${modalColor}20`; // Low opacity shadow
+      } else {
+        // Reset to default styles (remove inline styles to let CSS take over)
+        inner.style.backgroundColor = "";
+        inner.style.boxShadow = "";
+        outer.style.borderColor = "";
+        outer.style.backgroundColor = "";
+        outer.style.boxShadow = "";
+      }
+
       // Check for Interactive Elements (which should HIDE custom cursor)
       const interactiveSelector = "a, button, input, textarea, select, [role='button'], label";
       const interactive = target.closest(interactiveSelector);

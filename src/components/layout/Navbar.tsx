@@ -3,7 +3,6 @@ import { IoDocumentText, IoMoon, IoSunny, IoHeart, IoGrid } from "react-icons/io
 import { Link as Route, useNavigate, useLocation } from "react-router-dom";
 import { useGSAP } from "@gsap/react";
 import gsap, { Power2 } from "gsap";
-import Swal from "sweetalert2";
 import Headroom from "react-headroom";
 import { IoLogOut } from "react-icons/io5";
 import Logo from "../ui/Logo";
@@ -12,6 +11,7 @@ import Drawer from "./Drawer";
 import useAuth from "../../hooks/useAuth";
 import { useToggle } from "../../context/ToggleProvider";
 import { NavLink } from "react-router-dom";
+import { useModal } from "../ui/Modal";
 
 const navItems = [
   { id: 1, name: "Home", to: "/" },
@@ -24,6 +24,7 @@ const navItems = [
 const Navbar = () => {
   const { user, logoutUser } = useAuth();
   const { theme, setTheme, setOverflow } = useToggle();
+  const { showModal } = useModal();
   const [nav, setNav] = useState(false);
   const [dropdown, setDropdown] = useState(false);
   const [drawer, setDrawer] = useState(false);
@@ -201,44 +202,28 @@ const Navbar = () => {
   }, [nav, drawer, setOverflow]);
 
   const handleNavLogout = () => {
-    Swal.fire({
+    showModal({
+      type: "confirm",
       title: "Want to Logout?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      iconColor: "#3085d6",
-      confirmButtonText: "Yes, Logout",
-      background: "#111827",
-      buttonsStyling: false,
-      color: "#FFFFFF",
-      customClass: {
-        confirmButton:
-          "btn animate__animated animate__rubberBand outline-none bg-[#111827] hover:bg-[#111827] hover:border-[#3085d6] hover:text-[#3085d6] border-[4.5px] border-[#3085d6] text-[#3085d6] text-2xl font-bold font-edu px-5",
-        cancelButton:
-          "btn ml-5 animate__animated animate__rubberBand outline-none bg-[#111827] hover:bg-[#111827] hover:border-[#ef4444] hover:text-[#ef4444] border-[4.5px] border-[#ef4444] text-[#ef4444] text-2xl font-bold font-edu px-5",
-        title: "font-poppins",
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
+      message: "You will be signed out of your account.",
+      confirmText: "Yes, Logout",
+      cancelText: "Cancel",
+      showCancel: true,
+      onConfirm: () => {
         setDropdown(false);
-        drawer ? handleDrawer() : "";
+        if (drawer) handleDrawer();
         logoutUser();
         navigate("/");
-        Swal.fire({
-          title: "Logout Successful",
-          icon: "success",
-          confirmButtonText: "Save",
-          iconColor: "#00ffa5",
-          background: "#111827",
-          buttonsStyling: false,
-          color: "#FFFFFF",
-          customClass: {
-            confirmButton:
-              "btn animate__animated animate__rubberBand outline-none bg-[#111827] hover:bg-[#111827] hover:border-[#00ffa5] hover:text-[#00ffa5] border-[4.5px] border-[#00ffa5] text-[#00ffa5] text-2xl font-bold font-edu px-5",
-            title: "font-poppins",
-          },
-        });
-      }
+        // Show success modal after logout
+        setTimeout(() => {
+          showModal({
+            type: "success",
+            title: "Logout Successful",
+            message: "You have been signed out successfully.",
+            confirmText: "OK",
+          });
+        }, 100);
+      },
     });
   };
 
@@ -257,7 +242,7 @@ const Navbar = () => {
       className="relative z-[51] h-[105px] bg-white dark:bg-secondary"
     >
       <Headroom pin={visible}>
-        <div className="mx-auto flex  items-center justify-between overflow-hidden border-2 border-x-0 border-t-0 border-b-secondary bg-transparent px-5 py-5 shadow-[0_0_5px_2px] shadow-primary backdrop-blur-3xl lg:px-8">
+        <div className="mx-auto flex  items-center justify-between overflow-hidden border-b-2 border-x-0 border-t-0 border-b-secondary bg-transparent px-5 py-5 shadow-[0_5px_10px_-2px] shadow-primary backdrop-blur-3xl lg:px-8">
           <Logo
             className="navs flex w-[190px] cursor-pointer items-center rounded-xl border-2 border-secondary bg-white font-dosis text-2xl font-medium text-secondary shadow-[0_0_5px_2px] shadow-primary"
           />
@@ -430,7 +415,7 @@ const Navbar = () => {
       {user && (
         <div
           ref={dropdownRef}
-          className={`user-dropdown fixed right-5 top-[8.4rem] hidden w-[320px] overflow-hidden rounded-xl border-secondary shadow-primary backdrop-blur-xl backdrop-filter lg:block ${dropdown ? 'dropdown-open' : 'dropdown-closed'}`}
+          className={`user-dropdown fixed right-5 top-[8rem] hidden w-[320px] overflow-hidden rounded-xl border-secondary shadow-primary backdrop-blur-xl backdrop-filter lg:block ${dropdown ? 'dropdown-open' : 'dropdown-closed'}`}
         >
           <div className="flex flex-col items-center justify-center gap-2 p-5">
             {/* User Avatar with pop animation */}
@@ -446,7 +431,7 @@ const Navbar = () => {
             </div>
 
             {/* User Name - Boxed Design */}
-            <div className="mt-2 px-6 py-2 rounded-xl border-2 border-secondary bg-white shadow-[0_0_5px_2px] shadow-primary transform transition-transform hover:scale-105 duration-300">
+            <div className="mt-2 px-6 py-2 rounded-xl border-2 border-secondary bg-white shadow-[0_0_5px_2px] shadow-primary transform transition-transform duration-300">
               <h3 className="font-dosis text-xl font-bold text-secondary text-center uppercase tracking-wide">
                 {user?.displayName ? user.displayName : "Name not found"}
               </h3>

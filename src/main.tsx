@@ -12,6 +12,7 @@ import 'primereact/resources/primereact.min.css';
 import "primeicons/primeicons.css";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
+import { ModalProvider } from "./components/ui/Modal";
 
 const rootElement = document.getElementById("root");
 
@@ -24,11 +25,13 @@ ReactDOM.createRoot(rootElement).render(
     <Provider store={store}>
       <AuthProvider>
         <ToggleProvider>
-          <RouterProvider router={router} />
-
-          <Toast />
+          <ModalProvider>
+            <RouterProvider router={router} />
+            <Toast />
+          </ModalProvider>
         </ToggleProvider>
       </AuthProvider>
     </Provider>
   </AnimatePresence>
 );
+

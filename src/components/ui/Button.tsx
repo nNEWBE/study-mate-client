@@ -5,6 +5,7 @@ interface ButtonProps {
   str: string;
   shadow?: boolean;
   width?: string;
+  disabled?: boolean;
 }
 
 interface CustomCSSProperties extends CSSProperties {
@@ -13,7 +14,7 @@ interface CustomCSSProperties extends CSSProperties {
   "--char-index"?: number;
 }
 
-const Button = ({ str, shadow, width = "w-full" }: ButtonProps): JSX.Element => {
+const Button = ({ str, shadow, width = "w-full", disabled = false }: ButtonProps): JSX.Element => {
   const [x, setX] = useState<number>(0);
   const [y, setY] = useState<number>(0);
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -39,8 +40,9 @@ const Button = ({ str, shadow, width = "w-full" }: ButtonProps): JSX.Element => 
       type="submit"
       ref={btnRef}
       onMouseMove={handleMouse}
+      disabled={disabled}
       className={`relative border-2 bg-white ${shadow ? "shadow-[0_0_5px_2px] shadow-primary" : ""
-        } button ${width} h-full rounded-xl border-black px-5 py-2 font-poppins sm:text-lg lg:text-xl font-bold`}
+        } button ${width} h-full rounded-xl border-black px-5 py-2 font-poppins sm:text-lg lg:text-xl font-bold ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
       style={buttonStyle}
     >
       <span>
@@ -67,3 +69,4 @@ const Button = ({ str, shadow, width = "w-full" }: ButtonProps): JSX.Element => 
 };
 
 export default Button;
+
