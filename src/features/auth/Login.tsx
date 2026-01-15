@@ -30,9 +30,10 @@ interface LoginProps {
 
 interface GoogleUserInfo {
   name: string;
-  email: string;
+  email: string | null;
   photoURL: string;
   uid: string;
+  provider: 'google' | 'github';
 }
 
 const Login = ({ loginFormRef }: LoginProps) => {
@@ -200,9 +201,10 @@ const Login = ({ loginFormRef }: LoginProps) => {
         // User must set a password to complete registration
         setGoogleUserInfo({
           name: result.user.displayName || "",
-          email: result.user.email || "",
+          email: result.user.email || null,
           photoURL: result.user.photoURL || "",
           uid: result.user.uid || "",
+          provider: "google",
         });
         setIsGoogleModalOpen(true);
       }
@@ -226,8 +228,16 @@ const Login = ({ loginFormRef }: LoginProps) => {
     }
   };
 
-  const handleGooglePasswordSubmit = async (password: string) => {
+  const handleGooglePasswordSubmit = async (password: string, email?: string) => {
     if (!googleUserInfo) return;
+
+    // Use email from userInfo or the one provided by user
+    const userEmail = googleUserInfo.email || email;
+
+    if (!userEmail) {
+      toast.error("Email is required for registration");
+      return;
+    }
 
     const loadingToast = toast.loading(
       <div className="flex items-center gap-2">
@@ -254,7 +264,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
       // First, try to login with the email and password (for returning users)
       try {
         const loginResult = await login({
-          email: googleUserInfo.email,
+          email: userEmail,
           password: password,
         }).unwrap();
 
@@ -263,7 +273,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
         if (loginResult.success && loginResult.data) {
           dispatch(setReduxUser({
             user: {
-              email: loginResult.data.user?.email || googleUserInfo.email,
+              email: loginResult.data.user?.email || userEmail,
               uid: loginResult.data.user?._id || null,
               displayName: loginResult.data.user?.name || googleUserInfo.name,
               photoURL: loginResult.data.user?.profileImage || googleUserInfo.photoURL,
@@ -297,10 +307,10 @@ const Login = ({ loginFormRef }: LoginProps) => {
       // If login failed, register the user
       const registerData = {
         name: googleUserInfo.name,
-        email: googleUserInfo.email,
+        email: userEmail,
         password: password,
         profileImageUrl: googleUserInfo.photoURL || undefined,
-        provider: "google" as const,
+        provider: googleUserInfo.provider,
       };
 
       const registrationResult = await registerUser(registerData).unwrap();
@@ -308,7 +318,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
       if (registrationResult.success) {
         // Automatically login after successful registration to set cookies
         const result = await login({
-          email: googleUserInfo.email,
+          email: userEmail,
           password: password,
         }).unwrap();
 
@@ -317,7 +327,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
         if (result.success && result.data) {
           dispatch(setReduxUser({
             user: {
-              email: result.data.user?.email || googleUserInfo.email,
+              email: result.data.user?.email || userEmail,
               uid: result.data.user?._id || null,
               displayName: result.data.user?.name || googleUserInfo.name,
               photoURL: result.data.user?.profileImage || googleUserInfo.photoURL,
@@ -384,24 +394,56 @@ const Login = ({ loginFormRef }: LoginProps) => {
     );
 
     try {
-      await signInWithGithub();
+      const result = await signInWithGithub();
       toast.dismiss(loadingToast);
-      navigate(location?.state ? location.state : "/");
-      toast.success("Login successful!", {
-        style: {
-          background: "#0f172a",
-          color: "#00ffa5",
-          border: "2px solid #00ffa5",
-          boxShadow: "0 0 10px 2px rgba(0, 255, 165, 0.3)",
-          borderRadius: "12px",
-          padding: "12px 16px",
-          fontFamily: "Poppins, sans-serif",
-        },
-        iconTheme: {
-          primary: "#00ffa5",
-          secondary: "#0f172a",
-        },
-      });
+
+      if (result?.user) {
+        // If email exists, try social login
+        if (result.user.email) {
+          try {
+            const loginResult = await socialLogin({ email: result.user.email }).unwrap();
+
+            if (loginResult.success && loginResult.data) {
+              dispatch(setReduxUser({
+                user: {
+                  email: loginResult.data.user?.email || result.user.email,
+                  uid: loginResult.data.user?._id || null,
+                  displayName: loginResult.data.user?.name || result.user.displayName,
+                  photoURL: loginResult.data.user?.profileImage || result.user.photoURL,
+                },
+                token: loginResult.data.accessToken,
+              }));
+
+              if (auth.currentUser) setUser(auth.currentUser);
+
+              navigate(location?.state ? location.state : "/");
+
+              // Show success modal
+              setTimeout(() => {
+                showModal({
+                  type: "success",
+                  title: "Welcome Back!",
+                  message: "You have been logged in successfully.",
+                  confirmText: "Continue",
+                });
+              }, 100);
+              return;
+            }
+          } catch (error) {
+            console.log("User not found, proceeding to registration", error);
+          }
+        }
+
+        // Initialize modal for password setting (and email if missing)
+        setGoogleUserInfo({
+          name: result.user.displayName || result.user.providerData[0]?.displayName || "GitHub User",
+          email: result.user.email || null,
+          photoURL: result.user.photoURL || "",
+          uid: result.user.uid || "",
+          provider: "github",
+        });
+        setIsGoogleModalOpen(true);
+      }
     } catch (error: any) {
       toast.dismiss(loadingToast);
       const e = error.message?.slice(9, error.message.length) || "GitHub login failed";

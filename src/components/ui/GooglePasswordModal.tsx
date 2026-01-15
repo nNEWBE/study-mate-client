@@ -11,11 +11,11 @@ import BackDrop from "./BackDrop";
 interface GooglePasswordModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (password: string) => void;
+    onSubmit: (password: string, email?: string) => void;
     isLoading: boolean;
     userInfo: {
         name: string;
-        email: string;
+        email: string | null;
         photoURL: string;
     } | null;
 }
@@ -29,12 +29,34 @@ const GooglePasswordModal = ({
 }: GooglePasswordModalProps) => {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [email, setEmail] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [error, setError] = useState("");
+    const [isEmailRequired, setIsEmailRequired] = useState(false);
+
+    // Initialize email state when modal opens
+    if (isOpen && !userInfo?.email && !isEmailRequired) {
+        setIsEmailRequired(true);
+    }
+    if (isOpen && userInfo?.email && isEmailRequired) {
+        setIsEmailRequired(false);
+    }
 
     const validateAndSubmit = () => {
         setError("");
+
+        if (isEmailRequired) {
+            if (!email) {
+                setError("Email is required");
+                return;
+            }
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                setError("Please enter a valid email address");
+                return;
+            }
+        }
 
         if (password.length < 6) {
             setError("Password must be at least 6 characters");
@@ -51,7 +73,7 @@ const GooglePasswordModal = ({
             return;
         }
 
-        onSubmit(password);
+        onSubmit(password, isEmailRequired ? email : undefined);
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -63,6 +85,7 @@ const GooglePasswordModal = ({
         if (!isLoading) {
             setPassword("");
             setConfirmPassword("");
+            setEmail("");
             setError("");
             onClose();
         }
@@ -231,7 +254,7 @@ const GooglePasswordModal = ({
                             </motion.div>
 
                             {/* User Info Card - Reduced padding/margin */}
-                            {userInfo && (
+                            {userInfo && !isEmailRequired && (
                                 <motion.div
                                     className="mb-4 flex items-center gap-3 rounded-xl border-2 border-primary/30 bg-primary/10 p-3 shadow-[0_0_10px_0px] shadow-primary/10 relative overflow-hidden group"
                                     variants={contentVariants}
@@ -256,12 +279,59 @@ const GooglePasswordModal = ({
                                 </motion.div>
                             )}
 
+                            {/* User Info with Missing Email Header */}
+                            {userInfo && isEmailRequired && (
+                                <motion.div
+                                    className="mb-4 flex items-center gap-3 justify-center text-center"
+                                    variants={contentVariants}
+                                >
+                                    <div className="relative">
+                                        <img
+                                            src={userInfo.photoURL}
+                                            alt={userInfo.name}
+                                            className="h-16 w-16 rounded-full border-4 border-primary object-cover shadow-[0_0_10px_2px] shadow-primary/30 mb-2"
+                                        />
+                                    </div>
+                                    <div className="text-left">
+                                        <p className="font-dosis font-bold text-secondary dark:text-white text-lg">
+                                            Hi, {userInfo.name}
+                                        </p>
+                                        <p className="font-edu text-xs text-secondary/70 dark:text-white/60">
+                                            Please complete your profile
+                                        </p>
+                                    </div>
+                                </motion.div>
+                            )}
+
                             {/* Form - Compact spacing */}
                             <motion.form
                                 onSubmit={handleSubmit}
                                 className="space-y-3"
                                 variants={contentVariants}
                             >
+                                {isEmailRequired && (
+                                    <div className="relative group">
+                                        <input
+                                            type="email"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            placeholder="Enter your email address"
+                                            disabled={isLoading}
+                                            className={`
+                                                w-full rounded-xl 
+                                                border-2 border-primary bg-primary bg-opacity-25 
+                                                px-4 py-2.5 
+                                                font-semibold text-secondary 
+                                                placeholder-secondary/70 
+                                                outline-none 
+                                                disabled:opacity-60 
+                                                dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white dark:placeholder-white/70
+                                                focus:shadow-[0_0_15px_-3px] focus:shadow-primary/30
+                                                transition-all duration-300
+                                            `}
+                                        />
+                                    </div>
+                                )}
                                 {/* Password Field */}
                                 <div className="relative group">
                                     <input
