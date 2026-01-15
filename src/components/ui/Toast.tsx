@@ -10,38 +10,47 @@ const Toast = (): JSX.Element => {
     <Toaster
       position="bottom-right"
       reverseOrder={false}
-      gutter={15000}
+      gutter={12}
       toastOptions={{
+        // Default options for all toasts
+        className: "font-edu font-medium border-2",
+        style: {
+          background: theme ? "#0f172a" : "#ffffff", // Dark: Slate, Light: White
+          color: theme ? "#00ffa5" : "#111827",      // Dark: Primary Green, Light: Dark Text
+          border: `2px solid ${theme ? "#00ffa5" : "#111827"}`,
+          boxShadow: `0 0 10px 2px ${theme ? "rgba(0, 255, 165, 0.2)" : "rgba(17, 24, 39, 0.1)"}`,
+          borderRadius: "12px",
+          padding: "16px",
+          fontSize: "1rem",
+        },
         success: {
-          duration: 5000,
+          duration: 4000,
           iconTheme: {
             primary: "#00ffa5",
-            secondary: "#111827",
+            secondary: "#0f172a",
           },
-          className:
-            "font-edu text-[#111827] dark:text-white font-medium border-2 border-[#111827]",
           style: {
-            boxShadow: `0 0 5px 2px #00ffa5`,
-            borderRadius: "12px",
-            cursor: "pointer",
-            padding: "16px",
-            background: `${theme ? "#111827" : "white"}`,
+            borderColor: "#00ffa5",
+            boxShadow: `0 0 10px 2px rgba(0, 255, 165, 0.3)`,
           },
         },
         error: {
           duration: 5000,
           iconTheme: {
             primary: "#ef4444",
-            secondary: "#111827",
+            secondary: "#ffffff",
           },
-          className:
-            "font-edu text-[#111827] dark:text-white font-medium border-2 border-[#111827]",
           style: {
-            boxShadow: `0 0 5px 2px #ef4444`,
-            borderRadius: "12px",
-            cursor: "pointer",
-            padding: "16px",
-            background: `${theme ? "#111827" : "white"}`,
+            borderColor: "#ef4444",
+            color: theme ? "#ef4444" : "#ef4444",
+            boxShadow: `0 0 10px 2px rgba(239, 68, 68, 0.3)`,
+          },
+        },
+        loading: {
+          style: {
+            borderColor: "#60a5fa", // Blue-ish for loading
+            color: theme ? "#60a5fa" : "#1d4ed8",
+            boxShadow: `0 0 10px 2px rgba(96, 165, 250, 0.3)`,
           },
         },
       }}

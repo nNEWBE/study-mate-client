@@ -382,22 +382,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
     const loadingToast = toast.loading(
       <div className="flex items-center gap-2">
         <span className="font-semibold">Connecting to GitHub...</span>
-      </div>,
-      {
-        style: {
-          background: "#0f172a",
-          color: "#00ffa5",
-          border: "2px solid #00ffa5",
-          boxShadow: "0 0 10px 2px rgba(0, 255, 165, 0.3)",
-          borderRadius: "12px",
-          padding: "12px 16px",
-          fontFamily: "Poppins, sans-serif",
-        },
-        iconTheme: {
-          primary: "#00ffa5",
-          secondary: "#0f172a",
-        },
-      }
+      </div>
     );
 
     try {
@@ -459,17 +444,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
       sessionStorage.removeItem("google_pending_password");
       toast.dismiss(loadingToast);
       const e = error.message?.slice(9, error.message.length) || "GitHub login failed";
-      toast.error(`${e}`, {
-        style: {
-          background: "#0f172a",
-          color: "#ef4444",
-          border: "2px solid #ef4444",
-          boxShadow: "0 0 10px 2px rgba(239, 68, 68, 0.3)",
-          borderRadius: "12px",
-          padding: "12px 16px",
-          fontFamily: "Poppins, sans-serif",
-        },
-      });
+      toast.error(`${e}`);
     } finally {
       setIsSocialLoading(false);
     }
