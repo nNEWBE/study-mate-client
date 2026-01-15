@@ -377,6 +377,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
   };
 
   const handleGithubLogin = async () => {
+    sessionStorage.setItem("google_pending_password", "true");
     setIsSocialLoading(true);
     const loadingToast = toast.loading(
       <div className="flex items-center gap-2">
@@ -404,43 +405,42 @@ const Login = ({ loginFormRef }: LoginProps) => {
       toast.dismiss(loadingToast);
 
       if (result?.user) {
-        // If email exists, try social login
-        if (result.user.email) {
-          try {
-            const loginResult = await socialLogin({
-              email: result.user.email,
-              socialId: result.user.providerData[0]?.uid
-            }).unwrap();
+        // Try to login with social login first (using email OR socialId)
+        try {
+          const loginResult = await socialLogin({
+            email: result.user.email || undefined,
+            socialId: result.user.providerData[0]?.uid || result.user.uid
+          }).unwrap();
 
-            if (loginResult.success && loginResult.data) {
-              dispatch(setReduxUser({
-                user: {
-                  email: loginResult.data.user?.email || result.user.email,
-                  uid: loginResult.data.user?._id || null,
-                  displayName: loginResult.data.user?.name || result.user.displayName,
-                  photoURL: loginResult.data.user?.profileImage || result.user.photoURL,
-                },
-                token: loginResult.data.accessToken,
-              }));
+          if (loginResult.success && loginResult.data) {
+            dispatch(setReduxUser({
+              user: {
+                email: loginResult.data.user?.email || result.user.email,
+                uid: loginResult.data.user?._id || null,
+                displayName: loginResult.data.user?.name || result.user.displayName,
+                photoURL: loginResult.data.user?.profileImage || result.user.photoURL,
+              },
+              token: loginResult.data.accessToken,
+            }));
 
-              if (auth.currentUser) setUser(auth.currentUser);
+            sessionStorage.removeItem("google_pending_password");
+            if (auth.currentUser) setUser(auth.currentUser);
 
-              navigate(location?.state ? location.state : "/");
+            navigate(location?.state ? location.state : "/");
 
-              // Show success modal
-              setTimeout(() => {
-                showModal({
-                  type: "success",
-                  title: "Welcome Back!",
-                  message: "You have been logged in successfully.",
-                  confirmText: "Continue",
-                });
-              }, 100);
-              return;
-            }
-          } catch (error) {
-            console.log("User not found, proceeding to registration", error);
+            // Show success modal
+            setTimeout(() => {
+              showModal({
+                type: "success",
+                title: "Welcome Back!",
+                message: "You have been logged in successfully.",
+                confirmText: "Continue",
+              });
+            }, 100);
+            return;
           }
+        } catch (error) {
+          console.log("User not found, proceeding to registration", error);
         }
 
         // Initialize modal for password setting (and email if missing)
@@ -456,6 +456,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
         setIsGoogleModalOpen(true);
       }
     } catch (error: any) {
+      sessionStorage.removeItem("google_pending_password");
       toast.dismiss(loadingToast);
       const e = error.message?.slice(9, error.message.length) || "GitHub login failed";
       toast.error(`${e}`, {

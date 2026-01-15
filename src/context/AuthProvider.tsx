@@ -95,6 +95,7 @@ const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
       setLoading(false);
 
       if (currentUser) {
+        console.log(currentUser);
         const token = await currentUser.getIdToken();
         dispatch(setReduxUser({
           user: {
