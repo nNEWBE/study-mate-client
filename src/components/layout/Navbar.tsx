@@ -1,154 +1,149 @@
 import { useEffect, useRef, useState } from "react";
 import { IoDocumentText, IoMoon, IoSunny, IoHeart, IoGrid } from "react-icons/io5";
-import { Link as Route, useNavigate } from "react-router-dom";
-import { gsap, Power2 } from "gsap";
-import { useToggle } from "../../context/ToggleProvider";
-import { IoLogOut } from "react-icons/io5";
-import { NavLink } from "react-router-dom";
-import Headroom from "react-headroom";
-import Button from "../ui/Button";
-import Logo from "../ui/Logo";
-import Unhidden from "../../animation/Unhidden";
-
-import useAuth from "../../hooks/useAuth";
+import { Link as Route, useNavigate, useLocation } from "react-router-dom";
+import { useGSAP } from "@gsap/react";
+import gsap, { Power2 } from "gsap";
 import Swal from "sweetalert2";
+import Headroom from "react-headroom";
+import { IoLogOut } from "react-icons/io5";
+import Logo from "../ui/Logo";
+import Button from "../ui/Button";
 import Drawer from "./Drawer";
-import LottieFiles from "../ui/LottieFiles";
-import "../../styles/style.css";
+import useAuth from "../../hooks/useAuth";
+import { useToggle } from "../../context/ToggleProvider";
+import { NavLink } from "react-router-dom";
 
-gsap.registerPlugin();
+const navItems = [
+  { id: 1, name: "Home", to: "/" },
+  { id: 2, name: "Assignments", to: "/tasks" },
+  { id: 3, name: "Create", to: "/create" },
+  { id: 4, name: "Contact", to: "/contact" },
+  { id: 5, name: "About", to: "/about" },
+];
 
 const Navbar = () => {
-  const ref = useRef<HTMLDivElement>(null);
-  const navRef = useRef<HTMLElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
+  const { user, logoutUser } = useAuth();
   const { theme, setTheme, setOverflow } = useToggle();
-  const [visible, setVisible] = useState(false);
-  const [drawer, setDrawer] = useState(false);
   const [nav, setNav] = useState(false);
   const [dropdown, setDropdown] = useState(false);
-  const { user, logoutUser } = useAuth();
+  const [drawer, setDrawer] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const [slideStyle, setSlideStyle] = useState({ left: 0, width: 0, opacity: 0 });
+  const navigate = useNavigate();
+  const location = useLocation();
+  const ref = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const navListRef = useRef<HTMLUListElement>(null);
 
-  const handleDrawer = () => {
-    setDrawer(!drawer);
-    navRef.current?.classList.toggle("open");
-  };
-
+  const handleDropdown = () => setDropdown(!dropdown);
+  const handleDrawer = () => setDrawer(!drawer);
   const handleTheme = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const isDark = e.target.checked;
-    setTheme(isDark);
+    setTheme(e.target.checked);
   };
 
-  const handleDropdown = () => {
-    setDropdown(!dropdown);
+  const bar = useRef<any>(null);
+  const t1 = useRef<any>(null);
 
-    if (!dropdownRef.current) return;
+  // Dynamic slide indicator calculation
+  useEffect(() => {
+    const updateSlidePosition = () => {
+      if (!navListRef.current) return;
 
-    dropdownRef.current.classList.toggle("h-0");
-    dropdownRef.current.classList.toggle("h-[350px]");
-    if (
-      dropdownRef.current.classList.contains("shadow-[0_0_5px_2px]") &&
-      dropdownRef.current.classList.contains("border-2")
-    ) {
-      setTimeout(() => {
-        dropdownRef.current?.classList.toggle("border-2");
-        dropdownRef.current?.classList.toggle("shadow-[0_0_5px_2px]");
-      }, 400);
-    } else {
-      dropdownRef.current.classList.toggle("border-2");
-      dropdownRef.current.classList.toggle("shadow-[0_0_5px_2px]");
-    }
-  };
+      const activeLink = navListRef.current.querySelector('a.active') as HTMLElement;
+      if (activeLink) {
+        const navListRect = navListRef.current.getBoundingClientRect();
+        const activeRect = activeLink.getBoundingClientRect();
 
-  // window.addEventListener("scroll", () => {
-  //   if (window.scrollY > 0) {
-  //     const navs = document.getElementsByClassName("navs");
+        setSlideStyle({
+          left: activeRect.left - navListRect.left,
+          width: activeRect.width,
+          opacity: 1,
+        });
+      } else {
+        setSlideStyle(prev => ({ ...prev, opacity: 0 }));
+      }
+    };
 
-  //     Array.from(navs).forEach((element, index) => {
-  //       if (!element.classList.contains("active")) {
-  //         if (index == 0) {
-  //           element.classList.add("active");
-  //         }
-  //       }else if(element.classList.contains("active")){
-  //         if (index == 0) {
-  //           element.classList.remove("active");
-  //         }
-  //       }
-  //     });
-  //   }
-  // });
+    // Small delay to ensure DOM is ready after route change
+    const timeoutId = setTimeout(updateSlidePosition, 50);
 
-  const navItems = [
-    { id: 1, name: "Home", to: "/" },
-    { id: 2, name: "Tasks", to: "/tasks" },
-    { id: 3, name: "Create", to: "/create" },
-    { id: 4, name: "Contact", to: "/contact" },
-    { id: 5, name: "Blog", to: "/blog" },
-  ];
+    // Also update on window resize
+    window.addEventListener('resize', updateSlidePosition);
 
-  const bar = useRef(gsap.timeline({ paused: true }));
-  const t1 = useRef(gsap.timeline({ paused: true }));
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('resize', updateSlidePosition);
+    };
+  }, [location.pathname, user]);
+
   /* Removed unused GSAP stagger logic */
 
-  useEffect(() => {
-    bar.current
-      .to(
-        ".bar-1",
-        {
-          attr: { d: "M8,2 L2,8" },
-          x: 1,
-          ease: Power2.easeInOut,
-        },
-        "start",
-      )
-      .to(
-        ".bar-2",
-        {
-          autoAlpha: 0,
-        },
-        "start",
-      )
-      .to(
-        ".bar-3",
-        {
-          attr: { d: "M8,8 L2,2" },
-          x: 1,
-          ease: Power2.easeInOut,
-        },
-        "start",
-      )
-      .reverse();
+  /* Refactor to use useGSAP for correct cleanup and re-initialization when user changes */
+  useGSAP(
+    () => {
+      bar.current = gsap.timeline({ paused: true });
+      t1.current = gsap.timeline({ paused: true });
 
-    gsap.from(".navs", {
-      opacity: 0,
-      y: -250,
-      duration: 1,
-      ease: Power2.easeOut,
-      stagger: 0.1,
-    });
+      bar.current
+        .to(
+          ".bar-1",
+          {
+            attr: { d: "M8,2 L2,8" },
+            x: 1,
+            ease: Power2.easeInOut,
+          },
+          "start"
+        )
+        .to(
+          ".bar-2",
+          {
+            autoAlpha: 0,
+          },
+          "start"
+        )
+        .to(
+          ".bar-3",
+          {
+            attr: { d: "M8,8 L2,2" },
+            x: 1,
+            ease: Power2.easeInOut,
+          },
+          "start"
+        )
+        .reverse();
 
-    t1.current
-      .to(".container", {
-        display: "block",
-        ease: "Expo.easeInOut",
-      })
-      .from(".nav-bg span", {
-        x: "100%",
+      gsap.from(".navs", {
+        opacity: 0,
+        y: -250,
+        duration: 1,
+        ease: Power2.easeOut,
         stagger: 0.1,
-        ease: "Expo.easeInOut",
-      })
-      .from(
-        ".nav-container li a",
-        {
-          y: "100%",
+      });
+
+      t1.current
+        .to(".container", {
+          display: "block",
+          ease: "Expo.easeInOut",
+        })
+        .from(".nav-bg span", {
+          x: "100%",
           stagger: 0.1,
           ease: "Expo.easeInOut",
-        },
-        "-=0.5",
-      )
-      .reverse();
-  }, []);
+        })
+        .from(
+          ".nav-container li > *",
+          {
+            y: "100%",
+            stagger: 0.1,
+            ease: "Expo.easeInOut",
+          },
+          "-=0.5"
+        )
+        .reverse();
+    },
+    { dependencies: [user], scope: ref }
+  );
 
   const getNavOptions = () => {
     bar.current.reversed(!bar.current.reversed());
@@ -268,7 +263,7 @@ const Navbar = () => {
           />
 
           <div className="relative flex items-center gap-7">
-            <ul className="hidden items-center font-edu font-medium lg:flex relative">
+            <ul ref={navListRef} className="hidden items-center font-edu font-medium lg:flex relative">
               {/* Desktop Nav Items with Reveal Animation */}
               {user
                 ? navItems.map((item) => (
@@ -295,7 +290,15 @@ const Navbar = () => {
                       <span>{item.name}</span>
                     </NavLink>
                   ))}
-              <a className="slide"></a>
+              <span
+                className="slide"
+                style={{
+                  left: `${slideStyle.left}px`,
+                  width: `${slideStyle.width}px`,
+                  opacity: slideStyle.opacity,
+                  transition: 'all 0.6s cubic-bezier(0.5, 0.01, 0.068, 0.99)',
+                }}
+              />
             </ul>
             <div className="hidden items-center gap-2 lg:flex">
               <div className="navs relative bottom-3 right-2">

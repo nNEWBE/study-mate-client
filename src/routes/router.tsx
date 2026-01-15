@@ -12,7 +12,7 @@ import RoleBasedRoute from "./RoleBasedRoute";
 import UpdateAssignment from "../pages/UpdateAssignment";
 import ViewDetails from "../pages/ViewDetails";
 import Contact from "../pages/Contact";
-import Blog from "../pages/Blog";
+import About from "../pages/About";
 import Wishlist from "../pages/Wishlist";
 
 // Dashboard Imports
@@ -49,8 +49,8 @@ const router = createBrowserRouter([
         element: <Contact />,
       },
       {
-        path: "/blog",
-        element: <Blog />,
+        path: "/about",
+        element: <About />,
       },
       {
         path: "/create",

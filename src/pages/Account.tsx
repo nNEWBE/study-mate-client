@@ -1,7 +1,7 @@
 import login from "../../public/Login.json";
 import register from "../../public/Register.json";
 import "boxicons";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import "animate.css";
 import Login from "../features/auth/Login";
 import Register from "../features/auth/Register";
@@ -16,8 +16,42 @@ const Account = () => {
   const registerLogoRef = useRef<HTMLDivElement>(null);
   const loginFormRef = useRef<HTMLFormElement>(null);
   const registerFormRef = useRef<HTMLFormElement>(null);
+  const tabContainerRef = useRef<HTMLDivElement>(null);
+
+  const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
+  const [sideStyle, setSideStyle] = useState({ left: 0, width: 0, opacity: 1 });
+
+  // Dynamic side indicator calculation
+  useEffect(() => {
+    const updateSidePosition = () => {
+      if (!tabContainerRef.current) return;
+
+      const activeButton = activeTab === 'login' ? loginRef.current : registerRef.current;
+      if (activeButton) {
+        const containerRect = tabContainerRef.current.getBoundingClientRect();
+        const buttonRect = activeButton.getBoundingClientRect();
+
+        setSideStyle({
+          left: buttonRect.left - containerRect.left,
+          width: buttonRect.width,
+          opacity: 1,
+        });
+      }
+    };
+
+    // Small delay to ensure DOM is ready
+    const timeoutId = setTimeout(updateSidePosition, 50);
+    window.addEventListener('resize', updateSidePosition);
+
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('resize', updateSidePosition);
+    };
+  }, [activeTab]);
 
   const handleButton1 = () => {
+    setActiveTab('login');
+
     registerRef.current?.classList.remove("bg-primary", "active");
     registerRef.current?.classList.add("bg-white");
 
@@ -42,6 +76,8 @@ const Account = () => {
   };
 
   const handleButton2 = () => {
+    setActiveTab('register');
+
     loginRef.current?.classList.remove("bg-primary", "active");
     loginRef.current?.classList.add("bg-white");
 
@@ -94,11 +130,11 @@ const Account = () => {
           </div>
 
           <div className="col-2 w-full text-secondary lg:w-1/2">
-            <div className="relative mx-auto mb-5 mt-10 flex w-[15rem] justify-center gap-5">
+            <div ref={tabContainerRef} className="relative mx-auto mb-5 mt-10 flex w-[15rem] justify-center gap-5">
               <a
                 ref={loginRef}
                 onClick={handleButton1}
-                className="cursor-pointer rounded-xl border-2 border-secondary bg-primary px-3 pb-[3px] font-edu font-bold shadow-[0_0_5px_2px] shadow-primary transition-colors duration-[800]"
+                className="cursor-pointer rounded-xl border-2 border-secondary bg-primary px-3 pb-[3px] font-edu font-bold shadow-[0_0_5px_2px] shadow-primary transition-colors duration-[800] active"
               >
                 Sign In
               </a>
@@ -110,7 +146,15 @@ const Account = () => {
               >
                 Sign Up
               </a>
-              <button className="side"></button>
+              <span
+                className="side"
+                style={{
+                  left: `${sideStyle.left}px`,
+                  width: `${sideStyle.width}px`,
+                  opacity: sideStyle.opacity,
+                  transition: 'all 0.4s cubic-bezier(0.5, 0.01, 0.068, 0.99)',
+                }}
+              />
             </div>
 
             <div className="flex items-center justify-center">
@@ -125,3 +169,4 @@ const Account = () => {
 };
 
 export default Account;
+
