@@ -38,6 +38,7 @@ const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   googleProvider.setCustomParameters({ prompt: "select_account" });
 
   const githubProvider = new GithubAuthProvider();
+  githubProvider.setCustomParameters({ prompt: "select_account" });
 
   const signInWithGoogle = (): Promise<UserCredential> => {
     setLoading(true);

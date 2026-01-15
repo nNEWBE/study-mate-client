@@ -34,6 +34,7 @@ interface GoogleUserInfo {
   photoURL: string;
   uid: string;
   provider: 'google' | 'github';
+  socialId: string;
 }
 
 const Login = ({ loginFormRef }: LoginProps) => {
@@ -164,7 +165,10 @@ const Login = ({ loginFormRef }: LoginProps) => {
       if (result?.user && result.user.email) {
         // Try to login with social login first
         try {
-          const loginResult = await socialLogin({ email: result.user.email }).unwrap();
+          const loginResult = await socialLogin({
+            email: result.user.email,
+            socialId: result.user.providerData[0]?.uid
+          }).unwrap();
 
           if (loginResult.success && loginResult.data) {
             dispatch(setReduxUser({
@@ -205,6 +209,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
           photoURL: result.user.photoURL || "",
           uid: result.user.uid || "",
           provider: "google",
+          socialId: result.user.providerData[0]?.uid || result.user.uid
         });
         setIsGoogleModalOpen(true);
       }
@@ -311,6 +316,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
         password: password,
         profileImageUrl: googleUserInfo.photoURL || undefined,
         provider: googleUserInfo.provider,
+        socialId: googleUserInfo.socialId,
       };
 
       const registrationResult = await registerUser(registerData).unwrap();
@@ -401,7 +407,10 @@ const Login = ({ loginFormRef }: LoginProps) => {
         // If email exists, try social login
         if (result.user.email) {
           try {
-            const loginResult = await socialLogin({ email: result.user.email }).unwrap();
+            const loginResult = await socialLogin({
+              email: result.user.email,
+              socialId: result.user.providerData[0]?.uid
+            }).unwrap();
 
             if (loginResult.success && loginResult.data) {
               dispatch(setReduxUser({
@@ -435,12 +444,14 @@ const Login = ({ loginFormRef }: LoginProps) => {
         }
 
         // Initialize modal for password setting (and email if missing)
+        // Initialize modal for password setting (and email if missing)
         setGoogleUserInfo({
           name: result.user.displayName || result.user.providerData[0]?.displayName || "GitHub User",
           email: result.user.email || null,
           photoURL: result.user.photoURL || "",
           uid: result.user.uid || "",
           provider: "github",
+          socialId: result.user.providerData[0]?.uid || result.user.uid
         });
         setIsGoogleModalOpen(true);
       }

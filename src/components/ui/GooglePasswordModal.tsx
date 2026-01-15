@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
-import { FaGoogle } from "react-icons/fa";
+import { FaGoogle, FaGithub } from "react-icons/fa";
 import { MdError } from "react-icons/md";
 import ModalButton from "./ModalButton";
 import BackDrop from "./BackDrop";
@@ -17,6 +17,7 @@ interface GooglePasswordModalProps {
         name: string;
         email: string | null;
         photoURL: string;
+        provider?: 'google' | 'github';
     } | null;
 }
 
@@ -235,7 +236,11 @@ const GooglePasswordModal = ({
                                         `}
                                         variants={iconContainerVariants}
                                     >
-                                        <FaGoogle className="text-2xl md:text-3xl text-secondary" />
+                                        {userInfo?.provider === 'github' ? (
+                                            <FaGithub className="text-2xl md:text-3xl text-secondary" />
+                                        ) : (
+                                            <FaGoogle className="text-2xl md:text-3xl text-secondary" />
+                                        )}
                                     </motion.div>
                                 </div>
                             </div>

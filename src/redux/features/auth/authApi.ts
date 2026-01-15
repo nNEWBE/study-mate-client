@@ -13,6 +13,7 @@ export interface RegisterData {
     password: string;
     profileImageUrl?: string;
     provider?: 'google' | 'github' | 'email';
+    socialId?: string;
 }
 
 export interface AuthResponse {
@@ -67,7 +68,7 @@ export const authApi = baseApi.injectEndpoints({
         }),
 
         // POST /social-login - Login with social provider (Google/GitHub)
-        socialLogin: builder.mutation<ApiResponse<AuthResponse>, { email: string }>({
+        socialLogin: builder.mutation<ApiResponse<AuthResponse>, { email?: string; socialId?: string }>({
             query: (data) => ({
                 url: '/social-login',
                 method: 'POST',
