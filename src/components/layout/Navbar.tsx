@@ -12,6 +12,7 @@ import useAuth from "../../hooks/useAuth";
 import { useToggle } from "../../context/ToggleProvider";
 import { NavLink } from "react-router-dom";
 import { useModal } from "../ui/Modal";
+import Divider from "../ui/Divider";
 
 const navItems = [
   { id: 1, name: "Home", to: "/" },
@@ -415,7 +416,7 @@ const Navbar = () => {
       {user && (
         <div
           ref={dropdownRef}
-          className={`user-dropdown fixed right-5 top-[8rem] hidden w-[320px] overflow-hidden rounded-xl border-secondary shadow-primary backdrop-blur-xl backdrop-filter lg:block ${dropdown ? 'dropdown-open' : 'dropdown-closed'}`}
+          className={`user-dropdown fixed right-5 top-[7.8rem] hidden w-[320px] overflow-hidden rounded-xl border-secondary shadow-primary backdrop-blur-xl backdrop-filter lg:block ${dropdown ? 'dropdown-open' : 'dropdown-closed'}`}
         >
           <div className="flex flex-col items-center justify-center gap-2 p-5">
             {/* User Avatar with pop animation */}
@@ -442,18 +443,8 @@ const Navbar = () => {
               {user?.email ? user.email : "Email not found"}
             </p>
 
-            {/* Divider with PAGES */}
-            <div className="my-4 w-full">
-              <div className="flex items-center justify-center">
-                <div className="flex-1 border-t-2 border-secondary shadow-[0_0_5px_2px] shadow-primary"></div>
-                <div className="mx-3 px-4 py-1 border-2 border-secondary rounded-lg bg-white shadow-[0_0_5px_2px] shadow-primary">
-                  <span className="font-dosis text-base font-bold uppercase tracking-wider text-secondary">
-                    Pages
-                  </span>
-                </div>
-                <div className="flex-1 border-t-2 border-secondary shadow-[0_0_5px_2px] shadow-primary"></div>
-              </div>
-            </div>
+            {/* Divider */}
+            <Divider orbSize="md" />
 
             {/* Menu Items with animations */}
             <div className="space-y-3 w-full">

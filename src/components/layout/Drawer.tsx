@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { IoDocumentText, IoLogOut, IoMoon, IoSunny, IoHeart, IoGrid } from "react-icons/io5";
 import Button from "../ui/Button";
 import Logo from "../ui/Logo";
+import Divider from "../ui/Divider";
 import { useToggle } from "../../context/ToggleProvider";
 
 interface DrawerProps {
@@ -168,7 +169,7 @@ const Drawer = ({
             </div>
 
             {/* User Name - Boxed Design */}
-            <div className="mt-2 px-6 py-2 rounded-xl border-2 border-secondary bg-white shadow-[0_0_5px_2px] shadow-primary transform transition-transform hover:scale-105 duration-300">
+            <div className="mt-2 px-6 py-2 rounded-xl border-2 border-secondary bg-white shadow-[0_0_5px_2px] shadow-primary transform transition-transform duration-300">
               <h3 className="font-dosis text-2xl font-bold text-secondary text-center uppercase tracking-wide">
                 {user?.displayName ? user.displayName : "Name not found"}
               </h3>
@@ -177,18 +178,8 @@ const Drawer = ({
               {user?.email ? user.email : "Email not found"}
             </p>
 
-            {/* Divider with PAGES */}
-            <div className="my-8 w-full">
-              <div className="flex items-center justify-center">
-                <div className="flex-1 border-t-2 border-secondary shadow-[0_0_5px_2px] shadow-primary"></div>
-                <div className="mx-3 px-4 py-1 border-2 border-secondary rounded-lg bg-white shadow-[0_0_5px_2px] shadow-primary">
-                  <span className="font-dosis text-base font-bold uppercase tracking-wider text-secondary">
-                    Pages
-                  </span>
-                </div>
-                <div className="flex-1 border-t-2 border-secondary shadow-[0_0_5px_2px] shadow-primary"></div>
-              </div>
-            </div>
+            {/* Divider */}
+            <Divider orbSize="md" />
 
             <div className="space-y-3 w-full">
               {drawerLinks.map((item, index) => (

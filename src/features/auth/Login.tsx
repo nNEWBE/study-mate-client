@@ -1,4 +1,5 @@
 import "boxicons";
+import Divider from "../../components/ui/Divider";
 import Button from "../../components/ui/Button";
 import { useState } from "react";
 import { FiEyeOff, FiEye } from "react-icons/fi";
@@ -346,18 +347,8 @@ const Login = ({ loginFormRef }: LoginProps) => {
           />
         </div>
 
-        {/* "Or" divider design */}
-        <div className="my-5 w-full">
-          <div className="flex items-center justify-center">
-            <div className="flex-1 border-t-2 border-secondary shadow-[0_0_5px_2px] shadow-primary"></div>
-            <div className="mx-3 rounded-lg border-2 border-secondary bg-white px-4 py-1 shadow-[0_0_5px_2px] shadow-primary">
-              <span className="font-dosis text-base font-bold uppercase tracking-wider text-secondary">
-                Or
-              </span>
-            </div>
-            <div className="flex-1 border-t-2 border-secondary shadow-[0_0_5px_2px] shadow-primary"></div>
-          </div>
-        </div>
+        {/* Divider */}
+        <Divider orbSize="md" />
 
         <div className="mt-5 flex justify-center gap-3">
           <div
