@@ -1,12 +1,13 @@
 import "../../styles/style.css";
+import { useRef } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 import useAuth from "../../hooks/useAuth";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import Lottie from "lottie-react";
-import logo1 from "../../../public/Logo_01.json";
-import logo2 from "../../../public/Logo_02.json";
-import { IoDocumentText, IoLogOut, IoMoon, IoSunny } from "react-icons/io5";
+import { IoDocumentText, IoLogOut, IoMoon, IoSunny, IoHeart, IoGrid } from "react-icons/io5";
 import Button from "../ui/Button";
+import Logo from "../ui/Logo";
 import { useToggle } from "../../context/ToggleProvider";
 
 interface DrawerProps {
@@ -18,6 +19,7 @@ interface DrawerProps {
 }
 
 const Drawer = ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   navRef,
   drawer,
   setDrawer,
@@ -27,45 +29,120 @@ const Drawer = ({
   const { user } = useAuth();
   const { theme } = useToggle();
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+
   const handleOverlay = () => {
-    setDrawer(!drawer);
-    navRef.current?.classList.remove("open");
+    setDrawer(false);
   };
 
   const handleDrawer = () => {
     setDrawer(!drawer);
-    navRef.current?.classList.toggle("open");
   };
 
+  useGSAP(
+    () => {
+      const tl = gsap.timeline();
+
+      if (drawer) {
+        gsap.set(containerRef.current, { visibility: "visible" });
+
+        tl.to(overlayRef.current, {
+          opacity: 1,
+          duration: 0.3,
+          ease: "power2.out",
+        })
+          .to(
+            sidebarRef.current,
+            {
+              x: 0,
+              duration: 0.5,
+              ease: "power3.out",
+            },
+            "-=0.2"
+          )
+          .fromTo(
+            ".drawer-item",
+            { x: 30, opacity: 0 },
+            {
+              x: 0,
+              opacity: 1,
+              duration: 0.4,
+              stagger: 0.05,
+              ease: "back.out(1.2)",
+            },
+            "-=0.3"
+          );
+      } else {
+        tl.to(sidebarRef.current, {
+          x: "100%",
+          duration: 0.4,
+          ease: "power3.in",
+        })
+          .to(
+            overlayRef.current,
+            {
+              opacity: 0,
+              duration: 0.3,
+              ease: "power2.in",
+            },
+            "-=0.2"
+          )
+          .set(containerRef.current, { visibility: "hidden" });
+      }
+    },
+    { dependencies: [drawer], scope: containerRef }
+  );
+
+  const drawerLinks = [
+    {
+      name: "Dashboard",
+      path: "/dashboard",
+      icon: IoGrid,
+    },
+    {
+      name: "Wishlist",
+      path: "/wishlist",
+      icon: IoHeart,
+    },
+    {
+      name: "Submissions",
+      path: "/dashboard/submissions",
+      icon: IoDocumentText,
+    },
+    {
+      name: "Logout",
+      action: handleNavLogout,
+      icon: IoLogOut,
+    },
+  ];
+
   return (
-    <div className="block">
-      <nav ref={navRef}>
-        <div className="sidebar px-5 py-5">
-          <div className="flex items-center justify-between">
-            <Link
-              to="/"
-              onClick={handleDrawer}
-              className="flex w-[190px] cursor-pointer items-center rounded-xl border-2 border-secondary bg-white font-dosis text-2xl font-medium shadow-[0_0_5px_2px] shadow-primary"
-            >
-              <Lottie
-                animationData={logo1}
-                loop={true}
-                className="w-16 rounded-xl border-[5px] border-white"
-              />
-              <p className="relative right-3">tudy</p>
-              <Lottie
-                animationData={logo2}
-                loop={true}
-                className="relative right-3 w-16 rounded-xl border-[5px] border-white"
-              />
-              <p className="relative right-6">ate</p>
-            </Link>
+    <div
+      ref={containerRef}
+      className="fixed inset-0 z-50 block overflow-hidden invisible"
+    >
+      {/* Overlay */}
+      <div
+        ref={overlayRef}
+        onClick={handleOverlay}
+        className="absolute inset-0 bg-black/20 backdrop-blur-sm opacity-0"
+      />
+
+      <nav>
+        <div
+          ref={sidebarRef}
+          className="sidebar px-5 py-5 h-screen overflow-y-auto overflow-x-hidden will-change-transform !transition-none absolute right-0 translate-x-[100%]"
+        >
+          <div className="drawer-header flex items-center justify-between">
+            <Logo onClick={handleDrawer} />
             <div
               onClick={handleDrawer}
-              className="relative float-end block w-11 cursor-pointer"
+              className="relative float-end block w-14 cursor-pointer"
             >
               <img
-                className="size-[45px] rounded-full border-2 border-secondary object-cover shadow-[0_0_5px_2px] shadow-primary"
+                className="size-[55px] rounded-full border-2 border-secondary object-cover shadow-[0_0_5px_2px] shadow-primary"
                 referrerPolicy="no-referrer"
                 src={user?.photoURL || undefined}
                 alt="User"
@@ -74,8 +151,9 @@ const Drawer = ({
               <span className="absolute bottom-0 right-0 h-4 w-4 animate-ping rounded-full bg-[#00ffa5]"></span>
             </div>
           </div>
-          <div className="mt-3 flex flex-col items-center justify-center sm:mt-10 lg:mt-3">
-            <div className="relative bottom-3 right-2 block sm:hidden lg:block">
+
+          <div className="drawer-body mt-3 flex flex-col items-center justify-center sm:mt-10 lg:mt-3">
+            <div className="mb-4 block sm:hidden lg:block">
               <input
                 checked={theme === null ? false : theme}
                 onChange={handleTheme}
@@ -88,47 +166,64 @@ const Drawer = ({
                 <IoMoon className="moon" />
               </label>
             </div>
-            <p
-              style={{ textShadow: "1.5px 1px 3px #00ffa5" }}
-              className="text-center font-dosis text-2xl font-bold text-secondary"
-            >
-              {user?.displayName ? user.displayName : "Name not found"}
-            </p>
+
+            {/* User Name - Boxed Design */}
+            <div className="mt-2 px-6 py-2 rounded-xl border-2 border-secondary bg-white shadow-[0_0_5px_2px] shadow-primary transform transition-transform hover:scale-105 duration-300">
+              <h3 className="font-dosis text-2xl font-bold text-secondary text-center uppercase tracking-wide">
+                {user?.displayName ? user.displayName : "Name not found"}
+              </h3>
+            </div>
             <p className="mt-3 rounded-xl border-2 border-secondary bg-white px-3 py-1 text-center font-edu text-base font-bold shadow-[0_0_5px_2px] shadow-primary">
               {user?.email ? user.email : "Email not found"}
             </p>
 
-            <div className="my-10 flex w-full items-center justify-center">
-              <div className="w-full flex-grow border-2 border-t border-secondary shadow-[0_0_5px_2px] shadow-primary"></div>
-              <span
-                style={{ textShadow: "1.5px 1px 3px #00ffa5" }}
-                className="w-full text-center font-dosis text-xl font-bold uppercase text-secondary"
-              >
-                Pages
-              </span>
-              <div className="w-full flex-grow border-2 border-t border-secondary shadow-[0_0_5px_2px] shadow-primary"></div>
+            {/* Divider with PAGES */}
+            <div className="my-8 w-full">
+              <div className="flex items-center justify-center">
+                <div className="flex-1 border-t-2 border-secondary shadow-[0_0_5px_2px] shadow-primary"></div>
+                <div className="mx-3 px-4 py-1 border-2 border-secondary rounded-lg bg-white shadow-[0_0_5px_2px] shadow-primary">
+                  <span className="font-dosis text-base font-bold uppercase tracking-wider text-secondary">
+                    Pages
+                  </span>
+                </div>
+                <div className="flex-1 border-t-2 border-secondary shadow-[0_0_5px_2px] shadow-primary"></div>
+              </div>
             </div>
 
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div>
-                  <IoDocumentText className="rounded-xl border-2 border-secondary bg-white p-[5px] text-[2.3rem] text-secondary shadow-[0_0_5px_2px] shadow-primary" />
+            <div className="space-y-3 w-full">
+              {drawerLinks.map((item, index) => (
+                <div key={index} className="drawer-item">
+                  {item.path ? (
+                    <Link
+                      to={item.path}
+                      onClick={handleDrawer}
+                      className="flex items-center gap-3"
+                    >
+                      <div>
+                        <item.icon className="rounded-xl border-2 border-secondary bg-white p-[5px] text-[2.3rem] text-secondary shadow-[0_0_5px_2px] shadow-primary" />
+                      </div>
+                      <Button str={item.name} shadow={true} width="w-fit"></Button>
+                    </Link>
+                  ) : (
+                    <div
+                      onClick={() => {
+                        handleDrawer();
+                        if (item.action) item.action();
+                      }}
+                      className="flex items-center gap-3 cursor-pointer"
+                    >
+                      <div>
+                        <item.icon className="rounded-xl border-2 border-secondary bg-white p-[5px] text-[2.3rem] text-secondary shadow-[0_0_5px_2px] shadow-primary" />
+                      </div>
+                      <Button str={item.name} shadow={true} width="w-fit"></Button>
+                    </div>
+                  )}
                 </div>
-                <Button str="Submissions" shadow={true}></Button>
-              </div>
-              <div className="flex items-center gap-3">
-                <div>
-                  <IoLogOut className="rounded-xl border-2 border-secondary bg-white p-[5px] text-[2.3rem] text-secondary shadow-[0_0_5px_2px] shadow-primary" />
-                </div>
-                <div onClick={handleNavLogout}>
-                  <Button str={"Logout"} shadow={true}></Button>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
       </nav>
-      <section onClick={handleOverlay} className="overlay"></section>
     </div>
   );
 };

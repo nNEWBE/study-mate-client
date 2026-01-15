@@ -14,6 +14,7 @@ import { useContext, useState } from "react";
 import { useToggle } from "../context/ToggleProvider";
 import { HiOutlineDocumentChartBar } from "react-icons/hi2";
 import { useLoaderData, useNavigate } from "react-router-dom";
+import { useUpdateAssignmentMutation } from "../redux/features/assignments/assignmentApi";
 
 interface AssignmentData {
   _id: string;
@@ -55,6 +56,7 @@ const UpdateAssignment = () => {
     name: difficulty,
   });
 
+  const [updateAssignment] = useUpdateAssignmentMutation();
   console.log(selectedDifficulty?.name)
 
   const difficulties = [
@@ -91,16 +93,12 @@ const UpdateAssignment = () => {
     console.log("🚀 ~ onSubmit ~ updateAssignment:", assignmentData);
 
     try {
-      const { data } = await axios.put(
-        `${import.meta.env.VITE_API_URL}/assignment/${_id}`,
-        assignmentData,
-      );
-      console.log(data);
+      await updateAssignment({ id: _id, data: assignmentData }).unwrap();
       toast.success("Assignment updated successfully!");
       navigate("/tasks");
     } catch (err: any) {
       console.log(err);
-      toast.error(err.message);
+      toast.error(err.data?.message || err.message);
     }
   };
   return (

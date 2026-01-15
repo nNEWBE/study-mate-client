@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { IoDocumentText, IoMoon, IoSunny } from "react-icons/io5";
+import { IoDocumentText, IoMoon, IoSunny, IoHeart, IoGrid } from "react-icons/io5";
 import { Link as Route, useNavigate } from "react-router-dom";
 import { gsap, Power2 } from "gsap";
 import { useToggle } from "../../context/ToggleProvider";
 import { IoLogOut } from "react-icons/io5";
 import { NavLink } from "react-router-dom";
-import logo1 from "../../../public/Logo_01.json";
-import logo2 from "../../../public/Logo_02.json";
 import Headroom from "react-headroom";
 import Button from "../ui/Button";
+import Logo from "../ui/Logo";
 import Unhidden from "../../animation/Unhidden";
 
 import useAuth from "../../hooks/useAuth";
@@ -82,7 +81,7 @@ const Navbar = () => {
 
   const navItems = [
     { id: 1, name: "Home", to: "/" },
-    { id: 2, name: "All Tasks", to: "/tasks" },
+    { id: 2, name: "Tasks", to: "/tasks" },
     { id: 3, name: "Create", to: "/create" },
     { id: 4, name: "Contact", to: "/contact" },
     { id: 5, name: "Blog", to: "/blog" },
@@ -248,6 +247,15 @@ const Navbar = () => {
     });
   };
 
+  const iconClasses = "rounded-xl border-2 border-secondary bg-white p-[5px] text-[2.3rem] text-secondary shadow-[0_0_5px_2px] shadow-primary group-hover:bg-primary group-hover:scale-110 transition-all duration-300";
+
+  const dropdownMenuItems = [
+    { label: "Dashboard", path: "/dashboard", Icon: IoGrid },
+    { label: "Wishlist", path: "/wishlist", Icon: IoHeart },
+    { label: "Submissions", path: "/dashboard/submissions", Icon: IoDocumentText },
+    { label: "Logout", action: handleNavLogout, Icon: IoLogOut, isLogout: true },
+  ];
+
   return (
     <div
       ref={ref}
@@ -255,22 +263,9 @@ const Navbar = () => {
     >
       <Headroom pin={visible}>
         <div className="mx-auto flex  items-center justify-between overflow-hidden border-2 border-x-0 border-t-0 border-b-secondary bg-transparent px-5 py-5 shadow-[0_0_5px_2px] shadow-primary backdrop-blur-3xl lg:px-8">
-          <Route
-            to="/"
+          <Logo
             className="navs flex w-[190px] cursor-pointer items-center rounded-xl border-2 border-secondary bg-white font-dosis text-2xl font-medium text-secondary shadow-[0_0_5px_2px] shadow-primary"
-          >
-            <LottieFiles
-              animation={logo1}
-              className="w-16 rounded-xl border-[5px] border-white"
-            />
-
-            <p className="relative right-3">tudy</p>
-            <LottieFiles
-              animation={logo2}
-              className="relative right-3 w-16 rounded-xl border-[5px] border-white"
-            />
-            <p className="relative right-6">ate</p>
-          </Route>
+          />
 
           <div className="relative flex items-center gap-7">
             <ul className="hidden items-center font-edu font-medium lg:flex relative">
@@ -432,51 +427,80 @@ const Navbar = () => {
       {user && (
         <div
           ref={dropdownRef}
-          className="dropdown fixed right-5 top-[6.6rem] hidden h-0 w-[320px] overflow-hidden rounded-xl border-secondary shadow-primary backdrop-blur-xl backdrop-filter lg:block"
+          className={`user-dropdown fixed right-5 top-[8.4rem] hidden w-[320px] overflow-hidden rounded-xl border-secondary shadow-primary backdrop-blur-xl backdrop-filter lg:block ${dropdown ? 'dropdown-open' : 'dropdown-closed'}`}
         >
           <div className="flex flex-col items-center justify-center gap-2 p-5">
-            <div className="w-14 cursor-pointer">
+            {/* User Avatar with pop animation */}
+            <div className="dropdown-avatar relative w-14 cursor-pointer transition-transform duration-300 hover:scale-110">
               <img
                 className="rounded-full border-2 border-secondary shadow-[0_0_5px_2px] shadow-primary"
                 referrerPolicy="no-referrer"
                 src={user?.photoURL || undefined}
                 alt="User"
               />
+              <span className="absolute bottom-0 right-0 h-4 w-4 rounded-full border-2 border-secondary bg-[#00ffa5]"></span>
+              <span className="absolute bottom-0 right-0 h-4 w-4 animate-ping rounded-full bg-[#00ffa5]"></span>
             </div>
-            <p
-              style={{ textShadow: "1.5px 1px 3px #00ffa5" }}
-              className="font-dosis text-2xl font-bold text-secondary"
-            >
-              {user?.displayName ? user.displayName : "Name not found"}
-            </p>
+
+            {/* User Name - Boxed Design */}
+            <div className="mt-2 px-6 py-2 rounded-xl border-2 border-secondary bg-white shadow-[0_0_5px_2px] shadow-primary transform transition-transform hover:scale-105 duration-300">
+              <h3 className="font-dosis text-xl font-bold text-secondary text-center uppercase tracking-wide">
+                {user?.displayName ? user.displayName : "Name not found"}
+              </h3>
+            </div>
+
+            {/* Email */}
             <p className="mt-3 rounded-xl border-2 border-secondary bg-white px-3 py-1 font-edu text-base font-bold shadow-[0_0_5px_2px] shadow-primary">
               {user?.email ? user.email : "Email not found"}
             </p>
-            <div className="my-3 flex w-full items-center justify-center">
-              <div className="w-full flex-grow border-2 border-t border-secondary shadow-[0_0_5px_2px] shadow-primary"></div>
-              <span
-                style={{ textShadow: "1.5px 1px 3px #00ffa5" }}
-                className="w-full text-center font-dosis text-xl font-bold uppercase text-secondary"
-              >
-                Pages
-              </span>
-              <div className="w-full flex-grow border-2 border-t border-secondary shadow-[0_0_5px_2px] shadow-primary"></div>
-            </div>{" "}
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div>
-                  <IoDocumentText className="rounded-xl border-2 border-secondary bg-white p-[5px] text-[2.3rem] text-secondary shadow-[0_0_5px_2px] shadow-primary" />
+
+            {/* Divider with PAGES */}
+            <div className="my-4 w-full">
+              <div className="flex items-center justify-center">
+                <div className="flex-1 border-t-2 border-secondary shadow-[0_0_5px_2px] shadow-primary"></div>
+                <div className="mx-3 px-4 py-1 border-2 border-secondary rounded-lg bg-white shadow-[0_0_5px_2px] shadow-primary">
+                  <span className="font-dosis text-base font-bold uppercase tracking-wider text-secondary">
+                    Pages
+                  </span>
                 </div>
-                <Button str="Submissions" shadow={true}></Button>
+                <div className="flex-1 border-t-2 border-secondary shadow-[0_0_5px_2px] shadow-primary"></div>
               </div>
-              <div className="flex items-center gap-3">
-                <div>
-                  <IoLogOut className="rounded-xl border-2 border-secondary bg-white p-[5px] text-[2.3rem] text-secondary shadow-[0_0_5px_2px] shadow-primary" />
-                </div>
-                <div onClick={handleNavLogout}>
-                  <Button str={"Logout"} shadow={true}></Button>
-                </div>
-              </div>
+            </div>
+
+            {/* Menu Items with animations */}
+            <div className="space-y-3 w-full">
+              {dropdownMenuItems.map((item, index) => {
+                const { label, path, Icon, action, isLogout } = item;
+
+                if (isLogout) {
+                  return (
+                    <div
+                      key={index}
+                      onClick={action}
+                      className="dropdown-menu-item flex items-center gap-3 group cursor-pointer transition-transform duration-200 hover:translate-x-1"
+                    >
+                      <div>
+                        <Icon className={iconClasses} />
+                      </div>
+                      <Button str={label} shadow={true} width="w-fit" />
+                    </div>
+                  );
+                }
+
+                return (
+                  <Route
+                    key={index}
+                    to={path!}
+                    onClick={handleDropdown}
+                    className="dropdown-menu-item flex items-center gap-3 group transition-transform duration-200 hover:translate-x-1"
+                  >
+                    <div>
+                      <Icon className={iconClasses} />
+                    </div>
+                    <Button str={label} shadow={true} width="w-fit" />
+                  </Route>
+                );
+              })}
             </div>
           </div>
         </div>

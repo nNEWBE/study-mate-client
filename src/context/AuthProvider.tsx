@@ -13,6 +13,8 @@ import {
   UserCredential,
 } from "firebase/auth";
 import { AuthContextType } from "../types";
+import { useDispatch } from "react-redux";
+import { setUser as setReduxUser, logout as logoutReduxUser } from "../redux/features/auth/authSlice";
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -23,6 +25,7 @@ interface AuthProviderProps {
 const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const dispatch = useDispatch();
 
   const createUser = (email: string, password: string): Promise<UserCredential> => {
     setLoading(true);
@@ -75,14 +78,29 @@ const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   };
 
   useEffect(() => {
-    const unSubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unSubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       setLoading(false);
+
+      if (currentUser) {
+        const token = await currentUser.getIdToken();
+        dispatch(setReduxUser({
+          user: {
+            email: currentUser.email,
+            uid: currentUser.uid,
+            displayName: currentUser.displayName,
+            photoURL: currentUser.photoURL
+          },
+          token
+        }));
+      } else {
+        dispatch(logoutReduxUser());
+      }
     });
     return () => {
       unSubscribe();
     };
-  }, []);
+  }, [dispatch]);
 
   return (
     <div>

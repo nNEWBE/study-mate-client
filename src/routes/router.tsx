@@ -1,3 +1,4 @@
+
 import { createBrowserRouter } from "react-router-dom";
 import Main from "../pages/Main";
 import Home from "../pages/Home";
@@ -7,10 +8,18 @@ import Error from "../pages/Error";
 import Tasks from "../pages/Tasks";
 import CreateAssignments from "../pages/CreateAssignments";
 import PrivateRoute from "./PrivateRoute";
+import RoleBasedRoute from "./RoleBasedRoute";
 import UpdateAssignment from "../pages/UpdateAssignment";
 import ViewDetails from "../pages/ViewDetails";
 import Contact from "../pages/Contact";
 import Blog from "../pages/Blog";
+import Wishlist from "../pages/Wishlist";
+
+// Dashboard Imports
+import DashboardLayout from "../layouts/DashboardLayout";
+import DashboardOverview from "../pages/dashboard/DashboardOverview";
+import DashboardSubmissions from "../pages/dashboard/DashboardSubmissions";
+import DashboardRole from "../pages/dashboard/DashboardRole";
 
 const router = createBrowserRouter([
   {
@@ -48,6 +57,14 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <CreateAssignments />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/wishlist",
+        element: (
+          <PrivateRoute>
+            <Wishlist />
           </PrivateRoute>
         ),
       },
@@ -93,6 +110,29 @@ const router = createBrowserRouter([
       },
     ],
   },
+  {
+    path: "/dashboard",
+    element: (
+      <RoleBasedRoute allowedRoles={['student', 'teacher', 'admin']}>
+        <DashboardLayout />
+      </RoleBasedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <DashboardOverview />
+      },
+      {
+        path: "submissions",
+        element: <DashboardSubmissions />
+      },
+      {
+        path: "role-request",
+        element: <DashboardRole />
+      }
+    ]
+  }
 ]);
 
 export default router;
+

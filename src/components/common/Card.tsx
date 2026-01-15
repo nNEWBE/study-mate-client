@@ -7,22 +7,10 @@ import { IoMdArrowRoundForward } from "react-icons/io";
 import { useToggle } from "../../context/ToggleProvider";
 import "../../styles/style.css";
 import { Link } from "react-router-dom";
-
-interface CardData {
-  _id: string;
-  title: string;
-  description: string;
-  photoURL: string;
-  difficulty: string;
-  marks: string | number;
-  person: {
-    email: string;
-    name: string;
-  };
-}
+import { Assignment } from "../../types";
 
 interface CardProps {
-  d: CardData;
+  d: Assignment;
   handleDelete: (id: string, email: string, name: string) => void;
 }
 
@@ -42,7 +30,7 @@ const Card = ({ d, handleDelete }: CardProps): JSX.Element => {
           <Link to={`assignment/${d._id}`} className="card-view-link" data-cursor="card">
             <img
               className="h-[190px] w-full scale-[1.01] rounded-2xl object-cover shadow-xl transition-all duration-1000 hover:scale-110"
-              src={`${d.photoURL}`}
+              src={`${d.photoURL || (d as any).thumbnail || (d as any).thumbnailUrl?.[0]}`}
               alt={d.title}
             />
           </Link>
@@ -101,7 +89,7 @@ const Card = ({ d, handleDelete }: CardProps): JSX.Element => {
           </div>
           <div className="mt-7 flex items-center justify-between">
             <div
-              onClick={() => handleDelete(d._id, d.person.email, d.person.name)}
+              onClick={() => handleDelete(d._id, d.person?.email || d.creatorEmail || '', d.person?.name || d.creatorName || '')}
               className="w-[7rem] sm:w-[7.5rem]"
             >
               <Button str="Delete" shadow={true} />

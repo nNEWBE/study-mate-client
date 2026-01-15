@@ -31,13 +31,23 @@ export interface Assignment {
     _id: string;
     title: string;
     description: string;
-    marks: number;
-    thumbnail: string;
-    difficulty: "easy" | "medium" | "hard";
-    dueDate: string;
-    creatorEmail: string;
+    marks: number | string;
+    thumbnail?: string;
+    thumbnailUrl?: string[];
+    photoURL?: string;
+    difficulty: "easy" | "medium" | "hard" | string;
+    dueDate?: string;
+    date?: string;
+    creatorEmail?: string;
     creatorName?: string;
     creatorPhoto?: string;
+    categoryId?: string;
+    status?: string;
+    person?: {
+        name?: string | null;
+        email?: string | null;
+        photo?: string | null;
+    };
 }
 
 // Submission Types

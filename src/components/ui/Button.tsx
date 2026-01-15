@@ -4,6 +4,7 @@ import { useState, useRef, MouseEvent, CSSProperties } from "react";
 interface ButtonProps {
   str: string;
   shadow?: boolean;
+  width?: string;
 }
 
 interface CustomCSSProperties extends CSSProperties {
@@ -12,7 +13,7 @@ interface CustomCSSProperties extends CSSProperties {
   "--char-index"?: number;
 }
 
-const Button = ({ str, shadow }: ButtonProps): JSX.Element => {
+const Button = ({ str, shadow, width = "w-full" }: ButtonProps): JSX.Element => {
   const [x, setX] = useState<number>(0);
   const [y, setY] = useState<number>(0);
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -39,7 +40,7 @@ const Button = ({ str, shadow }: ButtonProps): JSX.Element => {
       ref={btnRef}
       onMouseMove={handleMouse}
       className={`relative border-2 bg-white ${shadow ? "shadow-[0_0_5px_2px] shadow-primary" : ""
-        } button w-full h-full rounded-xl border-black px-5 py-2 font-poppins sm:text-lg lg:text-xl font-bold`}
+        } button ${width} h-full rounded-xl border-black px-5 py-2 font-poppins sm:text-lg lg:text-xl font-bold`}
       style={buttonStyle}
     >
       <span>

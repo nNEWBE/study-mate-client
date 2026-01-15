@@ -14,27 +14,36 @@ import Button from "../components/ui/Button";
 import { useState } from "react";
 import AnimatedModal from "../components/ui/AnimatedModal";
 import { AnimatePresence } from "framer-motion";
+import toast from "react-hot-toast";
+import useAuth from "../hooks/useAuth";
+import { Assignment } from "../types";
+import { useAddToWishlistMutation } from "../redux/features/wishlist/wishlistApi";
 
-interface AssignmentData {
-  title: string;
-  description: string;
-  photoURL: string;
-  difficulty: string;
-  marks: string;
-  date: string;
-  status: string;
-  person: {
-    name: string;
-    email: string;
-    photo: string;
-  };
+interface AssignmentData extends Assignment {
+  _id: string; // Ensure _id is present
 }
 
 const ViewDetails = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const data = useLoaderData() as AssignmentData;
   const close = () => setModalOpen(false);
+  // const close = () => setModalOpen(false); // Removed duplicate
   const open = () => setModalOpen(true);
+  const { user } = useAuth();
+  const [addToWishlist] = useAddToWishlistMutation();
+
+  const handleAddToWishlist = async () => {
+    if (!user) {
+      toast.error("Please login to add to wishlist");
+      return;
+    }
+    try {
+      await addToWishlist({ assignment: data._id }).unwrap();
+      toast.success("Added to Wishlist!");
+    } catch (error: any) {
+      toast.error(error.data?.message || "Failed to add to wishlist");
+    }
+  };
 
   return (
     <div className="mx-auto w-[90%] bg-white py-32 dark:bg-secondary">
@@ -52,7 +61,7 @@ const ViewDetails = () => {
 
       <div className="relative mx-auto mt-16 w-full rounded-2xl shadow-[0_0_10px_2px] shadow-primary sm:mt-10 lg:w-[55vw]">
         <img
-          src={data.photoURL}
+          src={data.photoURL || data.thumbnail}
           alt={data.title}
           className="w-full rounded-2xl object-cover lg:w-[55vw]"
         />
@@ -130,7 +139,7 @@ const ViewDetails = () => {
               >
                 Name :{" "}
               </span>
-              {data.person.name}
+              {data.person?.name || data.creatorName || "Unknown"}
             </p>
             <p className="my-5 font-edu text-lg font-medium">
               {" "}
@@ -143,14 +152,14 @@ const ViewDetails = () => {
               >
                 Email :{" "}
               </span>
-              {data.person.email}
+              {data.person?.email || data.creatorEmail}
             </p>
           </div>
           <div>
             <img
               className="h-[70px] shadow-primary shadow-[0px_0px_7px_2px] border-2 border-secondary w-[70px] rounded-full object-cover"
-              src={data.person.photo}
-              alt={data.person.name}
+              src={data.person?.photo || data.creatorPhoto || "https://via.placeholder.com/70"}
+              alt={data.person?.name || "Author"}
             />
           </div>
         </div>
@@ -159,6 +168,12 @@ const ViewDetails = () => {
           className="mt-10 w-[7rem]"
         >
           <Button str="Take" shadow={true} />
+        </div>
+        <div
+          onClick={handleAddToWishlist}
+          className="mt-10 w-[9rem] sm:ml-5"
+        >
+          <Button str="Wishlist" shadow={true} />
         </div>
       </div>
       <AnimatePresence initial={false} >

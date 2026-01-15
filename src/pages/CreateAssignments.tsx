@@ -15,6 +15,7 @@ import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
 import { HiOutlineDocumentChartBar } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
+import { useCreateAssignmentMutation } from "../redux/features/assignments/assignmentApi";
 
 type FormInputs = {
   title: string;
@@ -29,6 +30,7 @@ const CreateAssignments = () => {
   const [date, setDate] = useState<Date | null>(new Date());
   const navigate = useNavigate();
   const { theme } = useToggle();
+  const [createAssignment] = useCreateAssignmentMutation();
   console.log(date?.toLocaleDateString("en-US"));
 
   const [selectedDifficulty, setSelectedDifficulty] = useState<{ name: string } | null>(null);
@@ -64,16 +66,12 @@ const CreateAssignments = () => {
 
 
     try {
-      const { data } = await axios.post(
-        `${import.meta.env.VITE_API_URL}/assignment`,
-        assignmentData,
-      );
-      console.log(data);
+      await createAssignment(assignmentData).unwrap();
       toast.success("Assignment created successfully!");
       navigate("/tasks");
     } catch (err: any) {
       console.log(err);
-      toast.error(err.message);
+      toast.error(err.data?.message || err.message);
     }
   };
   return (

@@ -10,6 +10,8 @@ import Toast from "./components/ui/Toast";
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
 import "primeicons/primeicons.css";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
 
 const rootElement = document.getElementById("root");
 
@@ -19,12 +21,14 @@ if (!rootElement) {
 
 ReactDOM.createRoot(rootElement).render(
   <AnimatePresence mode="wait">
-    <AuthProvider>
-      <ToggleProvider>
-        <RouterProvider router={router} />
+    <Provider store={store}>
+      <AuthProvider>
+        <ToggleProvider>
+          <RouterProvider router={router} />
 
-        <Toast />
-      </ToggleProvider>
-    </AuthProvider>
+          <Toast />
+        </ToggleProvider>
+      </AuthProvider>
+    </Provider>
   </AnimatePresence>
 );

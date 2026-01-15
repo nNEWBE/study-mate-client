@@ -196,6 +196,172 @@ div a:nth-child(2).active~.side {
   transition: height 0.4s cubic-bezier(0.5, 0.01, 0.068, 0.99);
 }
 
+/*@ Enhanced User Dropdown Animations - Reveal Effect */
+
+.user-dropdown {
+  transform-origin: top center;
+  will-change: transform, opacity;
+}
+
+.user-dropdown.dropdown-closed {
+  opacity: 0;
+  transform: scaleY(0.3) translateY(-20px);
+  pointer-events: none;
+  visibility: hidden;
+  transition:
+    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.25s ease-out,
+    visibility 0s linear 0.35s,
+    box-shadow 0.2s ease-out;
+}
+
+.user-dropdown.dropdown-open {
+  opacity: 1;
+  transform: scaleY(1) translateY(0);
+  pointer-events: auto;
+  visibility: visible;
+  border: 2px solid var(--secondary);
+  box-shadow:
+    0 0 5px 2px var(--primary),
+    0 20px 50px -15px rgba(0, 0, 0, 0.4);
+  transition:
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.4s ease-out,
+    visibility 0s linear 0s,
+    box-shadow 0.4s ease-out 0.1s;
+}
+
+/* Avatar with 3D flip entrance */
+.user-dropdown.dropdown-open .dropdown-avatar {
+  animation: avatarFlipIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.2s backwards;
+}
+
+@keyframes avatarFlipIn {
+  0% {
+    opacity: 0;
+    transform: perspective(600px) rotateX(-90deg) scale(0.8);
+  }
+
+  100% {
+    opacity: 1;
+    transform: perspective(600px) rotateX(0deg) scale(1);
+  }
+}
+
+/* Menu items slide from left with subtle rotation */
+.user-dropdown.dropdown-open .dropdown-menu-item {
+  animation: menuSlideIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.user-dropdown.dropdown-open .dropdown-menu-item:nth-child(1) {
+  animation-delay: 0.25s;
+}
+
+.user-dropdown.dropdown-open .dropdown-menu-item:nth-child(2) {
+  animation-delay: 0.32s;
+}
+
+.user-dropdown.dropdown-open .dropdown-menu-item:nth-child(3) {
+  animation-delay: 0.39s;
+}
+
+.user-dropdown.dropdown-open .dropdown-menu-item:nth-child(4) {
+  animation-delay: 0.46s;
+}
+
+@keyframes menuSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-30px) rotate(-3deg);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0) rotate(0deg);
+  }
+}
+
+/* Slow spin animation for avatar ring */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+
+/* Gradient text animation */
+@keyframes gradient-x {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 3s ease infinite;
+}
+
+/* Text shimmer animation for name */
+@keyframes text-shimmer {
+  0% {
+    background-position: -200% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.animate-text-shimmer {
+  background-size: 200% auto;
+  animation: text-shimmer 4s ease-in-out infinite;
+}
+
+/* Subtle pulse for role badge */
+@keyframes pulse-subtle {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.9;
+    transform: scale(1.02);
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+/* Shimmer effect for hover states */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+
+
 /*! Sidebar Menu */
 
 nav {
@@ -210,7 +376,7 @@ nav {
 nav .sidebar {
   position: fixed;
   top: 0;
-  right: -200%;
+  right: 0;
   height: 100%;
   width: 300px;
   backdrop-filter: blur(24px);
@@ -218,13 +384,15 @@ nav .sidebar {
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
   box-shadow: 0 0 5px 2px var(--primary);
-  transition: all 0.8s cubic-bezier(0.5, 0.01, 0.068, 0.99);
+  transform: translateX(110%);
+  transition: transform 0.5s cubic-bezier(0.5, 0.01, 0.068, 0.99);
+  will-change: transform;
   border-left: 2px solid var(--secondary);
   z-index: 50;
 }
 
 nav.open .sidebar {
-  right: 0;
+  transform: translateX(0);
 }
 
 .overlay {
@@ -341,7 +509,7 @@ nav.open~.overlay {
 /*! Theme Toggle Button */
 
 .toggle-label {
-  @apply h-[25px] w-[40px] sm:h-[30px] sm:w-[60px];
+  @apply h-[30px] w-[60px];
   position: relative;
   display: block;
   background: white;
@@ -355,7 +523,7 @@ nav.open~.overlay {
 .toggle-label:after {
   content: "";
   width: 22px;
-  @apply left-[3.3px] top-[2.5px] size-[15px] sm:left-[3px] sm:top-[2px] sm:size-[22px];
+  @apply left-[3px] top-[2px] size-[22px];
   position: absolute;
   background: var(--primary);
   border-radius: 180px;
@@ -373,7 +541,7 @@ nav.open~.overlay {
 }
 
 .toggle-input:checked+.toggle-label:after {
-  @apply left-[35px] sm:left-[55px] sm:top-[2.3px];
+  @apply left-[55px] top-[2.3px];
   transform: translateX(-100%);
   background: linear-gradient(180deg, #777, var(--secondary));
 }
@@ -384,12 +552,12 @@ nav.open~.overlay {
 }
 
 .toggle-label:active:after {
-  @apply w-[19px] sm:w-[30px];
+  @apply w-[30px];
 }
 
 .toggle-label svg {
   position: absolute;
-  @apply top-[4.738px] text-[11px] sm:top-[4px] sm:text-[18px];
+  @apply top-[4px] text-[18px];
   z-index: 100;
 }
 
@@ -400,7 +568,7 @@ nav.open~.overlay {
 }
 
 .toggle-label .moon {
-  @apply left-[22px] sm:left-[35px];
+  @apply left-[35px];
   fill: #fff;
   /* transition: all 0.4s cubic-bezier(0.5, 0.01, 0.068, 0.99); */
 }
@@ -844,4 +1012,93 @@ nav.open~.overlay {
 
 .p-dropdown-panel .p-dropdown-items .p-dropdown-item:not(.p-highlight):not(.p-disabled).p-focus {
   @apply dark:bg-secondary
+}
+
+/* Drawer Animations */
+
+nav.open .sidebar .drawer-header>* {
+  animation: drawerSlideIn 0.5s ease-out backwards;
+}
+
+nav.open .sidebar .drawer-header>*:nth-child(1) {
+  animation-delay: 0.3s;
+}
+
+nav.open .sidebar .drawer-header>*:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+nav.open .sidebar .drawer-body>* {
+  animation: drawerSlideUp 0.6s ease-out backwards;
+}
+
+nav.open .sidebar .drawer-body>*:nth-child(1) {
+  animation-delay: 0.45s;
+}
+
+/* Toggle */
+nav.open .sidebar .drawer-body>*:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+/* Name */
+nav.open .sidebar .drawer-body>*:nth-child(3) {
+  animation-delay: 0.55s;
+}
+
+/* Email */
+nav.open .sidebar .drawer-body>*:nth-child(4) {
+  animation-delay: 0.6s;
+}
+
+/* Divider */
+nav.open .sidebar .drawer-body>*:nth-child(5) {
+  animation-delay: 0.65s;
+}
+
+/* Menu Wrapper */
+
+/* Menu Items - reusing drawerSlideIn for consistent flow from right */
+nav.open .sidebar .drawer-body .space-y-3>* {
+  animation: drawerSlideIn 0.5s ease-out backwards;
+}
+
+nav.open .sidebar .drawer-body .space-y-3>*:nth-child(1) {
+  animation-delay: 0.7s;
+}
+
+nav.open .sidebar .drawer-body .space-y-3>*:nth-child(2) {
+  animation-delay: 0.75s;
+}
+
+nav.open .sidebar .drawer-body .space-y-3>*:nth-child(3) {
+  animation-delay: 0.8s;
+}
+
+nav.open .sidebar .drawer-body .space-y-3>*:nth-child(4) {
+  animation-delay: 0.85s;
+}
+
+@keyframes drawerSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes drawerSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
