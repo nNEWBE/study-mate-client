@@ -9,6 +9,7 @@ import Logo from "../ui/Logo";
 import Button from "../ui/Button";
 import Drawer from "./Drawer";
 import useAuth from "../../hooks/useAuth";
+import { useAppSelector } from "../../redux/store";
 import { useToggle } from "../../context/ToggleProvider";
 import { NavLink } from "react-router-dom";
 import { useModal } from "../ui/Modal";
@@ -23,7 +24,8 @@ const navItems = [
 ];
 
 const Navbar = () => {
-  const { user, logoutUser } = useAuth();
+  const { logoutUser } = useAuth();
+  const user = useAppSelector((state) => state.auth.user);
   const { theme, setTheme, setOverflow } = useToggle();
   const { showModal } = useModal();
   const [nav, setNav] = useState(false);

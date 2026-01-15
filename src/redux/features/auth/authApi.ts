@@ -51,11 +51,10 @@ export const authApi = baseApi.injectEndpoints({
         }),
 
         // POST /refresh-token - Refresh access token
-        refreshToken: builder.mutation<ApiResponse<{ accessToken: string }>, { refreshToken: string }>({
-            query: (data) => ({
+        refreshToken: builder.mutation<ApiResponse<AuthResponse>, void>({
+            query: () => ({
                 url: '/refresh-token',
                 method: 'POST',
-                body: data,
             }),
         }),
 

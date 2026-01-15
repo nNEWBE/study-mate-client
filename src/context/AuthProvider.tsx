@@ -15,7 +15,7 @@ import {
 import { AuthContextType } from "../types";
 import { useDispatch } from "react-redux";
 import { setUser as setReduxUser, logout as logoutReduxUser } from "../redux/features/auth/authSlice";
-import { useLogoutMutation } from "../redux/features/auth/authApi";
+import { useLogoutMutation, useRefreshTokenMutation } from "../redux/features/auth/authApi";
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -28,6 +28,7 @@ const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   const [loading, setLoading] = useState<boolean>(true);
   const dispatch = useDispatch();
   const [serverLogout] = useLogoutMutation();
+  const [refreshToken] = useRefreshTokenMutation();
 
   const createUser = (email: string, password: string): Promise<UserCredential> => {
     setLoading(true);
@@ -84,6 +85,31 @@ const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   };
 
   useEffect(() => {
+    const restoreSession = async () => {
+      try {
+        const result = await refreshToken().unwrap();
+        if (result.success && result.data && result.data.user) {
+          const { user: userData, accessToken } = result.data;
+          dispatch(setReduxUser({
+            user: {
+              email: userData.email,
+              uid: userData._id,
+              displayName: userData.name,
+              photoURL: userData.profileImage || null
+            },
+            token: accessToken
+          }));
+        }
+      } catch (error) {
+        // Only clear if firebase is also not managing session
+        if (!auth.currentUser) {
+          dispatch(logoutReduxUser());
+        }
+      }
+    };
+
+    restoreSession();
+
     const unSubscribe = onAuthStateChanged(auth, async (currentUser) => {
       const isPending = sessionStorage.getItem("google_pending_password");
       if (currentUser && isPending === "true") {
@@ -95,7 +121,6 @@ const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
       setLoading(false);
 
       if (currentUser) {
-        console.log(currentUser);
         const token = await currentUser.getIdToken();
         dispatch(setReduxUser({
           user: {
@@ -106,14 +131,16 @@ const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
           },
           token
         }));
-      } else {
-        dispatch(logoutReduxUser());
       }
+      // Note: We don't automatically logout from Redux here if currentUser is null, 
+      // because we might be logged in via backend-only session (handled by restoreSession).
+      // However, if we want strict syncing:
+      // If firebase is null, and verifyToken failed, then we are logged out.
     });
     return () => {
       unSubscribe();
     };
-  }, [dispatch]);
+  }, [dispatch, refreshToken]);
 
   return (
     <div>
