@@ -68,6 +68,7 @@ const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   };
 
   const logoutUser = (): void => {
+    dispatch(logoutReduxUser()); // Clear Redux state immediately
     serverLogout(); // Clear server-side cookies
     signOut(auth);
   };
