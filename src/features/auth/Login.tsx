@@ -68,22 +68,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
     const loadingToast = toast.loading(
       <div className="flex items-center gap-2">
         <span className="font-semibold">Signing in...</span>
-      </div>,
-      {
-        style: {
-          background: "#0f172a",
-          color: "#00ffa5",
-          border: "2px solid #00ffa5",
-          boxShadow: "0 0 10px 2px rgba(0, 255, 165, 0.3)",
-          borderRadius: "12px",
-          padding: "12px 16px",
-          fontFamily: "Poppins, sans-serif",
-        },
-        iconTheme: {
-          primary: "#00ffa5",
-          secondary: "#0f172a",
-        },
-      }
+      </div>
     );
 
     try {
@@ -120,17 +105,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
     } catch (error: any) {
       toast.dismiss(loadingToast);
       const message = error?.data?.message || "Login failed. Please try again.";
-      toast.error(message, {
-        style: {
-          background: "#0f172a",
-          color: "#ef4444",
-          border: "2px solid #ef4444",
-          boxShadow: "0 0 10px 2px rgba(239, 68, 68, 0.3)",
-          borderRadius: "12px",
-          padding: "12px 16px",
-          fontFamily: "Poppins, sans-serif",
-        },
-      });
+      toast.error(message);
     }
   };
 
@@ -140,22 +115,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
     const loadingToast = toast.loading(
       <div className="flex items-center gap-2">
         <span className="font-semibold">Connecting to Google...</span>
-      </div>,
-      {
-        style: {
-          background: "#0f172a",
-          color: "#00ffa5",
-          border: "2px solid #00ffa5",
-          boxShadow: "0 0 10px 2px rgba(0, 255, 165, 0.3)",
-          borderRadius: "12px",
-          padding: "12px 16px",
-          fontFamily: "Poppins, sans-serif",
-        },
-        iconTheme: {
-          primary: "#00ffa5",
-          secondary: "#0f172a",
-        },
-      }
+      </div>
     );
 
     try {
@@ -217,17 +177,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
       sessionStorage.removeItem("google_pending_password");
       toast.dismiss(loadingToast);
       const message = error?.message || "Google login failed. Please try again.";
-      toast.error(message, {
-        style: {
-          background: "#0f172a",
-          color: "#ef4444",
-          border: "2px solid #ef4444",
-          boxShadow: "0 0 10px 2px rgba(239, 68, 68, 0.3)",
-          borderRadius: "12px",
-          padding: "12px 16px",
-          fontFamily: "Poppins, sans-serif",
-        },
-      });
+      toast.error(message);
     } finally {
       setIsSocialLoading(false);
     }
@@ -247,22 +197,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
     const loadingToast = toast.loading(
       <div className="flex items-center gap-2">
         <span className="font-semibold">Authenticating...</span>
-      </div>,
-      {
-        style: {
-          background: "#0f172a",
-          color: "#00ffa5",
-          border: "2px solid #00ffa5",
-          boxShadow: "0 0 10px 2px rgba(0, 255, 165, 0.3)",
-          borderRadius: "12px",
-          padding: "12px 16px",
-          fontFamily: "Poppins, sans-serif",
-        },
-        iconTheme: {
-          primary: "#00ffa5",
-          secondary: "#0f172a",
-        },
-      }
+      </div>
     );
 
     try {
@@ -362,17 +297,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
     } catch (error: any) {
       toast.dismiss(loadingToast);
       const message = error?.data?.message || "Authentication failed. Please try again.";
-      toast.error(message, {
-        style: {
-          background: "#0f172a",
-          color: "#ef4444",
-          border: "2px solid #ef4444",
-          boxShadow: "0 0 10px 2px rgba(239, 68, 68, 0.3)",
-          borderRadius: "12px",
-          padding: "12px 16px",
-          fontFamily: "Poppins, sans-serif",
-        },
-      });
+      toast.error(message);
     }
   };
 
