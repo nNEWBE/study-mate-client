@@ -37,9 +37,9 @@ const Features = () => {
 
   const getData = async () => {
     const { data } = await axios(
-      `${import.meta.env.VITE_API_URL}/assignments`,
+      `${import.meta.env.VITE_API_URL}/assignment`,
     );
-    setData(data);
+    setData(data.data);
     setTimeout(() => {
       setIsLoading(false);
     }, 1000);

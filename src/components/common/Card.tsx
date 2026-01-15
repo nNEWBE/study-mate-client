@@ -32,6 +32,10 @@ const Card = ({ d, handleDelete }: CardProps): JSX.Element => {
               className="h-[190px] w-full scale-[1.01] rounded-2xl object-cover shadow-xl transition-all duration-1000 hover:scale-110"
               src={`${d.photoURL || (d as any).thumbnail || (d as any).thumbnailUrl?.[0]}`}
               alt={d.title}
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = "https://placehold.co/600x400/1f2937/00ffa5?text=Assignment";
+              }}
             />
           </Link>
           <div className="absolute right-3 top-3 text-sm font-bold">

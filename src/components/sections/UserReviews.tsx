@@ -69,7 +69,7 @@ const UserReviews = () => {
                         <div className="mb-6">
                             <Reveal>
                                 <h2 className="text-4xl md:text-5xl lg:text-6xl font-black font-dosis text-secondary dark:text-white leading-tight mb-6">
-                                    <TextScramble>What Our Users Say</TextScramble>
+                                    <TextScramble as="span">What Our Users Say</TextScramble>
                                 </h2>
                             </Reveal>
                             <Unhidden>

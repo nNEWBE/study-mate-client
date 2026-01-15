@@ -50,13 +50,15 @@ const Register = ({ registerFormRef }: RegisterProps) => {
       // Get a random avatar for the new user
       const randomAvatar = getRandomAvatar();
 
-      const formData = new FormData();
-      formData.append("name", data.name);
-      formData.append("email", data.email);
-      formData.append("password", data.password);
-      formData.append("profileImageUrl", randomAvatar);
+      const registerData = {
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        profileImageUrl: randomAvatar,
+        provider: "email" as const,
+      };
 
-      const result = await registerUser(formData).unwrap();
+      const result = await registerUser(registerData).unwrap();
       toast.dismiss(loadingToast);
 
       if (result.success && result.data) {

@@ -8,6 +8,7 @@ export interface User {
     email: string;
     role: 'student' | 'teacher' | 'admin';
     profileImage?: string;
+    provider?: 'google' | 'github' | 'email';
     isBlocked?: boolean;
     createdAt?: string;
     updatedAt?: string;

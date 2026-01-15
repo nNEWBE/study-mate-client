@@ -2,11 +2,17 @@ import { useState, useEffect, useRef, useCallback } from "react";
 
 interface TextScrambleProps {
   children: string;
+  as?: keyof JSX.IntrinsicElements;
+  className?: string;
 }
 
-const TextScramble = ({ children: text }: TextScrambleProps): JSX.Element => {
+const TextScramble = ({
+  children: text,
+  as: Tag = "h1",
+  className = ""
+}: TextScrambleProps): JSX.Element => {
   const [scrambled, setScrambled] = useState<{ char: string; isScrambled: boolean }[] | null>(null);
-  const textRef = useRef<HTMLHeadingElement>(null);
+  const textRef = useRef<HTMLElement>(null);
   const hasAnimated = useRef(false);
 
   const getRandomChar = (): string => {
@@ -66,10 +72,13 @@ const TextScramble = ({ children: text }: TextScrambleProps): JSX.Element => {
     };
   }, [startScramble]);
 
+  const defaultClasses = "font-dosis text-4xl mb-7 sm:text-5xl font-bold text-secondary text-center dark:text-white";
+  const finalClass = className ? `${defaultClasses} ${className}` : defaultClasses;
+
   return (
-    <h1
+    <Tag
       ref={textRef}
-      className="font-dosis text-4xl mb-7 sm:text-5xl font-bold text-secondary text-center dark:text-white"
+      className={finalClass}
     >
       {scrambled ? (
         scrambled.map((item, index) => (
@@ -84,7 +93,7 @@ const TextScramble = ({ children: text }: TextScrambleProps): JSX.Element => {
         text
       )}
       <span className="text-5xl text-primary">.</span>
-    </h1>
+    </Tag>
   );
 };
 

@@ -79,6 +79,12 @@ const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
 
   useEffect(() => {
     const unSubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      const isPending = sessionStorage.getItem("google_pending_password");
+      if (currentUser && isPending === "true") {
+        setLoading(false);
+        return;
+      }
+
       setUser(currentUser);
       setLoading(false);
 

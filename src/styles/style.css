@@ -67,11 +67,11 @@
 }
 
 .char::after {
-  transform: translateY(-180%);
+  transform: translateY(-220%);
 }
 
 .button:hover .char::before {
-  transform: translateY(180%);
+  transform: translateY(220%);
 }
 
 .button:hover .char::after {

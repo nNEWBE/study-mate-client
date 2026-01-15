@@ -11,7 +11,8 @@ export interface RegisterData {
     name: string;
     email: string;
     password: string;
-    profileImage?: File;
+    profileImageUrl?: string;
+    provider?: 'google' | 'github' | 'email';
 }
 
 export interface AuthResponse {
@@ -23,17 +24,18 @@ export interface AuthResponse {
         email: string;
         role: string;
         profileImage?: string;
+        provider?: 'google' | 'github' | 'email';
     };
 }
 
 export const authApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         // POST /register - Register a new user
-        register: builder.mutation<ApiResponse<AuthResponse>, FormData>({
-            query: (formData) => ({
+        register: builder.mutation<ApiResponse<AuthResponse>, RegisterData>({
+            query: (data) => ({
                 url: '/register',
                 method: 'POST',
-                body: formData,
+                body: data,
             }),
             invalidatesTags: ['User'],
         }),

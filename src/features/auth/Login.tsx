@@ -1,5 +1,6 @@
 import "boxicons";
 import Divider from "../../components/ui/Divider";
+import auth from "../../config/firebase";
 import Button from "../../components/ui/Button";
 import { useState } from "react";
 import { FiEyeOff, FiEye } from "react-icons/fi";
@@ -14,7 +15,7 @@ import toast from "react-hot-toast";
 import { useToggle } from "../../context/ToggleProvider";
 import { useLoginMutation, useRegisterMutation } from "../../redux/features/auth/authApi";
 import { useAppDispatch } from "../../redux/store";
-import { setUser } from "../../redux/features/auth/authSlice";
+import { setUser as setReduxUser } from "../../redux/features/auth/authSlice";
 import GooglePasswordModal from "../../components/ui/GooglePasswordModal";
 import { useModal } from "../../components/ui/Modal";
 
@@ -51,7 +52,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(e.target.checked);
   };
-  const { signInWithGoogle, signInWithGithub } = useAuth();
+  const { signInWithGoogle, signInWithGithub, logoutUser, setUser } = useAuth();
 
   const {
     register,
@@ -61,7 +62,26 @@ const Login = ({ loginFormRef }: LoginProps) => {
   } = useForm<LoginInputs>();
 
   const onSubmit = async (data: LoginInputs) => {
-    const loadingToast = toast.loading("Signing in...");
+    const loadingToast = toast.loading(
+      <div className="flex items-center gap-2">
+        <span className="font-semibold">Signing in...</span>
+      </div>,
+      {
+        style: {
+          background: "#0f172a",
+          color: "#00ffa5",
+          border: "2px solid #00ffa5",
+          boxShadow: "0 0 10px 2px rgba(0, 255, 165, 0.3)",
+          borderRadius: "12px",
+          padding: "12px 16px",
+          fontFamily: "Poppins, sans-serif",
+        },
+        iconTheme: {
+          primary: "#00ffa5",
+          secondary: "#0f172a",
+        },
+      }
+    );
 
     try {
       const result = await login({
@@ -72,7 +92,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
       toast.dismiss(loadingToast);
 
       if (result.success && result.data) {
-        dispatch(setUser({
+        dispatch(setReduxUser({
           user: {
             email: result.data.user?.email || data.email,
             uid: result.data.user?._id || null,
@@ -84,7 +104,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
 
         navigate(location?.state ? location.state : "/");
         reset();
-        // Show succes modal
+        // Show success modal
         setTimeout(() => {
           showModal({
             type: "success",
@@ -97,61 +117,74 @@ const Login = ({ loginFormRef }: LoginProps) => {
     } catch (error: any) {
       toast.dismiss(loadingToast);
       const message = error?.data?.message || "Login failed. Please try again.";
-      toast.error(message);
+      toast.error(message, {
+        style: {
+          background: "#0f172a",
+          color: "#ef4444",
+          border: "2px solid #ef4444",
+          boxShadow: "0 0 10px 2px rgba(239, 68, 68, 0.3)",
+          borderRadius: "12px",
+          padding: "12px 16px",
+          fontFamily: "Poppins, sans-serif",
+        },
+      });
     }
   };
 
   const handleGoogleLogin = async () => {
+    sessionStorage.setItem("google_pending_password", "true");
     setIsSocialLoading(true);
-    const loadingToast = toast.loading("Connecting to Google...");
+    const loadingToast = toast.loading(
+      <div className="flex items-center gap-2">
+        <span className="font-semibold">Connecting to Google...</span>
+      </div>,
+      {
+        style: {
+          background: "#0f172a",
+          color: "#00ffa5",
+          border: "2px solid #00ffa5",
+          boxShadow: "0 0 10px 2px rgba(0, 255, 165, 0.3)",
+          borderRadius: "12px",
+          padding: "12px 16px",
+          fontFamily: "Poppins, sans-serif",
+        },
+        iconTheme: {
+          primary: "#00ffa5",
+          secondary: "#0f172a",
+        },
+      }
+    );
 
     try {
       const result = await signInWithGoogle();
       toast.dismiss(loadingToast);
 
       if (result?.user && result.user.email) {
-        const userEmail: string = result.user.email as string;
-
-        // Try to login first to check if user exists
-        try {
-          const loginLoadingToast = toast.loading("Checking account...");
-          const loginResult = await login({
-            email: userEmail,
-            password: "", // Will fail if user needs password, but that's okay
-          }).unwrap();
-
-          toast.dismiss(loginLoadingToast);
-
-          // User exists and logged in successfully (shouldn't happen with empty password)
-          if (loginResult.success && loginResult.data) {
-            dispatch(setUser({
-              user: {
-                email: loginResult.data.user?.email || userEmail,
-                uid: loginResult.data.user?._id || null,
-                displayName: loginResult.data.user?.name || null,
-                photoURL: loginResult.data.user?.profileImage || null,
-              },
-              token: loginResult.data.accessToken,
-            }));
-            navigate(location?.state ? location.state : "/");
-            toast.success("Login successful!");
-          }
-        } catch (loginError: any) {
-          // User doesn't exist or password required - show modal for first-time users
-          toast.dismiss();
-          setGoogleUserInfo({
-            name: result.user.displayName || "",
-            email: result.user.email || "",
-            photoURL: result.user.photoURL || "",
-            uid: result.user.uid || "",
-          });
-          setIsGoogleModalOpen(true);
-        }
+        // Always show password modal for first-time or returning Google users
+        // User must set a password to complete registration
+        setGoogleUserInfo({
+          name: result.user.displayName || "",
+          email: result.user.email || "",
+          photoURL: result.user.photoURL || "",
+          uid: result.user.uid || "",
+        });
+        setIsGoogleModalOpen(true);
       }
     } catch (error: any) {
+      sessionStorage.removeItem("google_pending_password");
       toast.dismiss(loadingToast);
       const message = error?.message || "Google login failed. Please try again.";
-      toast.error(message);
+      toast.error(message, {
+        style: {
+          background: "#0f172a",
+          color: "#ef4444",
+          border: "2px solid #ef4444",
+          boxShadow: "0 0 10px 2px rgba(239, 68, 68, 0.3)",
+          borderRadius: "12px",
+          padding: "12px 16px",
+          fontFamily: "Poppins, sans-serif",
+        },
+      });
     } finally {
       setIsSocialLoading(false);
     }
@@ -160,23 +193,85 @@ const Login = ({ loginFormRef }: LoginProps) => {
   const handleGooglePasswordSubmit = async (password: string) => {
     if (!googleUserInfo) return;
 
-    const loadingToast = toast.loading("Creating your account...");
+    const loadingToast = toast.loading(
+      <div className="flex items-center gap-2">
+        <span className="font-semibold">Authenticating...</span>
+      </div>,
+      {
+        style: {
+          background: "#0f172a",
+          color: "#00ffa5",
+          border: "2px solid #00ffa5",
+          boxShadow: "0 0 10px 2px rgba(0, 255, 165, 0.3)",
+          borderRadius: "12px",
+          padding: "12px 16px",
+          fontFamily: "Poppins, sans-serif",
+        },
+        iconTheme: {
+          primary: "#00ffa5",
+          secondary: "#0f172a",
+        },
+      }
+    );
 
     try {
-      const formData = new FormData();
-      formData.append("name", googleUserInfo.name);
-      formData.append("email", googleUserInfo.email);
-      formData.append("password", password);
-      // Use Google photo URL if available
-      if (googleUserInfo.photoURL) {
-        formData.append("profileImageUrl", googleUserInfo.photoURL);
+      // First, try to login with the email and password (for returning users)
+      try {
+        const loginResult = await login({
+          email: googleUserInfo.email,
+          password: password,
+        }).unwrap();
+
+        toast.dismiss(loadingToast);
+
+        if (loginResult.success && loginResult.data) {
+          dispatch(setReduxUser({
+            user: {
+              email: loginResult.data.user?.email || googleUserInfo.email,
+              uid: loginResult.data.user?._id || null,
+              displayName: loginResult.data.user?.name || googleUserInfo.name,
+              photoURL: loginResult.data.user?.profileImage || googleUserInfo.photoURL,
+            },
+            token: loginResult.data.accessToken,
+          }));
+
+          sessionStorage.removeItem("google_pending_password");
+          if (auth.currentUser) setUser(auth.currentUser);
+
+          setIsGoogleModalOpen(false);
+          setGoogleUserInfo(null);
+          navigate(location?.state ? location.state : "/");
+
+          // Show success modal for login
+          setTimeout(() => {
+            showModal({
+              type: "success",
+              title: "Welcome Back!",
+              message: "You have been logged in successfully.",
+              confirmText: "Continue",
+            });
+          }, 100);
+          return;
+        }
+      } catch (loginError: any) {
+        // Login failed - user doesn't exist, proceed with registration
+        console.log("User not found, proceeding with registration...");
       }
 
-      const result = await registerUser(formData).unwrap();
+      // If login failed, register the user
+      const registerData = {
+        name: googleUserInfo.name,
+        email: googleUserInfo.email,
+        password: password,
+        profileImageUrl: googleUserInfo.photoURL || undefined,
+        provider: "google" as const,
+      };
+
+      const result = await registerUser(registerData).unwrap();
       toast.dismiss(loadingToast);
 
       if (result.success && result.data) {
-        dispatch(setUser({
+        dispatch(setReduxUser({
           user: {
             email: result.data.user?.email || googleUserInfo.email,
             uid: result.data.user?._id || null,
@@ -186,11 +281,14 @@ const Login = ({ loginFormRef }: LoginProps) => {
           token: result.data.accessToken,
         }));
 
+        sessionStorage.removeItem("google_pending_password");
+        if (auth.currentUser) setUser(auth.currentUser);
+
         setIsGoogleModalOpen(false);
         setGoogleUserInfo(null);
         navigate(location?.state ? location.state : "/");
 
-        // Show success modal
+        // Show success modal for registration
         setTimeout(() => {
           showModal({
             type: "success",
@@ -202,24 +300,77 @@ const Login = ({ loginFormRef }: LoginProps) => {
       }
     } catch (error: any) {
       toast.dismiss(loadingToast);
-      const message = error?.data?.message || "Registration failed. Please try again.";
-      toast.error(message);
+      const message = error?.data?.message || "Authentication failed. Please try again.";
+      toast.error(message, {
+        style: {
+          background: "#0f172a",
+          color: "#ef4444",
+          border: "2px solid #ef4444",
+          boxShadow: "0 0 10px 2px rgba(239, 68, 68, 0.3)",
+          borderRadius: "12px",
+          padding: "12px 16px",
+          fontFamily: "Poppins, sans-serif",
+        },
+      });
     }
   };
 
   const handleGithubLogin = async () => {
     setIsSocialLoading(true);
-    const loadingToast = toast.loading("Connecting to GitHub...");
+    const loadingToast = toast.loading(
+      <div className="flex items-center gap-2">
+        <span className="font-semibold">Connecting to GitHub...</span>
+      </div>,
+      {
+        style: {
+          background: "#0f172a",
+          color: "#00ffa5",
+          border: "2px solid #00ffa5",
+          boxShadow: "0 0 10px 2px rgba(0, 255, 165, 0.3)",
+          borderRadius: "12px",
+          padding: "12px 16px",
+          fontFamily: "Poppins, sans-serif",
+        },
+        iconTheme: {
+          primary: "#00ffa5",
+          secondary: "#0f172a",
+        },
+      }
+    );
 
     try {
       await signInWithGithub();
       toast.dismiss(loadingToast);
       navigate(location?.state ? location.state : "/");
-      toast.success("Login successful!");
+      toast.success("Login successful!", {
+        style: {
+          background: "#0f172a",
+          color: "#00ffa5",
+          border: "2px solid #00ffa5",
+          boxShadow: "0 0 10px 2px rgba(0, 255, 165, 0.3)",
+          borderRadius: "12px",
+          padding: "12px 16px",
+          fontFamily: "Poppins, sans-serif",
+        },
+        iconTheme: {
+          primary: "#00ffa5",
+          secondary: "#0f172a",
+        },
+      });
     } catch (error: any) {
       toast.dismiss(loadingToast);
       const e = error.message?.slice(9, error.message.length) || "GitHub login failed";
-      toast.error(`${e}`);
+      toast.error(`${e}`, {
+        style: {
+          background: "#0f172a",
+          color: "#ef4444",
+          border: "2px solid #ef4444",
+          boxShadow: "0 0 10px 2px rgba(239, 68, 68, 0.3)",
+          borderRadius: "12px",
+          padding: "12px 16px",
+          fontFamily: "Poppins, sans-serif",
+        },
+      });
     } finally {
       setIsSocialLoading(false);
     }
@@ -370,8 +521,10 @@ const Login = ({ loginFormRef }: LoginProps) => {
       <GooglePasswordModal
         isOpen={isGoogleModalOpen}
         onClose={() => {
+          sessionStorage.removeItem("google_pending_password");
           setIsGoogleModalOpen(false);
           setGoogleUserInfo(null);
+          logoutUser();
         }}
         onSubmit={handleGooglePasswordSubmit}
         isLoading={isRegisterLoading}
