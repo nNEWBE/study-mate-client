@@ -13,7 +13,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import "animate.css";
 import toast from "react-hot-toast";
 import { useToggle } from "../../context/ToggleProvider";
-import { useLoginMutation, useRegisterMutation } from "../../redux/features/auth/authApi";
+import { useLoginMutation, useRegisterMutation, useSocialLoginMutation } from "../../redux/features/auth/authApi";
 import { useAppDispatch } from "../../redux/store";
 import { setUser as setReduxUser } from "../../redux/features/auth/authSlice";
 import GooglePasswordModal from "../../components/ui/GooglePasswordModal";
@@ -47,6 +47,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [login, { isLoading }] = useLoginMutation();
+  const [socialLogin] = useSocialLoginMutation();
   const [registerUser, { isLoading: isRegisterLoading }] = useRegisterMutation();
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -160,6 +161,41 @@ const Login = ({ loginFormRef }: LoginProps) => {
       toast.dismiss(loadingToast);
 
       if (result?.user && result.user.email) {
+        // Try to login with social login first
+        try {
+          const loginResult = await socialLogin({ email: result.user.email }).unwrap();
+
+          if (loginResult.success && loginResult.data) {
+            dispatch(setReduxUser({
+              user: {
+                email: loginResult.data.user?.email || result.user.email,
+                uid: loginResult.data.user?._id || null,
+                displayName: loginResult.data.user?.name || result.user.displayName,
+                photoURL: loginResult.data.user?.profileImage || result.user.photoURL,
+              },
+              token: loginResult.data.accessToken,
+            }));
+
+            if (auth.currentUser) setUser(auth.currentUser);
+
+            navigate(location?.state ? location.state : "/");
+
+            // Show success modal
+            setTimeout(() => {
+              showModal({
+                type: "success",
+                title: "Welcome Back!",
+                message: "You have been logged in successfully.",
+                confirmText: "Continue",
+              });
+            }, 100);
+            return;
+          }
+        } catch (error) {
+          // If user not found, proceed to registration modal
+          console.log("User not found, proceeding to registration", error);
+        }
+
         // Always show password modal for first-time or returning Google users
         // User must set a password to complete registration
         setGoogleUserInfo({
@@ -267,36 +303,45 @@ const Login = ({ loginFormRef }: LoginProps) => {
         provider: "google" as const,
       };
 
-      const result = await registerUser(registerData).unwrap();
-      toast.dismiss(loadingToast);
+      const registrationResult = await registerUser(registerData).unwrap();
 
-      if (result.success && result.data) {
-        dispatch(setReduxUser({
-          user: {
-            email: result.data.user?.email || googleUserInfo.email,
-            uid: result.data.user?._id || null,
-            displayName: result.data.user?.name || googleUserInfo.name,
-            photoURL: result.data.user?.profileImage || googleUserInfo.photoURL,
-          },
-          token: result.data.accessToken,
-        }));
+      if (registrationResult.success) {
+        // Automatically login after successful registration to set cookies
+        const result = await login({
+          email: googleUserInfo.email,
+          password: password,
+        }).unwrap();
 
-        sessionStorage.removeItem("google_pending_password");
-        if (auth.currentUser) setUser(auth.currentUser);
+        toast.dismiss(loadingToast);
 
-        setIsGoogleModalOpen(false);
-        setGoogleUserInfo(null);
-        navigate(location?.state ? location.state : "/");
+        if (result.success && result.data) {
+          dispatch(setReduxUser({
+            user: {
+              email: result.data.user?.email || googleUserInfo.email,
+              uid: result.data.user?._id || null,
+              displayName: result.data.user?.name || googleUserInfo.name,
+              photoURL: result.data.user?.profileImage || googleUserInfo.photoURL,
+            },
+            token: result.data.accessToken,
+          }));
 
-        // Show success modal for registration
-        setTimeout(() => {
-          showModal({
-            type: "success",
-            title: "Account Created!",
-            message: "Welcome to StudyMate! Your account has been created successfully.",
-            confirmText: "Let's Go!",
-          });
-        }, 100);
+          sessionStorage.removeItem("google_pending_password");
+          if (auth.currentUser) setUser(auth.currentUser);
+
+          setIsGoogleModalOpen(false);
+          setGoogleUserInfo(null);
+          navigate(location?.state ? location.state : "/");
+
+          // Show success modal for registration/login
+          setTimeout(() => {
+            showModal({
+              type: "success",
+              title: "Account Created!",
+              message: "Welcome to StudyMate! Your account has been created and you are now logged in.",
+              confirmText: "Let's Go!",
+            });
+          }, 100);
+        }
       }
     } catch (error: any) {
       toast.dismiss(loadingToast);

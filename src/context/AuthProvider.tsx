@@ -15,6 +15,7 @@ import {
 import { AuthContextType } from "../types";
 import { useDispatch } from "react-redux";
 import { setUser as setReduxUser, logout as logoutReduxUser } from "../redux/features/auth/authSlice";
+import { useLogoutMutation } from "../redux/features/auth/authApi";
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -26,6 +27,7 @@ const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const dispatch = useDispatch();
+  const [serverLogout] = useLogoutMutation();
 
   const createUser = (email: string, password: string): Promise<UserCredential> => {
     setLoading(true);
@@ -33,6 +35,8 @@ const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   };
 
   const googleProvider = new GoogleAuthProvider();
+  googleProvider.setCustomParameters({ prompt: "select_account" });
+
   const githubProvider = new GithubAuthProvider();
 
   const signInWithGoogle = (): Promise<UserCredential> => {
@@ -62,6 +66,7 @@ const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   };
 
   const logoutUser = (): void => {
+    serverLogout(); // Clear server-side cookies
     signOut(auth);
   };
 

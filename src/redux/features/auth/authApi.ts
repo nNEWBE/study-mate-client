@@ -65,6 +65,15 @@ export const authApi = baseApi.injectEndpoints({
                 method: 'POST',
             }),
         }),
+
+        // POST /social-login - Login with social provider (Google/GitHub)
+        socialLogin: builder.mutation<ApiResponse<AuthResponse>, { email: string }>({
+            query: (data) => ({
+                url: '/social-login',
+                method: 'POST',
+                body: data,
+            }),
+        }),
     }),
 });
 
@@ -73,4 +82,5 @@ export const {
     useLoginMutation,
     useRefreshTokenMutation,
     useLogoutMutation,
+    useSocialLoginMutation,
 } = authApi;

@@ -12,6 +12,7 @@ export const baseApi = createApi({
             }
             return headers;
         },
+        credentials: 'include',
     }),
     tagTypes: ['Assignment', 'Submission', 'Wishlist', 'RoleRequest', 'User', 'Category', 'Review'],
     endpoints: () => ({}),
