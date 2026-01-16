@@ -26,10 +26,10 @@ const BestAssignments = () => {
   }, [])
 
   return (
-    <div className="w-full bg-white pt-32 dark:bg-secondary">
+    <div className="w-full bg-white pt-40 dark:bg-secondary">
       <div className="mx-auto w-[90%] max-w-7xl" id="Best">
         <div className="h-full">
-          <div className="sticky top-28 mb-5 sm:mb-0">
+          <div className="sticky top-36 mb-5 sm:mb-0">
             <div className="flex justify-center">
               <Reveal>
                 <TextScramble>Best Assignments</TextScramble>
@@ -50,7 +50,7 @@ const BestAssignments = () => {
             <BestCardSkeleton cards={bestAssignments.length} />
           ) : (
             data.map((bs, index: number) => (
-              <div key={index} className="sticky top-20 pt-7 sm:top-72" data-cursor="card">
+              <div key={index} className="sticky top-20 pt-7 sm:top-80" data-cursor="card">
                 <Tilt
                   glareEnable={false}
                   tiltMaxAngleY={5}
