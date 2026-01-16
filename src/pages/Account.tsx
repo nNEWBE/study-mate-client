@@ -102,10 +102,9 @@ const Account = () => {
 
   return (
     <motion.div
-      initial={{ translateX: "100%" }}
-      animate={{
-        translateX: "0%",
-      }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
       className="relative flex items-center justify-center overflow-hidden bg-white dark:bg-secondary py-10"
     >

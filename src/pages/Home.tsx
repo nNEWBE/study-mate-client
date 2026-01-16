@@ -10,18 +10,17 @@ import HowItWorks from "../components/sections/HowItWorks";
 import StudyCategories from "../components/sections/StudyCategories";
 
 
-import { useState } from "react";
+
 
 const Home = (): JSX.Element => {
-  const [isAnimationComplete, setIsAnimationComplete] = useState(false);
+
 
   return (
     <motion.div
-      initial={{ translateX: "100%" }}
-      animate={{ translateX: "0%" }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      onAnimationComplete={() => setIsAnimationComplete(true)}
-      style={isAnimationComplete ? { transform: "none" } : undefined}
     >
       <NavMenu />
       <Banner />
