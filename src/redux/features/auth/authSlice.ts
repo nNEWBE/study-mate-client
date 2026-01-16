@@ -7,6 +7,7 @@ interface AuthState {
         uid: string | null;
         displayName: string | null;
         photoURL: string | null;
+        role: 'student' | 'teacher' | 'admin' | null;
     } | null;
     token: string | null;
     loading: boolean;

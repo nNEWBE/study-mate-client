@@ -12,6 +12,7 @@ interface RoleBasedRouteProps {
 const RoleBasedRoute = ({ children, allowedRoles }: RoleBasedRouteProps): JSX.Element => {
     const location = useLocation();
     const { user, loading: authLoading } = useAppSelector((state) => state.auth);
+    console.log(user);
 
     // Fetch user role from backend
     const { data: userData, isLoading: roleLoading } = useGetMeQuery(undefined, {
@@ -27,7 +28,8 @@ const RoleBasedRoute = ({ children, allowedRoles }: RoleBasedRouteProps): JSX.El
     }
 
     // If user doesn't have required role, redirect to home with unauthorized message
-    if (!userData?.role || !allowedRoles.includes(userData.role)) {
+    const role = user?.role || userData?.role;
+    if (!role || !allowedRoles.includes(role)) {
         return <Navigate to="/" state={{ unauthorized: true }} replace />;
     }
 

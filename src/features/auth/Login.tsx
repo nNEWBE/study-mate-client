@@ -87,6 +87,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
             uid: result.data.user?._id || null,
             displayName: result.data.user?.name || null,
             photoURL: result.data.user?.profileImage || null,
+            role: (result.data.user?.role as 'student' | 'teacher' | 'admin') || "student",
           },
           token: result.data.accessToken,
         }));
@@ -142,6 +143,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
                 uid: loginResult.data.user?._id || null,
                 displayName: loginResult.data.user?.name || result.user.displayName,
                 photoURL: loginResult.data.user?.profileImage || result.user.photoURL,
+                role: (loginResult.data.user?.role as 'student' | 'teacher' | 'admin') || "student",
               },
               token: loginResult.data.accessToken,
             }));
@@ -225,6 +227,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
               uid: loginResult.data.user?._id || null,
               displayName: loginResult.data.user?.name || googleUserInfo.name,
               photoURL: loginResult.data.user?.profileImage || googleUserInfo.photoURL,
+              role: (loginResult.data.user?.role as 'student' | 'teacher' | 'admin') || "student",
             },
             token: loginResult.data.accessToken,
           }));
@@ -283,6 +286,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
               uid: result.data.user?._id || null,
               displayName: result.data.user?.name || googleUserInfo.name,
               photoURL: result.data.user?.profileImage || googleUserInfo.photoURL,
+              role: (result.data.user?.role as 'student' | 'teacher' | 'admin') || "student",
             },
             token: result.data.accessToken,
           }));
@@ -343,6 +347,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
                 uid: loginResult.data.user?._id || null,
                 displayName: loginResult.data.user?.name || result.user.displayName,
                 photoURL: loginResult.data.user?.profileImage || result.user.photoURL,
+                role: (loginResult.data.user?.role as 'student' | 'teacher' | 'admin') || "student",
               },
               token: loginResult.data.accessToken,
             }));

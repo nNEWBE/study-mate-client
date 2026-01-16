@@ -69,6 +69,7 @@ const Register = ({ registerFormRef }: RegisterProps) => {
             uid: result.data.user?._id || null,
             displayName: result.data.user?.name || data.name,
             photoURL: result.data.user?.profileImage || randomAvatar,
+            role: (result.data.user?.role as 'student' | 'teacher' | 'admin') || "student",
           },
           token: result.data.accessToken,
         }));

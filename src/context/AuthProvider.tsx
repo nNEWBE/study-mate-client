@@ -96,7 +96,8 @@ const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
               email: userData.email,
               uid: userData._id,
               displayName: userData.name,
-              photoURL: userData.profileImage || null
+              photoURL: userData.profileImage || null,
+              role: (userData.role as 'student' | 'teacher' | 'admin') || "student"
             },
             token: accessToken
           }));
@@ -128,7 +129,8 @@ const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
             email: currentUser.email,
             uid: currentUser.uid,
             displayName: currentUser.displayName,
-            photoURL: currentUser.photoURL
+            photoURL: currentUser.photoURL,
+            role: null // Role will be populated by restoreSession or getMe query
           },
           token
         }));
