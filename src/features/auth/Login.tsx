@@ -1,8 +1,8 @@
+
 import "boxicons";
 import Divider from "../../components/ui/Divider";
-import auth from "../../config/firebase";
 import Button from "../../components/ui/Button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FiEyeOff, FiEye } from "react-icons/fi";
 import PropTypes from "prop-types";
 import { FaGoogle, FaGithub } from "react-icons/fa";
@@ -13,12 +13,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import "animate.css";
 import toast from "react-hot-toast";
 import { useToggle } from "../../context/ToggleProvider";
-import { useLoginMutation, useRegisterMutation, useSocialLoginMutation } from "../../redux/features/auth/authApi";
+import { useLoginMutation, useRegisterMutation } from "../../redux/features/auth/authApi";
 import { useAppDispatch } from "../../redux/store";
 import { setUser as setReduxUser } from "../../redux/features/auth/authSlice";
 import GooglePasswordModal from "../../components/ui/GooglePasswordModal";
 import { useModal } from "../../components/ui/Modal";
 import { getErrorMessage } from "../../utils/errorHandler";
+import { User } from "../../types"; // Import custom User type
 
 interface LoginInputs {
   email: string;
@@ -35,7 +36,6 @@ interface GoogleUserInfo {
   photoURL: string;
   uid: string;
   provider: 'google' | 'github';
-  socialId: string;
 }
 
 const Login = ({ loginFormRef }: LoginProps) => {
@@ -50,13 +50,14 @@ const Login = ({ loginFormRef }: LoginProps) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [login, { isLoading }] = useLoginMutation();
-  const [socialLogin] = useSocialLoginMutation();
   const [registerUser, { isLoading: isRegisterLoading }] = useRegisterMutation();
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(e.target.checked);
   };
-  const { signInWithGoogle, signInWithGithub, logoutUser, setUser } = useAuth();
+
+  // Destructure user from useAuth
+  const { signInWithGoogle, signInWithGithub, logoutUser, setUser, user } = useAuth();
 
   const {
     register,
@@ -64,6 +65,89 @@ const Login = ({ loginFormRef }: LoginProps) => {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginInputs>();
+
+  // Monitor Supabase User State for Social Login completion
+  useEffect(() => {
+    // Check if there's a pending social user from redirect (set by AuthProvider)
+    const pendingUserData = sessionStorage.getItem("pendingSocialUser");
+    if (pendingUserData) {
+      try {
+        const userInfo = JSON.parse(pendingUserData) as GoogleUserInfo;
+        setGoogleUserInfo(userInfo);
+        setIsGoogleModalOpen(true);
+        sessionStorage.removeItem("pendingSocialUser");
+        return; // Don't run the rest of the effect
+      } catch (e) {
+        console.error("Failed to parse pending social user:", e);
+        sessionStorage.removeItem("pendingSocialUser");
+      }
+    }
+
+    const handleSocialRedirect = async () => {
+      // If we have a user (Supabase) but not backend authenticated
+      if (!user || localStorage.getItem("isAuthenticated") || isSocialLoading) {
+        return;
+      }
+
+      const socialProvider = user.providerData?.[0];
+      const isSocial = socialProvider?.providerId === 'google' || socialProvider?.providerId === 'github';
+
+      if (isSocial && socialProvider) {
+        setIsSocialLoading(true);
+        const loadingToast = toast.loading("Finalizing login...");
+
+        try {
+          // Try to login to backend with just email (no password for social login)
+          const loginResult = await login({
+            email: user.email || ""
+          }).unwrap();
+
+          if (loginResult.success && loginResult.data) {
+            dispatch(setReduxUser({
+              user: {
+                email: loginResult.data.user?.email || user.email,
+                uid: loginResult.data.user?._id || null,
+                displayName: loginResult.data.user?.name || user.displayName,
+                photoURL: loginResult.data.user?.profileImage || user.photoURL,
+                role: (loginResult.data.user?.role as 'student' | 'teacher' | 'admin') || "student",
+              },
+              token: loginResult.data.accessToken,
+            }));
+            localStorage.setItem("isAuthenticated", "true");
+
+            toast.dismiss(loadingToast);
+            toast.success(`Welcome back, ${loginResult.data.user?.name || user.displayName || "User"}!`);
+            navigate(location?.state ? location.state : "/");
+
+            // Show success modal for returning users
+            setTimeout(() => {
+              showModal({
+                type: "success",
+                title: "Welcome Back!",
+                message: "You have been logged in successfully.",
+                confirmText: "Continue",
+              });
+            }, 100);
+          }
+        } catch (error) {
+          toast.dismiss(loadingToast);
+          // User not found in backend -> Proceed to Registration (Password Modal)
+          setGoogleUserInfo({
+            name: user.displayName || "User",
+            email: user.email || null,
+            photoURL: user.photoURL || "",
+            uid: user.uid,
+            provider: socialProvider.providerId as 'google' | 'github'
+          });
+          setIsGoogleModalOpen(true);
+        } finally {
+          setIsSocialLoading(false);
+        }
+      }
+    };
+
+    handleSocialRedirect();
+  }, [user, navigate, location, login, dispatch, isSocialLoading, showModal]);
 
   const onSubmit = async (data: LoginInputs) => {
     const loadingToast = toast.loading(
@@ -91,14 +175,13 @@ const Login = ({ loginFormRef }: LoginProps) => {
           },
           token: result.data.accessToken,
         }));
+        localStorage.setItem("isAuthenticated", "true");
 
         navigate(location?.state ? location.state : "/");
         reset();
 
-        // Show welcome toast
         toast.success(`Welcome back, ${result.data.user?.name || "User"}!`);
 
-        // Show success modal
         setTimeout(() => {
           showModal({
             type: "success",
@@ -116,87 +199,28 @@ const Login = ({ loginFormRef }: LoginProps) => {
   };
 
   const handleGoogleLogin = async () => {
-    sessionStorage.setItem("google_pending_password", "true");
-    setIsSocialLoading(true);
-    const loadingToast = toast.loading(
-      <div className="flex items-center gap-2">
-        <span className="font-semibold">Connecting to Google...</span>
-      </div>
-    );
-
     try {
-      const result = await signInWithGoogle();
-      toast.dismiss(loadingToast);
-
-      if (result?.user && result.user.email) {
-        // Try to login with social login first
-        try {
-          const loginResult = await socialLogin({
-            email: result.user.email,
-            socialId: result.user.providerData[0]?.uid
-          }).unwrap();
-
-          if (loginResult.success && loginResult.data) {
-            dispatch(setReduxUser({
-              user: {
-                email: loginResult.data.user?.email || result.user.email,
-                uid: loginResult.data.user?._id || null,
-                displayName: loginResult.data.user?.name || result.user.displayName,
-                photoURL: loginResult.data.user?.profileImage || result.user.photoURL,
-                role: (loginResult.data.user?.role as 'student' | 'teacher' | 'admin') || "student",
-              },
-              token: loginResult.data.accessToken,
-            }));
-
-            if (auth.currentUser) setUser(auth.currentUser);
-
-            navigate(location?.state ? location.state : "/");
-
-            // Show welcome toast
-            toast.success(`Welcome back, ${loginResult.data.user?.name || result.user.displayName || "User"}!`);
-
-            // Show success modal
-            setTimeout(() => {
-              showModal({
-                type: "success",
-                title: "Welcome Back!",
-                message: "You have been logged in successfully.",
-                confirmText: "Continue",
-              });
-            }, 100);
-            return;
-          }
-        } catch (error) {
-          // If user not found, proceed to registration modal
-          console.log("User not found, proceeding to registration", error);
-        }
-
-        // Always show password modal for first-time or returning Google users
-        // User must set a password to complete registration
-        setGoogleUserInfo({
-          name: result.user.displayName || "",
-          email: result.user.email || null,
-          photoURL: result.user.photoURL || "",
-          uid: result.user.uid || "",
-          provider: "google",
-          socialId: result.user.providerData[0]?.uid || result.user.uid
-        });
-        setIsGoogleModalOpen(true);
-      }
+      await signInWithGoogle();
+      // Redirect happens automatically
     } catch (error: any) {
-      sessionStorage.removeItem("google_pending_password");
-      toast.dismiss(loadingToast);
-      const message = getErrorMessage(error, "Google login failed. Please try again.");
+      const message = getErrorMessage(error, "Google login failed.");
       toast.error(message);
-    } finally {
-      setIsSocialLoading(false);
+    }
+  };
+
+  const handleGithubLogin = async () => {
+    try {
+      await signInWithGithub();
+      // Redirect happens automatically
+    } catch (error: any) {
+      const message = getErrorMessage(error, "Github login failed.");
+      toast.error(message);
     }
   };
 
   const handleGooglePasswordSubmit = async (password: string, email?: string) => {
     if (!googleUserInfo) return;
 
-    // Use email from userInfo or the one provided by user
     const userEmail = googleUserInfo.email || email;
 
     if (!userEmail) {
@@ -204,74 +228,22 @@ const Login = ({ loginFormRef }: LoginProps) => {
       return;
     }
 
-    const loadingToast = toast.loading(
-      <div className="flex items-center gap-2">
-        <span className="font-semibold">Authenticating...</span>
-      </div>
-    );
+    const loadingToast = toast.loading("Creating account...");
 
     try {
-      // First, try to login with the email and password (for returning users)
-      try {
-        const loginResult = await login({
-          email: userEmail,
-          password: password,
-        }).unwrap();
-
-        toast.dismiss(loadingToast);
-
-        if (loginResult.success && loginResult.data) {
-          dispatch(setReduxUser({
-            user: {
-              email: loginResult.data.user?.email || userEmail,
-              uid: loginResult.data.user?._id || null,
-              displayName: loginResult.data.user?.name || googleUserInfo.name,
-              photoURL: loginResult.data.user?.profileImage || googleUserInfo.photoURL,
-              role: (loginResult.data.user?.role as 'student' | 'teacher' | 'admin') || "student",
-            },
-            token: loginResult.data.accessToken,
-          }));
-
-          sessionStorage.removeItem("google_pending_password");
-          if (auth.currentUser) setUser(auth.currentUser);
-
-          setIsGoogleModalOpen(false);
-          setGoogleUserInfo(null);
-          navigate(location?.state ? location.state : "/");
-
-          // Show welcome toast
-          toast.success(`Welcome back, ${loginResult.data.user?.name || googleUserInfo.name || "User"}!`);
-
-          // Show success modal for login
-          setTimeout(() => {
-            showModal({
-              type: "success",
-              title: "Welcome Back!",
-              message: "You have been logged in successfully.",
-              confirmText: "Continue",
-            });
-          }, 100);
-          return;
-        }
-      } catch (loginError: any) {
-        // Login failed - user doesn't exist, proceed with registration
-        console.log("User not found, proceeding with registration...");
-      }
-
-      // If login failed, register the user
+      // 1. Register the user
       const registerData = {
         name: googleUserInfo.name,
         email: userEmail,
         password: password,
         profileImageUrl: googleUserInfo.photoURL || undefined,
         provider: googleUserInfo.provider,
-        socialId: googleUserInfo.socialId,
       };
 
       const registrationResult = await registerUser(registerData).unwrap();
 
       if (registrationResult.success) {
-        // Automatically login after successful registration to set cookies
+        // 2. Login to get token
         const result = await login({
           email: userEmail,
           password: password,
@@ -290,23 +262,19 @@ const Login = ({ loginFormRef }: LoginProps) => {
             },
             token: result.data.accessToken,
           }));
-
-          sessionStorage.removeItem("google_pending_password");
-          if (auth.currentUser) setUser(auth.currentUser);
+          localStorage.setItem("isAuthenticated", "true");
 
           setIsGoogleModalOpen(false);
           setGoogleUserInfo(null);
           navigate(location?.state ? location.state : "/");
 
-          // Show welcome toast for new user
-          toast.success(`Welcome to StudyMate, ${result.data.user?.name || googleUserInfo.name || "User"}!`);
+          toast.success(`Welcome to StudyMate!`);
 
-          // Show success modal for registration/login
           setTimeout(() => {
             showModal({
               type: "success",
               title: "Account Created!",
-              message: "Welcome to StudyMate! Your account has been created and you are now logged in.",
+              message: "Welcome to StudyMate!",
               confirmText: "Let's Go!",
             });
           }, 100);
@@ -314,85 +282,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
       }
     } catch (error: any) {
       toast.dismiss(loadingToast);
-      const message = getErrorMessage(error, "Authentication failed. Please try again.");
-      toast.error(message);
-    }
-  };
-
-  const handleGithubLogin = async () => {
-    sessionStorage.setItem("google_pending_password", "true");
-    setIsSocialLoading(true);
-    const loadingToast = toast.loading(
-      <div className="flex items-center gap-2">
-        <span className="font-semibold">Connecting to GitHub...</span>
-      </div>
-    );
-
-    try {
-      const result = await signInWithGithub();
-      toast.dismiss(loadingToast);
-
-      if (result?.user) {
-        // Try to login with social login first (using email OR socialId)
-        try {
-          const loginResult = await socialLogin({
-            email: result.user.email || undefined,
-            socialId: result.user.providerData[0]?.uid || result.user.uid
-          }).unwrap();
-
-          if (loginResult.success && loginResult.data) {
-            dispatch(setReduxUser({
-              user: {
-                email: loginResult.data.user?.email || result.user.email,
-                uid: loginResult.data.user?._id || null,
-                displayName: loginResult.data.user?.name || result.user.displayName,
-                photoURL: loginResult.data.user?.profileImage || result.user.photoURL,
-                role: (loginResult.data.user?.role as 'student' | 'teacher' | 'admin') || "student",
-              },
-              token: loginResult.data.accessToken,
-            }));
-
-            sessionStorage.removeItem("google_pending_password");
-            if (auth.currentUser) setUser(auth.currentUser);
-
-            navigate(location?.state ? location.state : "/");
-
-            // Show welcome toast
-            toast.success(`Welcome back, ${loginResult.data.user?.name || result.user.displayName || "User"}!`);
-
-            // Show success modal
-            setTimeout(() => {
-              showModal({
-                type: "success",
-                title: "Welcome Back!",
-                message: "You have been logged in successfully.",
-                confirmText: "Continue",
-              });
-            }, 100);
-            return;
-          }
-        } catch (error) {
-          console.log("User not found, proceeding to registration", error);
-        }
-
-        // Initialize modal for password setting (and email if missing)
-        setGoogleUserInfo({
-          name: result.user.displayName || result.user.providerData[0]?.displayName || "GitHub User",
-          email: result.user.email || null,
-          photoURL: result.user.photoURL || "",
-          uid: result.user.uid || "",
-          provider: "github",
-          socialId: result.user.providerData[0]?.uid || result.user.uid
-        });
-        setIsGoogleModalOpen(true);
-      }
-    } catch (error: any) {
-      sessionStorage.removeItem("google_pending_password");
-      toast.dismiss(loadingToast);
-      const message = getErrorMessage(error, "GitHub login failed. Please try again.");
-      toast.error(message);
-    } finally {
-      setIsSocialLoading(false);
+      toast.error(getErrorMessage(error, "Registration failed."));
     }
   };
 
@@ -518,9 +408,6 @@ const Login = ({ loginFormRef }: LoginProps) => {
           />
         </div>
 
-        {/* Divider */}
-        <Divider orbSize="md" />
-
         <div className="mt-5 flex justify-center gap-3">
           <div
             onClick={!isSocialLoading ? handleGoogleLogin : undefined}
@@ -537,11 +424,9 @@ const Login = ({ loginFormRef }: LoginProps) => {
         </div>
       </form>
 
-      {/* Google Password Modal */}
       <GooglePasswordModal
         isOpen={isGoogleModalOpen}
         onClose={() => {
-          sessionStorage.removeItem("google_pending_password");
           setIsGoogleModalOpen(false);
           setGoogleUserInfo(null);
           logoutUser();
@@ -555,7 +440,6 @@ const Login = ({ loginFormRef }: LoginProps) => {
 };
 
 export default Login;
-
 Login.propTypes = {
   loginFormRef: PropTypes.object,
 };

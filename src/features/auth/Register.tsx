@@ -32,6 +32,7 @@ const Register = ({ registerFormRef }: RegisterProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useAppDispatch();
+
   const [registerUser, { isLoading }] = useRegisterMutation();
 
   const {

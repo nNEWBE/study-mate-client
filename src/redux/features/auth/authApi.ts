@@ -4,7 +4,7 @@ import { ApiResponse } from '../../../types';
 // Auth-specific types
 export interface LoginCredentials {
     email: string;
-    password: string;
+    password?: string; // Optional for social login
 }
 
 export interface RegisterData {
@@ -12,8 +12,7 @@ export interface RegisterData {
     email: string;
     password: string;
     profileImageUrl?: string;
-    provider?: 'google' | 'github' | 'email';
-    socialId?: string;
+    provider?: 'google' | 'github' | 'password';
 }
 
 export interface AuthResponse {
@@ -25,7 +24,7 @@ export interface AuthResponse {
         email: string;
         role: string;
         profileImage?: string;
-        provider?: 'google' | 'github' | 'email';
+        providers?: ('google' | 'github' | 'password')[];
     };
 }
 
@@ -41,7 +40,7 @@ export const authApi = baseApi.injectEndpoints({
             invalidatesTags: ['User'],
         }),
 
-        // POST /login - Login user
+        // POST /login - Login user (works for both password and social login)
         login: builder.mutation<ApiResponse<AuthResponse>, LoginCredentials>({
             query: (credentials) => ({
                 url: '/login',
@@ -65,15 +64,6 @@ export const authApi = baseApi.injectEndpoints({
                 method: 'POST',
             }),
         }),
-
-        // POST /social-login - Login with social provider (Google/GitHub)
-        socialLogin: builder.mutation<ApiResponse<AuthResponse>, { email?: string; socialId?: string }>({
-            query: (data) => ({
-                url: '/social-login',
-                method: 'POST',
-                body: data,
-            }),
-        }),
     }),
 });
 
@@ -82,5 +72,4 @@ export const {
     useLoginMutation,
     useRefreshTokenMutation,
     useLogoutMutation,
-    useSocialLoginMutation,
 } = authApi;

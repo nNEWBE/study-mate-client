@@ -1,5 +1,23 @@
-import { User, UserCredential } from "firebase/auth";
 import { ReactNode } from "react";
+
+export interface User {
+    uid: string;
+    email: string | null;
+    displayName: string | null;
+    photoURL: string | null;
+    providerData: {
+        uid: string;
+        displayName: string | null;
+        email: string | null;
+        photoURL: string | null;
+        providerId: string;
+    }[];
+}
+
+export interface UserCredential {
+    user: User;
+    providerId: string | null;
+}
 
 // Auth Context Types
 export interface AuthContextType {
