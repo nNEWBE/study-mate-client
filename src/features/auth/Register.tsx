@@ -12,6 +12,7 @@ import { useRegisterMutation } from "../../redux/features/auth/authApi";
 import { useAppDispatch } from "../../redux/store";
 import { setUser } from "../../redux/features/auth/authSlice";
 import { getRandomAvatar } from "../../utils/avatars";
+import { getErrorMessage } from "../../utils/errorHandler";
 
 interface RegisterInputs {
   name: string;
@@ -92,7 +93,7 @@ const Register = ({ registerFormRef }: RegisterProps) => {
       }
     } catch (error: any) {
       toast.dismiss(loadingToast);
-      const message = error?.data?.message || "Registration failed. Please try again.";
+      const message = getErrorMessage(error, "Registration failed. Please try again.");
       toast.error(message);
     }
   };

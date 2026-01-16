@@ -371,7 +371,6 @@ const Login = ({ loginFormRef }: LoginProps) => {
         }
 
         // Initialize modal for password setting (and email if missing)
-        // Initialize modal for password setting (and email if missing)
         setGoogleUserInfo({
           name: result.user.displayName || result.user.providerData[0]?.displayName || "GitHub User",
           email: result.user.email || null,

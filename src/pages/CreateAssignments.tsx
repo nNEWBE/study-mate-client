@@ -16,6 +16,7 @@ import { Dropdown } from "primereact/dropdown";
 import { HiOutlineDocumentChartBar } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 import { useCreateAssignmentMutation } from "../redux/features/assignments/assignmentApi";
+import { getErrorMessage } from "../utils/errorHandler";
 
 type FormInputs = {
   title: string;
@@ -71,7 +72,7 @@ const CreateAssignments = () => {
       navigate("/tasks");
     } catch (err: any) {
       console.log(err);
-      toast.error(err.data?.message || err.message);
+      toast.error(getErrorMessage(err, "Failed to create assignment"));
     }
   };
   return (

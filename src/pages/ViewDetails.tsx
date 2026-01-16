@@ -18,6 +18,7 @@ import toast from "react-hot-toast";
 import useAuth from "../hooks/useAuth";
 import { Assignment } from "../types";
 import { useAddToWishlistMutation } from "../redux/features/wishlist/wishlistApi";
+import { getErrorMessage } from "../utils/errorHandler";
 
 interface AssignmentData extends Assignment {
   _id: string; // Ensure _id is present
@@ -41,7 +42,7 @@ const ViewDetails = () => {
       await addToWishlist({ assignment: data._id }).unwrap();
       toast.success("Added to Wishlist!");
     } catch (error: any) {
-      toast.error(error.data?.message || "Failed to add to wishlist");
+      toast.error(getErrorMessage(error, "Failed to add to wishlist"));
     }
   };
 

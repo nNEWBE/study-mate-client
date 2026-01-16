@@ -13,6 +13,7 @@ import useAuth from "../hooks/useAuth";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { useGetAssignmentsQuery, useDeleteAssignmentMutation } from "../redux/features/assignments/assignmentApi";
+import { getErrorMessage } from "../utils/errorHandler";
 
 const Tasks = () => {
   const navigate = useNavigate();
@@ -71,7 +72,7 @@ const Tasks = () => {
       }
     } catch (error: any) {
       console.log(error);
-      toast.error(error.message || "Failed to delete");
+      toast.error(getErrorMessage(error, "Failed to delete assignment"));
     }
   };
 

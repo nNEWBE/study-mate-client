@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import { BsFillFileEarmarkBarGraphFill, BsFillFileEarmarkTextFill } from "react-icons/bs";
 import Button from "../components/ui/Button";
 import { useGetWishlistQuery, useRemoveFromWishlistMutation } from "../redux/features/wishlist/wishlistApi";
+import { getErrorMessage } from "../utils/errorHandler";
 
 const Wishlist = () => {
     const { user } = useAuth();
@@ -24,7 +25,7 @@ const Wishlist = () => {
             toast.success("Removed from wishlist");
         } catch (error) {
             console.error("Error removing", error);
-            toast.error("Failed to remove");
+            toast.error(getErrorMessage(error, "Failed to remove from wishlist"));
         }
     };
 

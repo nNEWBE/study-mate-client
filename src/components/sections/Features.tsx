@@ -12,6 +12,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import useAuth from "../../hooks/useAuth";
 import Swal from "sweetalert2";
+import { getErrorMessage } from "../../utils/errorHandler";
 
 interface Assignment {
   _id: string;
@@ -103,7 +104,7 @@ const Features = () => {
       }
     } catch (error) {
       console.log(error);
-      toast.error((error as Error).message);
+      toast.error(getErrorMessage(error, "Failed to delete assignment"));
     }
   };
 
