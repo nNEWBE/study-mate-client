@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import CardSkeleton from "../components/ui/CardSkeleton";
 import Card from "../components/common/Card";
@@ -10,7 +9,7 @@ import { motion } from "framer-motion";
 import CounterUp from "../animation/CounterUp";
 import toast from "react-hot-toast";
 import useAuth from "../hooks/useAuth";
-import Swal from "sweetalert2";
+import { useModal } from "../components/ui/Modal";
 import { useNavigate } from "react-router-dom";
 import { useGetAssignmentsQuery, useDeleteAssignmentMutation } from "../redux/features/assignments/assignmentApi";
 import { getErrorMessage } from "../utils/errorHandler";
@@ -18,6 +17,7 @@ import { getErrorMessage } from "../utils/errorHandler";
 const Tasks = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { showModal } = useModal();
 
   const { data: assignments = [], isLoading } = useGetAssignmentsQuery();
   const [deleteAssignment] = useDeleteAssignmentMutation();
@@ -31,49 +31,29 @@ const Tasks = () => {
     else if (user?.email !== email && user?.displayName !== name)
       return toast.error("Only author can delete assignment")
 
-    try {
-      const result = await Swal.fire({
-        title: "Want to Delete?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        iconColor: "#3085d6",
-        confirmButtonText: "Yes, Delete",
-        background: "#111827",
-        buttonsStyling: false,
-        color: "#FFFFFF",
-        customClass: {
-          confirmButton:
-            "btn animate__animated animate__rubberBand outline-none bg-[#111827] hover:bg-[#111827] hover:border-[#3085d6] hover:text-[#3085d6] border-[4.5px] border-[#3085d6] text-[#3085d6] text-2xl font-bold font-edu px-5",
-          cancelButton:
-            "btn ml-5 animate__animated animate__rubberBand outline-none bg-[#111827] hover:bg-[#111827] hover:border-[#ef4444] hover:text-[#ef4444] border-[4.5px] border-[#ef4444] text-[#ef4444] text-2xl font-bold font-edu px-5",
-          title: "font-poppins",
-        },
-      });
-
-      if (result.isConfirmed) {
-        await deleteAssignment(id).unwrap();
-        toast.success("Assignment Deleted Successfully");
-
-        Swal.fire({
-          title: "Deleted Successful",
-          icon: "success",
-          confirmButtonText: "Ok",
-          iconColor: "#00ffa5",
-          background: "#111827",
-          buttonsStyling: false,
-          color: "#FFFFFF",
-          customClass: {
-            confirmButton:
-              "btn animate__animated animate__rubberBand outline-none bg-[#111827] hover:bg-[#111827] hover:border-[#00ffa5] hover:text-[#00ffa5] border-[4.5px] border-[#00ffa5] text-[#00ffa5] text-2xl font-bold font-edu px-5",
-            title: "font-poppins",
-          },
-        });
-      }
-    } catch (error: any) {
-      console.log(error);
-      toast.error(getErrorMessage(error, "Failed to delete assignment"));
-    }
+    showModal({
+      type: "confirm",
+      title: "Want to Delete?",
+      message: "This action cannot be undone.",
+      confirmText: "Yes, Delete",
+      cancelText: "Cancel",
+      showCancel: true,
+      onConfirm: async () => {
+        try {
+          await deleteAssignment(id).unwrap();
+          toast.success("Assignment Deleted Successfully");
+          showModal({
+            type: "success",
+            title: "Deleted Successfully",
+            message: "The assignment has been removed.",
+            confirmText: "Ok",
+          });
+        } catch (error: any) {
+          console.log(error);
+          toast.error(getErrorMessage(error, "Failed to delete assignment"));
+        }
+      },
+    });
   };
 
   return (

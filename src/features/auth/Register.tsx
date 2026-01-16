@@ -6,7 +6,6 @@ import PropTypes from "prop-types";
 import { MdError } from "react-icons/md";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
 import { useToggle } from "../../context/ToggleProvider";
 import { useRegisterMutation, useLoginMutation } from "../../redux/features/auth/authApi";
 import { useAppDispatch } from "../../redux/store";
@@ -90,23 +89,19 @@ const Register = ({ registerFormRef }: RegisterProps) => {
             token: loginResult.data.accessToken,
           }));
 
+          // Show welcome toast
+          toast.success(`Welcome, ${loginResult.data.user?.name || data.name}!`);
+
+          // Dispatch welcome modal event
+          window.dispatchEvent(new CustomEvent('showWelcomeModal', {
+            detail: {
+              name: loginResult.data.user?.name || data.name,
+              isRegistration: true
+            }
+          }));
+
           navigate(location?.state ? location.state : "/");
           reset();
-          Swal.fire({
-            title: "SignUp Successful",
-            text: "Welcome to StudyMate!",
-            icon: "success",
-            confirmButtonText: "Let's Go!",
-            iconColor: "#00ffa5",
-            background: "#111827",
-            buttonsStyling: false,
-            color: "#FFFFFF",
-            customClass: {
-              confirmButton:
-                "btn animate__animated animate__rubberBand outline-none bg-[#111827] hover:bg-[#111827] hover:border-[#00ffa5] hover:text-[#00ffa5] border-[4.5px] border-[#00ffa5] text-[#00ffa5] text-2xl font-bold font-edu px-5",
-              title: "font-poppins",
-            },
-          });
         }
       }
     } catch (error: any) {

@@ -13,6 +13,7 @@ import "primeicons/primeicons.css";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import { ModalProvider } from "./components/ui/Modal";
+import WelcomeModalHandler from "./components/WelcomeModalHandler";
 
 const rootElement = document.getElementById("root");
 
@@ -26,6 +27,7 @@ ReactDOM.createRoot(rootElement).render(
       <AuthProvider>
         <ToggleProvider>
           <ModalProvider>
+            <WelcomeModalHandler />
             <RouterProvider router={router} />
             <Toast />
           </ModalProvider>

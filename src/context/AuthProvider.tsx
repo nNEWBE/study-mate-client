@@ -18,7 +18,12 @@ interface AuthProviderProps {
 
 const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  // Only show loading (skeletons) if there's a session hint (user was previously logged in)
+  const [loading, setLoading] = useState<boolean>(() => {
+    const hasSessionHint = localStorage.getItem('sessionHint') === 'true';
+    const hasPendingProvider = localStorage.getItem('pendingProvider');
+    return hasSessionHint || !!hasPendingProvider;
+  });
   const dispatch = useDispatch();
   const [serverLogout] = useLogoutMutation();
   const [refreshToken] = useRefreshTokenMutation();
@@ -42,6 +47,8 @@ const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
         providerData: [] // Redux user doesn't store this, but we mock it for type compatibility
       });
       setLoading(false);
+      // Set session hint when user is logged in
+      localStorage.setItem('sessionHint', 'true');
     } else {
       // If Redux has no user, we might still be loading or truly logged out.
       // We don't force null here immediately because Supabase session check (setUserFromSession)
@@ -142,6 +149,8 @@ const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
     serverLogout();
     await supabase.auth.signOut();
     setUser(null);
+    // Clear session hint on logout
+    localStorage.removeItem('sessionHint');
   };
 
   const authInfo: AuthContextType = {
@@ -230,9 +239,20 @@ const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
             token: loginResult.data.accessToken,
           }));
 
+          // Set welcome modal flag for display after redirect
+          const userName = loginResult.data.user?.name || appUser.displayName || 'User';
+          const welcomeData = {
+            name: userName,
+            provider: providerName
+          };
 
+          // Store in localStorage for page refresh scenarios
+          localStorage.setItem('showWelcomeModal', JSON.stringify(welcomeData));
 
-          toast.success(`Welcome, ${loginResult.data.user?.name || appUser.displayName}!`);
+          // Dispatch custom event for immediate modal display
+          window.dispatchEvent(new CustomEvent('showWelcomeModal', { detail: welcomeData }));
+
+          toast.success(`Welcome, ${userName}!`);
           console.log("Social login complete! Cookies set.");
 
           // Clear pending provider

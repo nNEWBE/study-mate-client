@@ -16,11 +16,12 @@ import {
 import Reveal from "../animation/Reveal";
 import Button from "../components/ui/Button";
 import { useToggle } from "../context/ToggleProvider";
+import { useModal } from "../components/ui/Modal";
 import "../styles/style.css";
-import Swal from "sweetalert2";
 
 const Contact = () => {
     const { theme } = useToggle();
+    const { showModal } = useModal();
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -40,20 +41,11 @@ const Contact = () => {
         // Simulate form submission
         setTimeout(() => {
             setIsSubmitting(false);
-            Swal.fire({
+            showModal({
+                type: "success",
                 title: "Message Sent!",
-                text: "We'll get back to you as soon as possible.",
-                icon: "success",
-                confirmButtonText: "Great!",
-                iconColor: "#00ffa5",
-                background: "#111827",
-                buttonsStyling: false,
-                color: "#FFFFFF",
-                customClass: {
-                    confirmButton:
-                        "btn animate__animated animate__rubberBand outline-none bg-[#111827] hover:bg-[#111827] hover:border-[#00ffa5] hover:text-[#00ffa5] border-[4.5px] border-[#00ffa5] text-[#00ffa5] text-2xl font-bold font-edu px-5",
-                    title: "font-poppins",
-                },
+                message: "We'll get back to you as soon as possible.",
+                confirmText: "Great!",
             });
             setFormData({ name: "", email: "", subject: "", message: "" });
         }, 1500);

@@ -1,44 +1,46 @@
-
+import { useState } from "react";
 import useAuth from "../../hooks/useAuth";
 import { useGetMyRoleRequestsQuery, useCreateRoleRequestMutation } from "../../redux/features/roleRequests/roleRequestApi";
-import Swal from "sweetalert2";
+import { useModal } from "../../components/ui/Modal";
+import toast from "react-hot-toast";
+import Modal from "../../components/ui/Modal";
 
 const DashboardRole = () => {
     const { user } = useAuth();
+    const { showModal } = useModal();
     const { data: requests = [], isLoading } = useGetMyRoleRequestsQuery(undefined, { skip: !user });
     const [createRoleRequest] = useCreateRoleRequestMutation();
 
-    const handleRequestRole = async () => {
-        const { value: formValues } = await Swal.fire({
-            title: 'Request Role Upgrade',
-            html:
-                '<select id="swal-role" class="swal2-input">' +
-                '<option value="teacher">Teacher</option>' +
-                '<option value="admin">Admin</option>' +
-                '</select>' +
-                '<input id="swal-reason" class="swal2-input" placeholder="Reason (min 10 chars)">',
-            focusConfirm: false,
-            preConfirm: () => {
-                return [
-                    (document.getElementById('swal-role') as HTMLInputElement).value,
-                    (document.getElementById('swal-reason') as HTMLInputElement).value
-                ]
-            }
-        });
+    // Form state
+    const [showForm, setShowForm] = useState(false);
+    const [selectedRole, setSelectedRole] = useState<string>("teacher");
+    const [reason, setReason] = useState<string>("");
 
-        if (formValues) {
-            const [role, reason] = formValues;
-            if (reason.length < 10) {
-                return Swal.fire('Error', 'Reason must be at least 10 characters', 'error');
+    const handleSubmitRequest = async () => {
+        if (reason.length < 10) {
+            toast.error("Reason must be at least 10 characters");
+            return;
+        }
+
+        try {
+            const res = await createRoleRequest({ requestedRole: selectedRole as "teacher" | "admin", reason }).unwrap();
+            if (res.success) {
+                showModal({
+                    type: "success",
+                    title: "Success",
+                    message: "Request submitted successfully!",
+                    confirmText: "OK",
+                });
+                setShowForm(false);
+                setReason("");
             }
-            try {
-                const res = await createRoleRequest({ requestedRole: role, reason }).unwrap();
-                if (res.success) {
-                    Swal.fire('Success', 'Request submitted', 'success');
-                }
-            } catch (error: any) {
-                Swal.fire('Error', error.data?.message || 'Failed to submit', 'error');
-            }
+        } catch (error: any) {
+            showModal({
+                type: "error",
+                title: "Error",
+                message: error.data?.message || "Failed to submit request",
+                confirmText: "OK",
+            });
         }
     };
 
@@ -47,12 +49,53 @@ const DashboardRole = () => {
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-3xl font-bold text-secondary dark:text-white">Role Requests</h1>
                 <button
-                    onClick={handleRequestRole}
+                    onClick={() => setShowForm(true)}
                     className="bg-primary text-secondary font-bold px-6 py-2.5 rounded-xl shadow-lg hover:shadow-primary/50 transition-all active:scale-95"
                 >
                     Request Upgrade
                 </button>
             </div>
+
+            {/* Role Request Form Modal */}
+            <Modal
+                isOpen={showForm}
+                onClose={() => setShowForm(false)}
+                type="info"
+                title="Request Role Upgrade"
+                confirmText="Submit Request"
+                cancelText="Cancel"
+                showCancel={true}
+                onConfirm={handleSubmitRequest}
+                onCancel={() => setShowForm(false)}
+            >
+                <div className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-secondary dark:text-white mb-2">
+                            Select Role
+                        </label>
+                        <select
+                            value={selectedRole}
+                            onChange={(e) => setSelectedRole(e.target.value)}
+                            className="w-full px-4 py-3 rounded-xl border-2 border-secondary/30 dark:border-white/30 bg-white dark:bg-secondary text-secondary dark:text-white focus:border-primary focus:outline-none transition-colors"
+                        >
+                            <option value="teacher">Teacher</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-secondary dark:text-white mb-2">
+                            Reason (min 10 characters)
+                        </label>
+                        <textarea
+                            value={reason}
+                            onChange={(e) => setReason(e.target.value)}
+                            placeholder="Why do you want this role?"
+                            rows={3}
+                            className="w-full px-4 py-3 rounded-xl border-2 border-secondary/30 dark:border-white/30 bg-white dark:bg-secondary text-secondary dark:text-white focus:border-primary focus:outline-none transition-colors resize-none"
+                        />
+                    </div>
+                </div>
+            </Modal>
 
             <div className="grid grid-cols-1 gap-4">
                 {isLoading ? (

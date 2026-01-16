@@ -216,23 +216,22 @@ const Login = ({ loginFormRef }: LoginProps) => {
           </div>
         </div>
 
-        <div className="mb-4 flex items-center justify-between">
-          <div className="flex items-center">
-            <input
-              id="default-checkbox"
-              type="checkbox"
-              onChange={onChange}
-              className="peer h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
-            />
-            <label
-              htmlFor="default-checkbox"
-              className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-            >
-              Remember me
-            </label>
-          </div>
+         <div className="checkbox-wrapper">
+          <input
+            onChange={onChange}
+            checked={checked}
+            type="checkbox"
+            id="input"
+            className="check-input"
+            disabled={isFormDisabled}
+          />
+          <label htmlFor="input" className="checkbox">
+            <svg viewBox="0 0 22 16" fill="none">
+              <path d="M1 6.85L8.09677 14L21 1" />
+            </svg>
+          </label>
           <label
-            htmlFor="my_modal_6"
+            htmlFor="input"
             className="ml-4 cursor-pointer text-base font-semibold text-secondary dark:text-white"
           >
             Remember Me
@@ -255,7 +254,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
             onClick={handleGoogleLogin}
             type="button"
             disabled={isFormDisabled}
-            className="flex items-center gap-2 rounded-xl border-2 border-primary bg-primary bg-opacity-10 px-6 py-2 pb-3 pt-3 font-semibold text-secondary transition-all hover:bg-opacity-25 dark:border-white dark:border-opacity-[0.3] dark:text-white disabled:opacity-50"
+            className="flex items-center gap-2 rounded-xl border-2 border-primary bg-primary bg-opacity-10 px-6 py-2 pb-3 pt-3 font-semibold text-secondary transition-all dark:bg-[rgba(255,255,255,.2)] dark:border-white dark:border-opacity-[0.3] dark:text-white disabled:opacity-50"
           >
             <FaGoogle className="text-xl" />
             <span>Google</span>
@@ -264,7 +263,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
             onClick={handleGithubLogin}
             type="button"
             disabled={isFormDisabled}
-            className="flex items-center gap-2 rounded-xl border-2 border-primary bg-primary bg-opacity-10 px-6 py-2 pb-3 pt-3 font-semibold text-secondary transition-all hover:bg-opacity-25 dark:border-white dark:border-opacity-[0.3] dark:text-white disabled:opacity-50"
+            className="flex items-center gap-2 rounded-xl border-2 border-primary bg-primary bg-opacity-10 px-6 py-2 pb-3 pt-3 font-semibold text-secondary transition-all dark:bg-[rgba(255,255,255,.2)] dark:border-white dark:border-opacity-[0.3] dark:text-white disabled:opacity-50"
           >
             <FaGithub className="text-xl" />
             <span>GitHub</span>

@@ -7,22 +7,27 @@ import Reveal from "../animation/Reveal";
 import TextScramble from "../animation/TextScramble";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import Modal, { useModal } from "../components/ui/Modal";
+import toast from "react-hot-toast";
 
 const Dashboard = () => {
     const { user } = useAuth();
+    const { showModal } = useModal();
     const [submissions, setSubmissions] = useState<Submission[]>([]);
     const [roleRequests, setRoleRequests] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
+    // Role request form state
+    const [showRoleForm, setShowRoleForm] = useState(false);
+    const [selectedRole, setSelectedRole] = useState<string>("teacher");
+    const [reason, setReason] = useState<string>("");
+
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const token = await user?.getIdToken();
-                const headers = { Authorization: `Bearer ${token}` };
-
                 const [subRes, reqRes] = await Promise.all([
-                    axios.get<ApiResponse<Submission[]>>(`${import.meta.env.VITE_API_URL}/submission/my-submissions`, { headers }),
-                    axios.get(`${import.meta.env.VITE_API_URL}/role-request/my-requests`, { headers })
+                    axios.get<ApiResponse<Submission[]>>(`${import.meta.env.VITE_API_URL}/submission/my-submissions`, { withCredentials: true }),
+                    axios.get(`${import.meta.env.VITE_API_URL}/role-request/my-requests`, { withCredentials: true })
                 ]);
 
                 if (subRes.data.success && subRes.data.data) {
@@ -43,43 +48,36 @@ const Dashboard = () => {
         }
     }, [user]);
 
-    const handleRequestRole = async () => {
-        import("sweetalert2").then(async (Swal) => {
-            const { value: formValues } = await Swal.default.fire({
-                title: 'Request Role Upgrade',
-                html:
-                    '<select id="swal-role" class="swal2-input">' +
-                    '<option value="teacher">Teacher</option>' +
-                    '<option value="admin">Admin</option>' +
-                    '</select>' +
-                    '<input id="swal-reason" class="swal2-input" placeholder="Reason (min 10 chars)">',
-                focusConfirm: false,
-                preConfirm: () => {
-                    return [
-                        (document.getElementById('swal-role') as HTMLInputElement).value,
-                        (document.getElementById('swal-reason') as HTMLInputElement).value
-                    ]
-                }
-            });
+    const handleRequestRole = () => {
+        setShowRoleForm(true);
+    };
 
-            if (formValues) {
-                const [role, reason] = formValues;
-                if (reason.length < 10) {
-                    return Swal.default.fire('Error', 'Reason must be at least 10 characters', 'error');
-                }
-                try {
-                    const token = await user?.getIdToken();
-                    await axios.post(`${import.meta.env.VITE_API_URL}/role-request`,
-                        { requestedRole: role, reason },
-                        { headers: { Authorization: `Bearer ${token}` } }
-                    );
-                    Swal.default.fire('Success', 'Request submitted', 'success');
-                    // Refresh requests could be added here
-                } catch (error: any) {
-                    Swal.default.fire('Error', error.response?.data?.message || 'Failed to submit', 'error');
-                }
-            }
-        });
+    const handleSubmitRoleRequest = async () => {
+        if (reason.length < 10) {
+            toast.error("Reason must be at least 10 characters");
+            return;
+        }
+        try {
+            await axios.post(`${import.meta.env.VITE_API_URL}/role-request`,
+                { requestedRole: selectedRole, reason },
+                { withCredentials: true }
+            );
+            showModal({
+                type: "success",
+                title: "Success",
+                message: "Request submitted successfully!",
+                confirmText: "OK",
+            });
+            setShowRoleForm(false);
+            setReason("");
+        } catch (error: any) {
+            showModal({
+                type: "error",
+                title: "Error",
+                message: error.response?.data?.message || "Failed to submit request",
+                confirmText: "OK",
+            });
+        }
     };
 
     const pendingCount = submissions.filter((s) => s.status === "pending").length;
@@ -88,6 +86,47 @@ const Dashboard = () => {
 
     return (
         <div className="min-h-screen w-full bg-white dark:bg-secondary pt-24 px-4 sm:px-10">
+            {/* Role Request Form Modal */}
+            <Modal
+                isOpen={showRoleForm}
+                onClose={() => setShowRoleForm(false)}
+                type="info"
+                title="Request Role Upgrade"
+                confirmText="Submit Request"
+                cancelText="Cancel"
+                showCancel={true}
+                onConfirm={handleSubmitRoleRequest}
+                onCancel={() => setShowRoleForm(false)}
+            >
+                <div className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-secondary dark:text-white mb-2">
+                            Select Role
+                        </label>
+                        <select
+                            value={selectedRole}
+                            onChange={(e) => setSelectedRole(e.target.value)}
+                            className="w-full px-4 py-3 rounded-xl border-2 border-secondary/30 dark:border-white/30 bg-white dark:bg-secondary text-secondary dark:text-white focus:border-primary focus:outline-none transition-colors"
+                        >
+                            <option value="teacher">Teacher</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-secondary dark:text-white mb-2">
+                            Reason (min 10 characters)
+                        </label>
+                        <textarea
+                            value={reason}
+                            onChange={(e) => setReason(e.target.value)}
+                            placeholder="Why do you want this role?"
+                            rows={3}
+                            className="w-full px-4 py-3 rounded-xl border-2 border-secondary/30 dark:border-white/30 bg-white dark:bg-secondary text-secondary dark:text-white focus:border-primary focus:outline-none transition-colors resize-none"
+                        />
+                    </div>
+                </div>
+            </Modal>
+
             <div className="mx-auto max-w-7xl">
                 {/* Header */}
                 <div className="mb-12 text-center">
