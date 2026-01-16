@@ -81,6 +81,21 @@ const Navbar = () => {
     };
   }, [location.pathname, user]);
 
+  // Reset nav state when user changes (login/logout)
+  useEffect(() => {
+    // Close mobile nav when user state changes
+    if (nav) {
+      setNav(false);
+    }
+    // Reset GSAP elements to initial state
+    gsap.set(".container", { display: "none" });
+    gsap.set(".nav-bg span", { x: "100%" });
+    gsap.set(".nav-container li > *", { y: "0%" });
+    gsap.set(".bar-1", { attr: { d: "M0,4 L10,4" }, x: 0 });
+    gsap.set(".bar-2", { autoAlpha: 1 });
+    gsap.set(".bar-3", { attr: { d: "M0,6 L10,6" }, x: 0 });
+  }, [user]);
+
   /* Removed unused GSAP stagger logic */
 
   /* Refactor to use useGSAP for correct cleanup and re-initialization when user changes */
@@ -146,7 +161,7 @@ const Navbar = () => {
         )
         .reverse();
     },
-    { dependencies: [user], scope: ref }
+    { dependencies: [user], scope: ref, revertOnUpdate: true }
   );
 
   const getNavOptions = () => {
