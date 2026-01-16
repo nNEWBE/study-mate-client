@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+
 import TextScramble from "../../animation/TextScramble";
 import "../../styles/style.css";
 import Card from "../common/Card";
@@ -8,47 +8,18 @@ import Unhidden from "../../animation/Unhidden";
 import CardSkeleton from "../ui/CardSkeleton";
 import Button from "../ui/Button";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useDeleteAssignmentMutation, useGetAssignmentsQuery } from "../../redux/features/assignments/assignmentApi";
 import toast from "react-hot-toast";
 import useAuth from "../../hooks/useAuth";
 import Swal from "sweetalert2";
 import { getErrorMessage } from "../../utils/errorHandler";
 
-interface Assignment {
-  _id: string;
-  title: string;
-  photoURL: string;
-  marks: string;
-  description: string;
-  difficulty: string;
-  date: string;
-  person: {
-    name: string;
-    email: string;
-    photo: string;
-  };
-  status: string;
-}
 
 const Features = () => {
-  const [data, setData] = useState<Assignment[]>([]);
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
-
-  const getData = async () => {
-    const { data } = await axios(
-      `${import.meta.env.VITE_API_URL}/assignment`,
-    );
-    setData(data.data);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-  };
-
-  useEffect(() => {
-    getData();
-  }, [user]);
+  const { data: assignments = [], isLoading } = useGetAssignmentsQuery();
+  const [deleteAssignment] = useDeleteAssignmentMutation();
 
   const handleDelete = async (id: string, email: string, name: string) => {
     if (!user) {
@@ -78,12 +49,7 @@ const Features = () => {
       });
 
       if (result.isConfirmed) {
-        const { data } = await axios.delete(
-          `${import.meta.env.VITE_API_URL}/assignment/${id}`,
-        );
-
-        getData();
-        console.log(data);
+        await deleteAssignment(id).unwrap();
 
         toast.success("Assignment Deleted Successfully");
 
@@ -108,22 +74,6 @@ const Features = () => {
     }
   };
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await fetch("/assignments.json");
-  //       const data = await response.json();
-  //       setData(data);
-  //       setTimeout(() => {
-  //         setIsLoading(false);
-  //       }, 5000);
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
 
   return (
     <div className="w-full bg-white pt-32 dark:bg-secondary">
@@ -150,7 +100,7 @@ const Features = () => {
           {isLoading ? (
             <CardSkeleton cards={6} />
           ) : (
-            data
+            assignments
               .slice(0, 6)
               .map((d, index) => (
                 <Card handleDelete={handleDelete} d={d} key={index} />
@@ -172,7 +122,7 @@ const Features = () => {
               {isLoading ? (
                 <CardSkeleton cards={3} />
               ) : (
-                data
+                assignments
                   .slice(0, 3)
                   .map((d, index) => (
                     <Card handleDelete={handleDelete} d={d} key={index} />

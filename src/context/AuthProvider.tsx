@@ -110,8 +110,6 @@ const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
       }
     };
 
-    restoreSession();
-
     const unSubscribe = onAuthStateChanged(auth, async (currentUser) => {
       const isPending = sessionStorage.getItem("google_pending_password");
       if (currentUser && isPending === "true") {
@@ -134,11 +132,8 @@ const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
           },
           token
         }));
+        await restoreSession();
       }
-      // Note: We don't automatically logout from Redux here if currentUser is null, 
-      // because we might be logged in via backend-only session (handled by restoreSession).
-      // However, if we want strict syncing:
-      // If firebase is null, and verifyToken failed, then we are logged out.
     });
     return () => {
       unSubscribe();
