@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import useAuth from "../hooks/useAuth";
+import { useAppSelector } from "../redux/store";
 import Loader from "../components/ui/Loader";
 import { useGetMeQuery } from "../redux/features/users/userApi";
 
@@ -11,7 +11,7 @@ interface RoleBasedRouteProps {
 
 const RoleBasedRoute = ({ children, allowedRoles }: RoleBasedRouteProps): JSX.Element => {
     const location = useLocation();
-    const { user, loading: authLoading } = useAuth();
+    const { user, loading: authLoading } = useAppSelector((state) => state.auth);
 
     // Fetch user role from backend
     const { data: userData, isLoading: roleLoading } = useGetMeQuery(undefined, {
