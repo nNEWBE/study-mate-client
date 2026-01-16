@@ -18,6 +18,7 @@ import { useAppDispatch } from "../../redux/store";
 import { setUser as setReduxUser } from "../../redux/features/auth/authSlice";
 import GooglePasswordModal from "../../components/ui/GooglePasswordModal";
 import { useModal } from "../../components/ui/Modal";
+import { getErrorMessage } from "../../utils/errorHandler";
 
 interface LoginInputs {
   email: string;
@@ -64,23 +65,6 @@ const Login = ({ loginFormRef }: LoginProps) => {
     formState: { errors },
   } = useForm<LoginInputs>();
 
-  // Helper function to extract error message from API response
-  const getErrorMessage = (error: any, fallback: string): string => {
-    // Check for issues array first (validation errors)
-    if (error?.data?.error?.issues?.[0]?.message) {
-      return error.data.error.issues[0].message;
-    }
-    // Check for direct message
-    if (error?.data?.message && error.data.message !== "Internal Server Error") {
-      return error.data.message;
-    }
-    // Check for Firebase/other error message
-    if (error?.message) {
-      return error.message;
-    }
-    return fallback;
-  };
-
   const onSubmit = async (data: LoginInputs) => {
     const loadingToast = toast.loading(
       <div className="flex items-center gap-2">
@@ -109,6 +93,10 @@ const Login = ({ loginFormRef }: LoginProps) => {
 
         navigate(location?.state ? location.state : "/");
         reset();
+
+        // Show welcome toast
+        toast.success(`Welcome back, ${result.data.user?.name || "User"}!`);
+
         // Show success modal
         setTimeout(() => {
           showModal({
@@ -161,6 +149,9 @@ const Login = ({ loginFormRef }: LoginProps) => {
             if (auth.currentUser) setUser(auth.currentUser);
 
             navigate(location?.state ? location.state : "/");
+
+            // Show welcome toast
+            toast.success(`Welcome back, ${loginResult.data.user?.name || result.user.displayName || "User"}!`);
 
             // Show success modal
             setTimeout(() => {
@@ -245,6 +236,9 @@ const Login = ({ loginFormRef }: LoginProps) => {
           setGoogleUserInfo(null);
           navigate(location?.state ? location.state : "/");
 
+          // Show welcome toast
+          toast.success(`Welcome back, ${loginResult.data.user?.name || googleUserInfo.name || "User"}!`);
+
           // Show success modal for login
           setTimeout(() => {
             showModal({
@@ -300,6 +294,9 @@ const Login = ({ loginFormRef }: LoginProps) => {
           setGoogleUserInfo(null);
           navigate(location?.state ? location.state : "/");
 
+          // Show welcome toast for new user
+          toast.success(`Welcome to StudyMate, ${result.data.user?.name || googleUserInfo.name || "User"}!`);
+
           // Show success modal for registration/login
           setTimeout(() => {
             showModal({
@@ -354,6 +351,9 @@ const Login = ({ loginFormRef }: LoginProps) => {
             if (auth.currentUser) setUser(auth.currentUser);
 
             navigate(location?.state ? location.state : "/");
+
+            // Show welcome toast
+            toast.success(`Welcome back, ${loginResult.data.user?.name || result.user.displayName || "User"}!`);
 
             // Show success modal
             setTimeout(() => {
