@@ -5,6 +5,7 @@ interface DividerProps {
     orbSize?: "sm" | "md" | "lg";
     lineWidth?: string;
     animate?: boolean;
+    str?: string;
 }
 
 const Divider = ({
@@ -12,6 +13,7 @@ const Divider = ({
     orbSize = "sm",
     lineWidth = "max-w-32",
     animate = true,
+    str,
 }: DividerProps): JSX.Element => {
     const orbSizes = {
         sm: "w-3 h-3",
@@ -24,8 +26,14 @@ const Divider = ({
             {/* Left gradient line */}
             <div className={`flex-1 h-[2px] w-full ${lineWidth} bg-gradient-to-l from-primary to-transparent rounded-full`} />
 
-            {/* Center orb */}
-            <div className={`${orbSizes[orbSize]} mx-3 rounded-full bg-white border-2 border-secondary shadow-[0_0_5px_2px_#00ffa5]`} />
+            {/* Center content */}
+            {str ? (
+                <span className="mx-3 font-semibold text-secondary dark:text-white whitespace-nowrap">
+                    {str}
+                </span>
+            ) : (
+                <div className={`${orbSizes[orbSize]} mx-3 rounded-full bg-white border-2 border-secondary shadow-[0_0_5px_2px_#00ffa5]`} />
+            )}
 
             {/* Right gradient line */}
             <div className={`flex-1 h-[2px] w-full ${lineWidth} bg-gradient-to-r from-primary to-transparent rounded-full`} />

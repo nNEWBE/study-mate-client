@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useToggle } from "../../context/ToggleProvider";
-import { useRegisterMutation } from "../../redux/features/auth/authApi";
+import { useRegisterMutation, useLoginMutation } from "../../redux/features/auth/authApi";
 import { useAppDispatch } from "../../redux/store";
 import { setUser } from "../../redux/features/auth/authSlice";
 import { getRandomAvatar } from "../../utils/avatars";
@@ -33,7 +33,10 @@ const Register = ({ registerFormRef }: RegisterProps) => {
   const location = useLocation();
   const dispatch = useAppDispatch();
 
-  const [registerUser, { isLoading }] = useRegisterMutation();
+  const [registerUser, { isLoading: isRegisterLoading }] = useRegisterMutation();
+  const [login, { isLoading: isLoginLoading }] = useLoginMutation();
+
+  const isLoading = isRegisterLoading || isLoginLoading;
 
   const {
     register,
@@ -57,41 +60,54 @@ const Register = ({ registerFormRef }: RegisterProps) => {
         email: data.email,
         password: data.password,
         profileImageUrl: randomAvatar,
-        provider: "email" as const,
+        provider: "password" as const,
       };
 
-      const result = await registerUser(registerData).unwrap();
-      toast.dismiss(loadingToast);
+      // 1. Register the user
+      const registerResult = await registerUser(registerData).unwrap();
 
-      if (result.success && result.data) {
-        dispatch(setUser({
-          user: {
-            email: result.data.user?.email || data.email,
-            uid: result.data.user?._id || null,
-            displayName: result.data.user?.name || data.name,
-            photoURL: result.data.user?.profileImage || randomAvatar,
-            role: (result.data.user?.role as 'student' | 'teacher' | 'admin') || "student",
-          },
-          token: result.data.accessToken,
-        }));
+      if (registerResult.success) {
+        // 2. Immediately login to set cookies
+        toast.loading("Logging you in...", { id: loadingToast });
 
-        navigate(location?.state ? location.state : "/");
-        reset();
-        Swal.fire({
-          title: "SignUp Successful",
-          text: "Welcome to StudyMate!",
-          icon: "success",
-          confirmButtonText: "Let's Go!",
-          iconColor: "#00ffa5",
-          background: "#111827",
-          buttonsStyling: false,
-          color: "#FFFFFF",
-          customClass: {
-            confirmButton:
-              "btn animate__animated animate__rubberBand outline-none bg-[#111827] hover:bg-[#111827] hover:border-[#00ffa5] hover:text-[#00ffa5] border-[4.5px] border-[#00ffa5] text-[#00ffa5] text-2xl font-bold font-edu px-5",
-            title: "font-poppins",
-          },
-        });
+        const loginResult = await login({
+          email: data.email,
+          password: data.password,
+        }).unwrap();
+
+        toast.dismiss(loadingToast);
+
+        if (loginResult.success && loginResult.data) {
+          // Update Redux state with user info
+          dispatch(setUser({
+            user: {
+              email: loginResult.data.user?.email || data.email,
+              uid: loginResult.data.user?._id || null,
+              displayName: loginResult.data.user?.name || data.name,
+              photoURL: loginResult.data.user?.profileImage || randomAvatar,
+              role: (loginResult.data.user?.role as 'student' | 'teacher' | 'admin') || "student",
+            },
+            token: loginResult.data.accessToken,
+          }));
+
+          navigate(location?.state ? location.state : "/");
+          reset();
+          Swal.fire({
+            title: "SignUp Successful",
+            text: "Welcome to StudyMate!",
+            icon: "success",
+            confirmButtonText: "Let's Go!",
+            iconColor: "#00ffa5",
+            background: "#111827",
+            buttonsStyling: false,
+            color: "#FFFFFF",
+            customClass: {
+              confirmButton:
+                "btn animate__animated animate__rubberBand outline-none bg-[#111827] hover:bg-[#111827] hover:border-[#00ffa5] hover:text-[#00ffa5] border-[4.5px] border-[#00ffa5] text-[#00ffa5] text-2xl font-bold font-edu px-5",
+              title: "font-poppins",
+            },
+          });
+        }
       }
     } catch (error: any) {
       toast.dismiss(loadingToast);
@@ -273,7 +289,7 @@ const Register = ({ registerFormRef }: RegisterProps) => {
 
       <div className="mx-auto mt-2 w-full">
         <Button
-          str={isLoading ? "Creating Account..." : "Sign Up"}
+          str={isLoading ? "Please Wait..." : "Sign Up"}
           shadow={true}
           disabled={isLoading}
         />

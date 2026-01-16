@@ -10,7 +10,7 @@ export interface LoginCredentials {
 export interface RegisterData {
     name: string;
     email: string;
-    password: string;
+    password?: string; // Optional for social login (google/github)
     profileImageUrl?: string;
     provider?: 'google' | 'github' | 'password';
 }
@@ -26,6 +26,12 @@ export interface AuthResponse {
         profileImage?: string;
         providers?: ('google' | 'github' | 'password')[];
     };
+}
+
+export interface CheckUserResponse {
+    exists: boolean;
+    hasProvider: boolean;
+    providers: ('google' | 'github' | 'password')[];
 }
 
 export const authApi = baseApi.injectEndpoints({
@@ -64,6 +70,14 @@ export const authApi = baseApi.injectEndpoints({
                 method: 'POST',
             }),
         }),
+
+        // GET /check-user - Check if user exists with a specific provider
+        checkUserExists: builder.query<ApiResponse<CheckUserResponse>, { email: string; provider: string }>({
+            query: ({ email, provider }) => ({
+                url: `/check-user?email=${encodeURIComponent(email)}&provider=${provider}`,
+                method: 'GET',
+            }),
+        }),
     }),
 });
 
@@ -72,4 +86,5 @@ export const {
     useLoginMutation,
     useRefreshTokenMutation,
     useLogoutMutation,
+    useLazyCheckUserExistsQuery,
 } = authApi;

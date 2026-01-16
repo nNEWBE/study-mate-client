@@ -24,8 +24,6 @@ export interface AuthContextType {
     user: User | null;
     loading: boolean;
     setUser: React.Dispatch<React.SetStateAction<User | null>>;
-    createUser: (email: string, password: string) => Promise<UserCredential>;
-    signInUser: (email: string, password: string) => Promise<UserCredential>;
     logoutUser: () => void;
     signInWithGoogle: () => Promise<UserCredential>;
     signInWithGithub: () => Promise<UserCredential>;

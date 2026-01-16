@@ -2,7 +2,6 @@ import "../../styles/style.css";
 import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import useAuth from "../../hooks/useAuth";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { IoDocumentText, IoLogOut, IoMoon, IoSunny, IoHeart, IoGrid } from "react-icons/io5";
@@ -10,6 +9,7 @@ import Button from "../ui/Button";
 import Logo from "../ui/Logo";
 import Divider from "../ui/Divider";
 import { useToggle } from "../../context/ToggleProvider";
+import { useAppSelector } from "../../redux/store";
 
 interface DrawerProps {
   navRef: React.RefObject<HTMLElement>;
@@ -27,7 +27,8 @@ const Drawer = ({
   handleNavLogout,
   handleTheme,
 }: DrawerProps) => {
-  const { user } = useAuth();
+  // Use Redux for faster user updates (same as Navbar)
+  const user = useAppSelector((state) => state.auth.user);
   const { theme } = useToggle();
 
   const containerRef = useRef<HTMLDivElement>(null);

@@ -29,7 +29,7 @@ const Toast = (): JSX.Element => {
             secondary: theme ? "#0f172a" : "#ffffff",
           },
           style: {
-            borderColor: "#00ffa5",
+            borderColor: "#0f172a",
             boxShadow: `0 0 5px 2px #00ffa5`,
           },
         },

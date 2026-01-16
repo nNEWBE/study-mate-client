@@ -5,6 +5,8 @@ import { useGSAP } from "@gsap/react";
 import gsap, { Power2 } from "gsap";
 import Headroom from "react-headroom";
 import { IoLogOut } from "react-icons/io5";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import Logo from "../ui/Logo";
 import Button from "../ui/Button";
 import Drawer from "./Drawer";
@@ -24,7 +26,7 @@ const navItems = [
 ];
 
 const Navbar = () => {
-  const { logoutUser } = useAuth();
+  const { logoutUser, loading } = useAuth();
   const user = useAppSelector((state) => state.auth.user);
   const { theme, setTheme, setOverflow } = useToggle();
   const { showModal } = useModal();
@@ -162,7 +164,7 @@ const Navbar = () => {
         )
         .reverse();
     },
-    { dependencies: [user], scope: ref, revertOnUpdate: true }
+    { dependencies: [user, loading], scope: ref, revertOnUpdate: true }
   );
 
   const getNavOptions = () => {
@@ -262,14 +264,36 @@ const Navbar = () => {
     >
       <Headroom pin={visible}>
         <div className="mx-auto flex  items-center justify-between overflow-hidden border-b-2 border-x-0 border-t-0 border-b-secondary bg-transparent px-5 py-5 shadow-[0_5px_10px_-2px] shadow-primary backdrop-blur-3xl lg:px-8">
-          <Logo
-            className="navs flex w-[190px] cursor-pointer items-center rounded-xl border-2 border-secondary bg-white font-dosis text-2xl font-medium text-secondary shadow-[0_0_5px_2px] shadow-primary"
-          />
+          {loading ? (
+            <SkeletonTheme
+              baseColor={theme ? "#1e293b" : "#e5e7eb"}
+              highlightColor={theme ? "#334155" : "#f3f4f6"}
+            >
+              <div className="w-[190px] h-[40px]">
+                <Skeleton width={190} height={40} borderRadius="0.75rem" />
+              </div>
+            </SkeletonTheme>
+          ) : (
+            <Logo
+              className="navs flex w-[190px] cursor-pointer items-center rounded-xl border-2 border-secondary bg-white font-dosis text-2xl font-medium text-secondary shadow-[0_0_5px_2px] shadow-primary"
+            />
+          )}
 
           <div className="relative flex items-center gap-7">
             <ul ref={navListRef} className="hidden items-center font-edu font-medium lg:flex relative">
               {/* Desktop Nav Items with Reveal Animation */}
-              {user
+              {loading ? (
+                <SkeletonTheme
+                  baseColor={theme ? "#1e293b" : "#e5e7eb"}
+                  highlightColor={theme ? "#334155" : "#f3f4f6"}
+                >
+                  {[1, 2, 3, 4, 5].map((_, i) => (
+                    <div key={i} className="relative z-10 mr-4">
+                      <Skeleton width={80} height={40} borderRadius="0.75rem" />
+                    </div>
+                  ))}
+                </SkeletonTheme>
+              ) : user
                 ? navItems.map((item) => (
                   <NavLink
                     to={item.to}
@@ -305,20 +329,40 @@ const Navbar = () => {
               />
             </ul>
             <div className="hidden items-center gap-2 lg:flex">
-              <div className="navs relative bottom-3 right-2">
-                <input
-                  onChange={handleTheme}
-                  checked={theme === null ? false : theme}
-                  type="checkbox"
-                  id="darkmode-toggle-1"
-                  className="toggle-input"
-                />
-                <label htmlFor="darkmode-toggle-1" className="toggle-label">
-                  <IoSunny className="sun" />
-                  <IoMoon className="moon" />
-                </label>
-              </div>
-              {user ? (
+              {loading ? (
+                <SkeletonTheme
+                  baseColor={theme ? "#1e293b" : "#e5e7eb"}
+                  highlightColor={theme ? "#334155" : "#f3f4f6"}
+                >
+                  <div className="mr-5">
+                    <Skeleton width={50} height={26} borderRadius={20} />
+                  </div>
+                </SkeletonTheme>
+              ) : (
+                <div className="navs relative bottom-3 right-2">
+                  <input
+                    onChange={handleTheme}
+                    checked={theme === null ? false : theme}
+                    type="checkbox"
+                    id="darkmode-toggle-1"
+                    className="toggle-input"
+                  />
+                  <label htmlFor="darkmode-toggle-1" className="toggle-label">
+                    <IoSunny className="sun" />
+                    <IoMoon className="moon" />
+                  </label>
+                </div>
+              )}
+              {loading ? (
+                <SkeletonTheme
+                  baseColor={theme ? "#1e293b" : "#e5e7eb"}
+                  highlightColor={theme ? "#334155" : "#f3f4f6"}
+                >
+                  <div className="relative w-14">
+                    <Skeleton circle width={55} height={55} />
+                  </div>
+                </SkeletonTheme>
+              ) : user ? (
                 <div
                   onClick={handleDropdown}
                   className="navs relative w-14 cursor-pointer"
@@ -340,7 +384,17 @@ const Navbar = () => {
             </div>
           </div>
 
-          {user ? (
+          {loading ? (
+            <SkeletonTheme
+              baseColor={theme ? "#1e293b" : "#e5e7eb"}
+              highlightColor={theme ? "#334155" : "#f3f4f6"}
+            >
+              <div className="flex items-center gap-3 lg:hidden">
+                <Skeleton width={50} height={30} borderRadius={20} />
+                <Skeleton circle width={45} height={45} />
+              </div>
+            </SkeletonTheme>
+          ) : user ? (
             <div className="flex items-center gap-3 lg:hidden">
               <div className="relative bottom-3 right-0 hidden sm:block lg:hidden">
                 <input

@@ -1,11 +1,14 @@
 
-import { createContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useEffect, useState, ReactNode, useCallback } from "react";
 import { supabase } from "../config/supabase";
 import { AuthContextType, User, UserCredential } from "../types";
 import { useDispatch } from "react-redux";
-import { setUser as setReduxUser, logout as logoutReduxUser } from "../redux/features/auth/authSlice";
-import { useLogoutMutation, useRefreshTokenMutation, useLoginMutation } from "../redux/features/auth/authApi";
+import { setUser as setReduxUser, logout as logoutReduxUser, setPendingProvider, clearPendingProvider, setLoading as setReduxLoading } from "../redux/features/auth/authSlice";
+import { useLogoutMutation, useRefreshTokenMutation, useLoginMutation, useRegisterMutation, useLazyCheckUserExistsQuery } from "../redux/features/auth/authApi";
+import { getRandomAvatar } from "../utils/avatars";
 import { User as SupabaseUser } from "@supabase/supabase-js";
+import toast from "react-hot-toast";
+import { useAppSelector } from "../redux/store";
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -20,6 +23,33 @@ const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   const [serverLogout] = useLogoutMutation();
   const [refreshToken] = useRefreshTokenMutation();
   const [backendLogin] = useLoginMutation();
+  const [registerNewUser] = useRegisterMutation();
+  const [checkUserExists] = useLazyCheckUserExistsQuery();
+
+  // Get pending provider from Redux (which button was clicked)
+  const pendingProvider = useAppSelector((state) => state.auth.pendingProvider);
+  const reduxUser = useAppSelector((state) => state.auth.user);
+
+  // Sync Context user with Redux user
+  // This allows components using useAuth() (Context) to stay in sync with Redux
+  useEffect(() => {
+    if (reduxUser) {
+      setUser({
+        uid: reduxUser.uid || "",
+        email: reduxUser.email,
+        displayName: reduxUser.displayName,
+        photoURL: reduxUser.photoURL,
+        providerData: [] // Redux user doesn't store this, but we mock it for type compatibility
+      });
+      setLoading(false);
+    } else {
+      // If Redux has no user, we might still be loading or truly logged out.
+      // We don't force null here immediately because Supabase session check (setUserFromSession)
+      // might be running in parallel. But usually Redux is the source of truth for "logged in via backend".
+      // If we are logged out in Redux, we are likely logged out in Context too.
+      // However, be careful not to override initial Supabase check.
+    }
+  }, [reduxUser]);
 
   // Helper to map Supabase user to our App's User format
   const mapUser = (sbUser: SupabaseUser): User => {
@@ -49,55 +79,17 @@ const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
     };
   };
 
-  // Supabase Auth implementations
-  const createUser = async (email: string, password: string): Promise<UserCredential> => {
-    setLoading(true);
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
 
-    if (error) {
-      setLoading(false);
-      throw error;
-    }
-
-    if (data.user) {
-      return {
-        user: mapUser(data.user),
-        providerId: 'email'
-      };
-    } else {
-      setLoading(false);
-      throw new Error("User creation failed");
-    }
-  };
-
-  const signInUser = async (email: string, password: string): Promise<UserCredential> => {
-    setLoading(true);
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      setLoading(false);
-      throw error;
-    }
-
-    if (data.user) {
-      return {
-        user: mapUser(data.user),
-        providerId: 'email'
-      };
-    } else {
-      setLoading(false);
-      throw new Error("Login failed");
-    }
-  };
 
   const signInWithGoogle = async (): Promise<UserCredential> => {
     setLoading(true);
+
+    // Store which button was clicked in Redux AND localStorage (before OAuth redirect)
+    // localStorage is needed because Redux state is lost on page redirect
+    // This fixes Supabase returning first provider for linked accounts
+    dispatch(setPendingProvider('google'));
+    localStorage.setItem('pendingProvider', 'google');
+
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -105,22 +97,34 @@ const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
       }
     });
 
-    if (error) throw error;
+    // NOTE: execution typically STOPS here because the browser redirects to Google.
+    // The code below will NOT run.
+    // The flow resumes in the useEffect hook (onAuthStateChange) after the user returns to the app.
 
-    // This will never be reached because of redirect, but types might demand return
-    // We return a dummy object to satisfy TypeScript until redirect happens
+    if (error) throw error;
     return {} as UserCredential;
   };
 
   const signInWithGithub = async (): Promise<UserCredential> => {
     setLoading(true);
+
+    // Store which button was clicked in Redux AND localStorage (before OAuth redirect)
+    // localStorage is needed because Redux state is lost on page redirect
+    // This fixes Supabase returning first provider for linked accounts
+    dispatch(setPendingProvider('github'));
+    localStorage.setItem('pendingProvider', 'github');
+
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'github',
       options: {
         redirectTo: window.location.origin,
-        scopes: 'user:email read:user' // Explicitly request email and profile scopes
+        scopes: 'user:email read:user'
       }
     });
+
+    // NOTE: execution typically STOPS here because the browser redirects to GitHub.
+    // The code below will NOT run.
+    // The flow resumes in the useEffect hook (onAuthStateChange) after the user returns to the app.
 
     if (error) throw error;
     return {} as UserCredential;
@@ -137,7 +141,6 @@ const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
     dispatch(logoutReduxUser());
     serverLogout();
     await supabase.auth.signOut();
-    localStorage.removeItem("isAuthenticated");
     setUser(null);
   };
 
@@ -145,8 +148,6 @@ const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
     user,
     loading,
     setUser,
-    createUser,
-    signInUser,
     logoutUser,
     signInWithGoogle,
     signInWithGithub,
@@ -154,18 +155,67 @@ const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   };
 
   useEffect(() => {
-    // Helper function to sync social login with backend
-    const syncSocialLoginWithBackend = async (appUser: User, provider: string) => {
-      if (localStorage.getItem("isAuthenticated")) return; // Already authenticated
+    let isMounted = true;
+    let isCheckingBackend = true;
+    let isSyncingSocialLogin = false;
 
+    // Helper function to sync social login with backend
+    // ONLY called on fresh SIGNED_IN event with pendingProvider
+    const syncSocialLoginWithBackend = async (appUser: User, provider: string) => {
       const isSocialProvider = provider === 'google' || provider === 'github';
       if (!isSocialProvider) return;
 
+      isSyncingSocialLogin = true; // Mark sync in progress
+
+      const providerName = provider.charAt(0).toUpperCase() + provider.slice(1);
+      const loadingToast = toast.loading(`Signing in with ${providerName}...`);
+
       try {
-        // Use regular login endpoint with just email (no password) for social users
+        // STEP 1: Check if user exists in database
+        console.log("STEP 1: Checking if user exists in database...");
+        const checkResult = await checkUserExists({
+          email: appUser.email || "",
+          provider
+        }).unwrap();
+
+        const userExistsInDB = checkResult.data?.exists;
+        const dbProviders = checkResult.data?.providers || [];
+
+        // Check if clicked provider is already in the DB user's providers array
+        const providerExistsInDB = dbProviders.includes(provider as 'google' | 'github' | 'password');
+
+        console.log("Check result:", {
+          userExistsInDB,
+          clickedProvider: provider,
+          dbProviders,
+          providerExistsInDB
+        });
+
+        // STEP 2: Register only if user doesn't exist OR doesn't have this provider
+        if (!userExistsInDB || !providerExistsInDB) {
+          console.log("STEP 2: Registering user to backend...");
+          console.log(`Provider '${provider}' not found in DB providers [${dbProviders.join(', ')}]`);
+
+          const registerData = {
+            name: appUser.displayName || `User-${Date.now()}`,
+            email: appUser.email || "",
+            profileImageUrl: appUser.photoURL || getRandomAvatar(),
+            provider: provider as 'google' | 'github'
+          };
+
+          await registerNewUser(registerData).unwrap();
+          console.log("Registration successful!");
+        } else {
+          console.log(`Provider '${provider}' already exists in DB. Skipping registration.`);
+        }
+
+        // STEP 3: Login to backend to SET COOKIES
+        console.log("STEP 3: Logging in to set cookies...");
         const loginResult = await backendLogin({
           email: appUser.email || ""
         }).unwrap();
+
+        toast.dismiss(loadingToast);
 
         if (loginResult.success && loginResult.data) {
           // Update Redux state
@@ -180,127 +230,117 @@ const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
             token: loginResult.data.accessToken,
           }));
 
-          // Update context user with backend photo/name for navbar
-          setUser({
-            ...appUser,
-            displayName: loginResult.data.user?.name || appUser.displayName,
-            photoURL: loginResult.data.user?.profileImage || appUser.photoURL,
-          });
 
-          localStorage.setItem("isAuthenticated", "true");
-          console.log("Social login synced with backend!");
 
-          // Call refresh-token to establish server session and set HTTP-only cookies
-          try {
-            await refreshToken().unwrap();
-            console.log("Session cookies established!");
-          } catch (refreshError) {
-            console.log("Refresh token not available yet, but login succeeded.");
-          }
+          toast.success(`Welcome, ${loginResult.data.user?.name || appUser.displayName}!`);
+          console.log("Social login complete! Cookies set.");
+
+          // Clear pending provider
+          dispatch(clearPendingProvider());
+          localStorage.removeItem('pendingProvider');
+
+          // Set loading false now that social login is complete
+          setLoading(false);
+          isSyncingSocialLogin = false;
         }
-      } catch (error) {
-        // New user - needs password setup
-        console.log("New social user detected, needs password setup.");
-        const userInfo = {
-          name: appUser.displayName || "User",
-          email: appUser.email || null,
-          photoURL: appUser.photoURL || "",
-          uid: appUser.uid,
-          provider: provider as 'google' | 'github',
-          socialId: appUser.providerData[0]?.uid
-        };
-        sessionStorage.setItem("pendingSocialUser", JSON.stringify(userInfo));
-        window.location.href = "/account";
+      } catch (error: any) {
+        toast.dismiss(loadingToast);
+        console.error("Social login failed:", error);
+        toast.error(error?.data?.message || "Login failed. Please try again.");
+        dispatch(clearPendingProvider());
+        localStorage.removeItem('pendingProvider');
+        // Set loading false on error too
+        setLoading(false);
+        isSyncingSocialLogin = false;
       }
     };
 
-    // 1. Check active session on mount
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (session?.user) {
-        console.log("Session found:", session.user);
-        const appUser = mapUser(session.user);
-        setUser(appUser);
-        setLoading(false);
+    const setUserFromSession = async () => {
+      // 1. Try to restore from Backend (HttpOnly Cookie) - This gives the "correct" persistent profile
+      try {
+        const result = await refreshToken().unwrap();
+        if (result.success && result.data && result.data.user) {
+          console.log("Session restored from Backend Cookie:", result.data.user);
 
-        const provider = session.user.app_metadata?.provider;
+          dispatch(setReduxUser({
+            user: {
+              email: result.data.user.email,
+              uid: result.data.user._id,
+              displayName: result.data.user.name,
+              photoURL: result.data.user.profileImage || null,
+              role: (result.data.user.role as 'student' | 'teacher' | 'admin') || "student",
+            },
+            token: result.data.accessToken,
+          }));
 
-        // If already authenticated with backend, restore session
-        if (localStorage.getItem("isAuthenticated") === "true") {
-          restoreBackendSession();
-        } else if (provider && (provider === 'google' || provider === 'github')) {
-          // New social login - sync with backend immediately
-          await syncSocialLoginWithBackend(appUser, provider);
+          if (isMounted) setLoading(false);
+          return; // Stop here if backend session is valid
         }
-      } else {
-        setLoading(false);
+      } catch (error) {
+        console.log("Backend session check failed (no cookie or invalid).");
+      } finally {
+        dispatch(setReduxLoading(false));
+        isCheckingBackend = false;
       }
-    });
 
-    // 2. Listen for auth changes (Redirect return, Logout, etc.)
+      // 2. If Backend failed, we check Supabase session but do NOT automatically set Redux user
+      // to avoid avatar mismatch (User specifically requested consistent avatar).
+      // We only log it for debugging.
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (session?.user) {
+        console.log("Supabase session exists but backend cookie failed. Ignoring Supabase session for UI consistency.");
+      }
+
+      // Only set loading false if NOT returning from OAuth and not syncing
+      const hasPendingProvider = localStorage.getItem('pendingProvider');
+      if (isMounted && !hasPendingProvider && !isSyncingSocialLogin) setLoading(false);
+    };
+
+    setUserFromSession();
+
+    // Listen for auth changes - ONLY sync on fresh SIGNED_IN with pendingProvider
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Supabase Auth Event:", event);
 
       if (session?.user) {
-        const appUser = mapUser(session.user);
-        setUser(appUser);
-        setLoading(false);
+        // We do NOT set user here directly anymore. 
+        // We rely on 'setUserFromSession' (on mount) or 'syncSocialLoginWithBackend' (on login) to update Redux.
+        // This prevents overwriting rich Backend User data in Context with basic Supabase User data on events like TOKEN_REFRESHED.
 
-        // Only process SIGNED_IN if not already handled by getSession
-        if (event === 'SIGNED_IN' && !localStorage.getItem("isAuthenticated")) {
-          const provider = session.user.app_metadata?.provider;
-          // Use the shared helper function
-          if (provider) {
-            await syncSocialLoginWithBackend(appUser, provider);
+        const appUser = mapUser(session.user);
+
+        // ONLY sync on SIGNED_IN event AND when there's a pendingProvider
+        // This prevents re-syncing on page refresh or tab switch
+        if (event === 'SIGNED_IN') {
+          const clickedProvider = localStorage.getItem('pendingProvider') as 'google' | 'github' | null;
+          console.log("SIGNED_IN - pendingProvider:", clickedProvider);
+
+          if (clickedProvider) {
+            // Fresh OAuth return - sync with backend (updates Redux -> Context)
+            await syncSocialLoginWithBackend(appUser, clickedProvider);
           }
         }
+
+        // Don't set loading false here if sync is in progress
+        if (!isCheckingBackend && !isSyncingSocialLogin && isMounted) setLoading(false);
       } else {
-        setUser(null);
-        setLoading(false);
+        // If we are still checking backend, ignore Supabase "no session" event
+        if (isCheckingBackend) return;
+
+        if (isMounted) {
+          // Dispatch logout to Redux to clear state (and Context via sync)
+          dispatch(logoutReduxUser());
+          setLoading(false);
+        }
       }
     });
 
-    // 3. Backend Session Restoration
-    const restoreBackendSession = async () => {
-      try {
-        const result = await refreshToken().unwrap();
-        if (result.success && result.data && result.data.user) {
-          const { user: userData, accessToken } = result.data;
-          dispatch(setReduxUser({
-            user: {
-              email: userData.email,
-              uid: userData._id,
-              displayName: userData.name,
-              photoURL: userData.profileImage || null,
-              role: (userData.role as 'student' | 'teacher' | 'admin') || "student"
-            },
-            token: accessToken
-          }));
-          localStorage.setItem("isAuthenticated", "true");
-
-          // Re-map backend user to context user to ensure consistency
-          const mappedUser = {
-            displayName: userData.name,
-            email: userData.email,
-            uid: userData._id,
-            photoURL: userData.profileImage,
-            providerData: [] // Backend user might not have provider data handy here, but that's ok
-          } as unknown as User;
-          setUser(mappedUser);
-        }
-      } catch (error) {
-        localStorage.removeItem("isAuthenticated");
-      }
-    };
-
-    // If backend authenticated flag exists, try to restore
-    if (localStorage.getItem("isAuthenticated") === "true") {
-      restoreBackendSession();
-    }
-
     return () => {
+      isMounted = false;
       subscription.unsubscribe();
     };
-  }, [dispatch, refreshToken]);
+  }, [dispatch, backendLogin, registerNewUser, checkUserExists, refreshToken]);
 
   return (
     <div>
