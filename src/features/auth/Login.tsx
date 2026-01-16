@@ -64,6 +64,23 @@ const Login = ({ loginFormRef }: LoginProps) => {
     formState: { errors },
   } = useForm<LoginInputs>();
 
+  // Helper function to extract error message from API response
+  const getErrorMessage = (error: any, fallback: string): string => {
+    // Check for issues array first (validation errors)
+    if (error?.data?.error?.issues?.[0]?.message) {
+      return error.data.error.issues[0].message;
+    }
+    // Check for direct message
+    if (error?.data?.message && error.data.message !== "Internal Server Error") {
+      return error.data.message;
+    }
+    // Check for Firebase/other error message
+    if (error?.message) {
+      return error.message;
+    }
+    return fallback;
+  };
+
   const onSubmit = async (data: LoginInputs) => {
     const loadingToast = toast.loading(
       <div className="flex items-center gap-2">
@@ -104,7 +121,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
       }
     } catch (error: any) {
       toast.dismiss(loadingToast);
-      const message = error?.data?.message || "Login failed. Please try again.";
+      const message = getErrorMessage(error, "Login failed. Please try again.");
       toast.error(message);
     }
   };
@@ -176,7 +193,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
     } catch (error: any) {
       sessionStorage.removeItem("google_pending_password");
       toast.dismiss(loadingToast);
-      const message = error?.message || "Google login failed. Please try again.";
+      const message = getErrorMessage(error, "Google login failed. Please try again.");
       toast.error(message);
     } finally {
       setIsSocialLoading(false);
@@ -296,7 +313,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
       }
     } catch (error: any) {
       toast.dismiss(loadingToast);
-      const message = error?.data?.message || "Authentication failed. Please try again.";
+      const message = getErrorMessage(error, "Authentication failed. Please try again.");
       toast.error(message);
     }
   };
@@ -368,8 +385,8 @@ const Login = ({ loginFormRef }: LoginProps) => {
     } catch (error: any) {
       sessionStorage.removeItem("google_pending_password");
       toast.dismiss(loadingToast);
-      const e = error.message?.slice(9, error.message.length) || "GitHub login failed";
-      toast.error(`${e}`);
+      const message = getErrorMessage(error, "GitHub login failed. Please try again.");
+      toast.error(message);
     } finally {
       setIsSocialLoading(false);
     }
