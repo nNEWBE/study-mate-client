@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import useAuth from "../hooks/useAuth";
+import { useAppSelector } from "../redux/store";
 import Loader from "../components/ui/Loader";
 
 interface PrivateRouteProps {
@@ -9,7 +9,7 @@ interface PrivateRouteProps {
 
 const PrivateRoute = ({ children }: PrivateRouteProps): JSX.Element => {
   const location = useLocation();
-  const { user, loading } = useAuth();
+  const { user, loading } = useAppSelector((state) => state.auth);
 
   if (loading) return <Loader />;
 
