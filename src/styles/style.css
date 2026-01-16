@@ -141,6 +141,11 @@
   transition: transform 0.4s cubic-bezier(0.5, 0.01, 0.068, 0.99);
 }
 
+/* Nav items start hidden (translated down) and animate in via GSAP */
+.nav-container li>* {
+  transform: translateY(100%);
+}
+
 .nav li+li {
   margin-top: 20px;
 }

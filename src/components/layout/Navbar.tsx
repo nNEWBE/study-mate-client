@@ -90,10 +90,11 @@ const Navbar = () => {
     // Reset GSAP elements to initial state
     gsap.set(".container", { display: "none" });
     gsap.set(".nav-bg span", { x: "100%" });
-    gsap.set(".nav-container li > *", { y: "0%" });
-    gsap.set(".bar-1", { attr: { d: "M0,4 L10,4" }, x: 0 });
+    gsap.set(".nav-container li > *", { y: "100%" });
+    // Reset hamburger icon to original state (3 horizontal bars)
+    gsap.set(".bar-1", { attr: { d: "M10,2 L2,2" }, x: 0 });
     gsap.set(".bar-2", { autoAlpha: 1 });
-    gsap.set(".bar-3", { attr: { d: "M0,6 L10,6" }, x: 0 });
+    gsap.set(".bar-3", { attr: { d: "M10,8 L2,8" }, x: 0 });
   }, [user]);
 
   /* Removed unused GSAP stagger logic */
@@ -150,10 +151,10 @@ const Navbar = () => {
           stagger: 0.1,
           ease: "Expo.easeInOut",
         })
-        .from(
+        .to(
           ".nav-container li > *",
           {
-            y: "100%",
+            y: "0%",
             stagger: 0.1,
             ease: "Expo.easeInOut",
           },
