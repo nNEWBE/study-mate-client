@@ -47,3 +47,38 @@ html {
   width: 100%;
   height: 100%;
 }
+
+/* =========================== */
+/* Custom Datepicker Styles    */
+/* =========================== */
+
+/* Light Mode - Calendar Icon */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(15%) sepia(10%) saturate(500%) hue-rotate(180deg);
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* Dark Mode - Calendar Icon */
+.dark input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(100%) brightness(200%);
+  opacity: 0.8;
+}
+
+.dark input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* Date Input Text Color Fix */
+input[type="date"] {
+  color-scheme: light;
+}
+
+.dark input[type="date"] {
+  color-scheme: dark;
+}

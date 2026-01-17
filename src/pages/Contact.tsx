@@ -14,9 +14,10 @@ import {
     FaDiscord,
 } from "react-icons/fa";
 import Reveal from "../animation/Reveal";
-import Button from "../components/ui/Button";
 import { useToggle } from "../context/ToggleProvider";
 import { useModal } from "../components/ui/Modal";
+import Input from "../components/ui/Input";
+import Textarea from "../components/ui/Textarea";
 import "../styles/style.css";
 
 const Contact = () => {
@@ -222,16 +223,13 @@ const Contact = () => {
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: 0.3 }}
                                 >
-                                    <label className="mb-2 block font-edu font-bold text-secondary dark:text-white">
-                                        Your Name
-                                    </label>
-                                    <input
+                                    <Input
+                                        label="Your Name"
                                         type="text"
                                         name="name"
                                         value={formData.name}
                                         onChange={handleChange}
                                         required
-                                        className="w-full rounded-xl border-2 border-primary bg-primary/10 px-4 py-3 font-poppins text-secondary outline-none transition-all duration-300 placeholder:text-secondary/50 focus:shadow-[0_0_15px_2px] focus:shadow-primary/50 dark:border-white/30 dark:bg-white/10 dark:text-white dark:placeholder:text-white/50"
                                         placeholder="John Doe"
                                     />
                                 </motion.div>
@@ -241,16 +239,13 @@ const Contact = () => {
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: 0.4 }}
                                 >
-                                    <label className="mb-2 block font-edu font-bold text-secondary dark:text-white">
-                                        Email Address
-                                    </label>
-                                    <input
+                                    <Input
+                                        label="Email Address"
                                         type="email"
                                         name="email"
                                         value={formData.email}
                                         onChange={handleChange}
                                         required
-                                        className="w-full rounded-xl border-2 border-primary bg-primary/10 px-4 py-3 font-poppins text-secondary outline-none transition-all duration-300 placeholder:text-secondary/50 focus:shadow-[0_0_15px_2px] focus:shadow-primary/50 dark:border-white/30 dark:bg-white/10 dark:text-white dark:placeholder:text-white/50"
                                         placeholder="john@example.com"
                                     />
                                 </motion.div>
@@ -260,16 +255,13 @@ const Contact = () => {
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: 0.5 }}
                                 >
-                                    <label className="mb-2 block font-edu font-bold text-secondary dark:text-white">
-                                        Subject
-                                    </label>
-                                    <input
+                                    <Input
+                                        label="Subject"
                                         type="text"
                                         name="subject"
                                         value={formData.subject}
                                         onChange={handleChange}
                                         required
-                                        className="w-full rounded-xl border-2 border-primary bg-primary/10 px-4 py-3 font-poppins text-secondary outline-none transition-all duration-300 placeholder:text-secondary/50 focus:shadow-[0_0_15px_2px] focus:shadow-primary/50 dark:border-white/30 dark:bg-white/10 dark:text-white dark:placeholder:text-white/50"
                                         placeholder="How can we help?"
                                     />
                                 </motion.div>
@@ -279,16 +271,13 @@ const Contact = () => {
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: 0.6 }}
                                 >
-                                    <label className="mb-2 block font-edu font-bold text-secondary dark:text-white">
-                                        Message
-                                    </label>
-                                    <textarea
+                                    <Textarea
+                                        label="Message"
                                         name="message"
                                         value={formData.message}
                                         onChange={handleChange}
                                         required
                                         rows={5}
-                                        className="w-full resize-none rounded-xl border-2 border-primary bg-primary/10 px-4 py-3 font-poppins text-secondary outline-none transition-all duration-300 placeholder:text-secondary/50 focus:shadow-[0_0_15px_2px] focus:shadow-primary/50 dark:border-white/30 dark:bg-white/10 dark:text-white dark:placeholder:text-white/50"
                                         placeholder="Tell us about your inquiry..."
                                     />
                                 </motion.div>

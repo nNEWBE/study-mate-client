@@ -30,8 +30,8 @@ const Cursor = (): JSX.Element | null => {
     const inner = innerRef.current;
     const outer = outerRef.current;
     if (inner && outer) {
-      inner.classList.remove("cursor-on-card", "cursor-on-category", "cursor-on-step", "cursor-on-create", "cursor-hidden");
-      outer.classList.remove("cursor-on-card", "cursor-on-category", "cursor-on-step", "cursor-on-create", "cursor-hidden");
+      inner.classList.remove("cursor-on-card", "cursor-on-category", "cursor-on-step", "cursor-hidden");
+      outer.classList.remove("cursor-on-card", "cursor-on-category", "cursor-on-step", "cursor-hidden");
     }
   }, [location]);
 
@@ -106,8 +106,7 @@ const Cursor = (): JSX.Element | null => {
       // Check for Step
       const step = target.closest("[data-cursor='step']");
 
-      // Check for Create form
-      const create = target.closest("[data-cursor='create']");
+
 
       // Check for Modal Color Context
       const modalContext = target.closest("[data-modal-color]");
@@ -139,8 +138,8 @@ const Cursor = (): JSX.Element | null => {
 
       // Remove all cursor states first
       const removeAllStates = () => {
-        inner.classList.remove("cursor-on-card", "cursor-on-category", "cursor-on-step", "cursor-on-create", "cursor-hidden");
-        outer.classList.remove("cursor-on-card", "cursor-on-category", "cursor-on-step", "cursor-on-create", "cursor-hidden");
+        inner.classList.remove("cursor-on-card", "cursor-on-category", "cursor-on-step", "cursor-hidden");
+        outer.classList.remove("cursor-on-card", "cursor-on-category", "cursor-on-step", "cursor-hidden");
       };
 
       if (noCursor) {
@@ -168,11 +167,7 @@ const Cursor = (): JSX.Element | null => {
         removeAllStates();
         inner.classList.add("cursor-on-step");
         outer.classList.add("cursor-on-step");
-      } else if (create) {
-        // If hovering on create assignment section
-        removeAllStates();
-        inner.classList.add("cursor-on-create");
-        outer.classList.add("cursor-on-create");
+
       } else if (card) {
         // Inside card, but not on an interactive element
         removeAllStates();
@@ -189,7 +184,6 @@ const Cursor = (): JSX.Element | null => {
       const goingToCard = related.closest("[data-cursor='card']");
       const goingToCategory = related.closest("[data-cursor='category']");
       const goingToStep = related.closest("[data-cursor='step']");
-      const goingToCreate = related.closest("[data-cursor='create']");
       const interactiveSelector = "a, button, input, textarea, select, [role='button'], label";
       const goingToInteractive = related.closest(interactiveSelector);
 
@@ -208,10 +202,7 @@ const Cursor = (): JSX.Element | null => {
         outer.classList.remove("cursor-on-step");
       }
 
-      if (!goingToCreate) {
-        inner.classList.remove("cursor-on-create");
-        outer.classList.remove("cursor-on-create");
-      }
+
 
 
       if (!goingToInteractive) {

@@ -1,330 +1,238 @@
 import toast from "react-hot-toast";
-import axios from "axios";
 import Reveal from "../animation/Reveal";
 import Button from "../components/ui/Button";
 import Unhidden from "../animation/Unhidden";
 import TextReveal from "../animation/TextReveal";
 import TextScramble from "../animation/TextScramble";
+import Input from "../components/ui/Input";
+import Textarea from "../components/ui/Textarea";
 import { motion } from "framer-motion";
-import { MdError } from "react-icons/md";
 import { useForm } from "react-hook-form";
-import { Calendar } from "primereact/calendar";
-import { Dropdown } from "primereact/dropdown";
-import { useContext, useState } from "react";
+import { useState, useEffect } from "react";
 import { useToggle } from "../context/ToggleProvider";
 import { HiOutlineDocumentChartBar } from "react-icons/hi2";
 import { useLoaderData, useNavigate } from "react-router-dom";
 import { useUpdateAssignmentMutation } from "../redux/features/assignments/assignmentApi";
 import { getErrorMessage } from "../utils/errorHandler";
+import { MdCloudUpload, MdClose, MdImage } from "react-icons/md";
 
 interface AssignmentData {
   _id: string;
   title: string;
-  photoURL: string;
+  thumbnailUrl: string[]; // Updated to match array format
+  photoURL?: string; // Legacy support
   description: string;
   marks: string;
   difficulty: string;
+  content?: string;
   person: {
     email: string;
     name: string;
     photo: string;
   };
-  date: string;
+  dueDate: string;
+  date?: string; // Legacy
+  categoryId?: string;
 }
 
 interface UpdateFormInputs {
   title: string;
-  photo: string;
   marks: string;
   description: string;
+  content: string;
+  date: string;
 }
 
 const UpdateAssignment = () => {
-  const { _id, title, photoURL, description, marks, difficulty, person, date: d } = useLoaderData() as AssignmentData;
+  const assignment = useLoaderData() as AssignmentData;
+  const { _id, title, description, marks, difficulty, person, content } = assignment;
 
-  const formatToFullDate = (dateString: string) => {
-    const [year, month, day] = dateString.split("/");
-    const date = new Date(`${year}-${month}-${day}`);
+  // Handle legacy date field
+  const defaultDate = assignment.dueDate ? new Date(assignment.dueDate) :
+    assignment.date ? new Date(assignment.date) : new Date();
 
-    return date;
-  };
-
-  const fullDate = formatToFullDate(d);
-  const [date, setDate] = useState<Date | null | undefined>(fullDate);
   const navigate = useNavigate();
   const { theme } = useToggle();
-  const [selectedDifficulty, setSelectedDifficulty] = useState<{ name: string } | null>({
-    name: difficulty,
-  });
+  const [updateAssignment, { isLoading }] = useUpdateAssignmentMutation();
 
-  const [updateAssignment] = useUpdateAssignmentMutation();
-  console.log(selectedDifficulty?.name)
-
-  const difficulties = [
-    { name: "Easy" },
-    { name: "Medium" },
-    { name: "Hard" },
-  ];
+  const [selectedDifficulty, setSelectedDifficulty] = useState(difficulty || "medium");
+  const [dueDate, setDueDate] = useState<string>(defaultDate.toISOString().split('T')[0]);
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
-  } = useForm<UpdateFormInputs>(); // Typed useForm
-
-  const onSubmit = async (data: UpdateFormInputs) => { // Typed data
-    const title = data.title;
-    const photoURL = data.photo;
-    const marks = data.marks;
-    const description = data.description;
-
-    const assignmentData = {
+  } = useForm<UpdateFormInputs>({
+    defaultValues: {
       title,
-      photoURL,
       marks,
-      date: date?.toLocaleDateString("en-US"),
       description,
-      difficulty: selectedDifficulty?.name,
+      content: content || description, // Fallback
+    }
+  });
+
+  const onSubmit = async (data: UpdateFormInputs) => {
+    const assignmentData = {
+      title: data.title,
+      marks: data.marks,
+      description: data.description,
+      content: data.content,
+      difficulty: selectedDifficulty,
+      dueDate: data.date,
+      // We don't update thumbnails/images here to simplify, or user should use Create for new ones
+      // But if we need to support it, it's more complex. 
+      // For now, let's keep the core text fields updateable.
       person: {
         email: person?.email,
         name: person?.name,
         photo: person?.photo,
       },
     };
-    console.log("🚀 ~ onSubmit ~ updateAssignment:", assignmentData);
 
     try {
       await updateAssignment({ id: _id, data: assignmentData }).unwrap();
       toast.success("Assignment updated successfully!");
       navigate("/tasks");
     } catch (err: any) {
-      console.log(err);
       toast.error(getErrorMessage(err, "Failed to update assignment"));
     }
   };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="mx-auto w-[90%] bg-white py-32 dark:bg-secondary"
+      className="min-h-screen bg-white py-32 dark:bg-secondary"
     >
       <div className="flex justify-center">
         <Reveal>
-          <TextScramble>Update Assigment</TextScramble>
+          <TextScramble>Update Assignment</TextScramble>
         </Reveal>
       </div>
 
       <div className="relative mx-auto sm:w-3/4 lg:w-[45%]">
         <Unhidden>
           <TextReveal className="text-center">
-            Update assignments seamlessly on the platform for efficient online
-            study management and enhanced student engagement.
+            Update your assignment details below.
           </TextReveal>
         </Unhidden>
       </div>
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="mx-auto mt-10 flex flex-col items-center overflow-hidden rounded-3xl border-2 border-primary bg-primary bg-opacity-10 p-10 shadow-2xl backdrop-blur-[20px] backdrop-filter dark:border-white dark:border-opacity-[0.3] dark:bg-transparent sm:w-full lg:w-[50rem]"
+        className="mx-auto mt-10 flex max-w-4xl flex-col gap-6 overflow-hidden rounded-3xl border-2 border-primary bg-primary bg-opacity-10 p-6 shadow-2xl backdrop-blur-[20px] backdrop-filter dark:border-white dark:border-opacity-[0.3] dark:bg-transparent sm:p-10"
       >
-        <p className="mb-16 text-center font-poppins text-4xl font-bold text-secondary dark:text-white sm:mb-10">
+        <p className="mb-6 text-center font-poppins text-4xl font-bold text-secondary dark:text-white sm:mb-10">
           Update
-          <span className="ml-2 rounded-xl border-2 border-[#111827] bg-primary px-2 font-dosis tracking-wider text-[#111827] shadow-[0_0_5px_2px] shadow-primary">
+          <span className="ml-2 rounded-xl border-2 border-[#111827] bg-primary/5 px-2 font-dosis tracking-wider text-[#111827] shadow-[0_0_5px_2px] shadow-primary">
             Now
           </span>
         </p>
 
-        <div className="flex flex-col gap-0 md:flex-row md:gap-5 lg:gap-10">
-          <div className="relative w-[16.6rem] sm:w-[20rem]">
-            <input
-              {...register("title", {
-                required: {
-                  value: true,
-                  message: "Enter assignment title",
-                },
-              })}
-              defaultValue={title}
-              type="text"
-              placeholder="Title"
-              className="mx-auto w-[16.6rem] rounded-xl border-2 border-primary bg-primary bg-opacity-25 px-4 py-3 pr-12 font-semibold text-secondary placeholder-secondary outline-none dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white dark:placeholder-white sm:w-[20rem]"
-            />
-            {errors.title ? (
-              <div
-                role="alert"
-                className="flex h-[1.5rem] items-center gap-1 text-sm text-red-500"
-              >
-                <MdError />
-                <span>{errors.title.message}</span>
-              </div>
-            ) : (
-              <div className="h-[1.5rem]"></div>
-            )}
-            <div className="absolute right-4 top-3">
-              <box-icon
-                name="text"
-                color={`${theme ? "white" : "black"}`}
-              ></box-icon>
-            </div>
-          </div>
+        {/* Title & Email */}
+        <div className="grid gap-6 md:grid-cols-2">
+          <Input
+            label="Title"
+            required
+            defaultValue={title}
+            placeholder="Assignment Title"
+            icon={<box-icon name="text" color={theme ? "white" : "#1f2937"}></box-icon>}
+            error={errors.title?.message}
+            {...register("title", { required: "Title is required" })}
+          />
 
-          <div className="relative w-[16.6rem] sm:w-[20rem]">
-            <input
-              disabled
-              defaultValue={person.email}
-              type="email"
-              placeholder="Email"
-              className="mx-auto w-[16.6rem] cursor-not-allowed select-none rounded-xl border-2 border-primary bg-primary bg-opacity-25 px-4 py-3 pr-12 font-semibold text-secondary placeholder-secondary outline-none dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white dark:placeholder-white sm:w-[20rem]"
-            />
-            <div className="h-[1.5rem]"></div>
-            <div className="absolute right-4 top-3">
-              <box-icon
-                name="envelope"
-                color={`${theme ? "white" : "black"}`}
-              ></box-icon>
-            </div>
+          <Input
+            label="Creator Email"
+            disabled
+            defaultValue={person?.email}
+            icon={<box-icon name="envelope" color={theme ? "white" : "#1f2937"}></box-icon>}
+            variant="filled"
+          />
+        </div>
+
+        {/* Date & Marks */}
+        <div className="grid gap-6 md:grid-cols-2">
+          <Input
+            label="Due Date"
+            type="date"
+            defaultValue={dueDate}
+            required
+            error={errors.date?.message}
+            {...register("date", { required: "Date is required" })}
+          />
+
+          <Input
+            label="Marks"
+            type="number"
+            required
+            defaultValue={marks}
+            placeholder="100"
+            icon={<HiOutlineDocumentChartBar className="text-2xl" />}
+            error={errors.marks?.message}
+            {...register("marks", { required: "Marks are required", pattern: { value: /^\d+$/, message: "Numbers only" } })}
+          />
+        </div>
+
+        {/* Difficulty */}
+        <div>
+          <label className="mb-2 block font-edu font-semibold text-secondary dark:text-white">
+            Difficulty <span className="text-primary">*</span>
+          </label>
+          <div className="flex gap-2">
+            {[
+              { value: "easy", label: "Easy", color: "bg-primary", shadow: "shadow-primary", border: "border-primary", hoverBg: "hover:bg-primary/40" },
+              { value: "medium", label: "Medium", color: "bg-blue-500", shadow: "shadow-blue-500", border: "border-blue-500", hoverBg: "hover:bg-blue-500/40" },
+              { value: "hard", label: "Hard", color: "bg-red-500", shadow: "shadow-red-500", border: "border-red-500", hoverBg: "hover:bg-red-500/40" },
+            ].map((diff) => (
+              <button
+                key={diff.value}
+                type="button"
+                onClick={() => setSelectedDifficulty(diff.value)}
+                className={`flex-1 rounded-xl border-2 px-3 py-2.5 font-dosis font-semibold transition-all ${selectedDifficulty === diff.value
+                    ? `border-secondary ${diff.color} text-white shadow-[0_0_5px_2px] ${diff.shadow}`
+                    : `${diff.border} ${diff.color} bg-opacity-10 text-secondary ${diff.hoverBg} dark:bg-opacity-20 dark:text-white`
+                  }`}
+              >
+                {diff.label}
+              </button>
+            ))}
           </div>
         </div>
 
-        <div className="flex flex-col gap-0 md:flex-row md:gap-5 lg:gap-10">
-          <div className="mb-[1.5rem]">
-            <Calendar
-              id="buttondisplay"
-              value={date}
-              onChange={(e) => setDate(e.value as Date | null | undefined)}
-              placeholder={date ? date.toLocaleDateString("en-US") : "Select Date"}
-              dateFormat="yy/mm/dd"
-              showIcon
-            />
-          </div>
-
-          <div className="mb-[1.5rem]">
-            <Dropdown
-              inputId="dd-city"
-              value={selectedDifficulty}
-              onChange={(e) => setSelectedDifficulty(e.value)}
-              options={difficulties}
-              optionLabel="name"
-              className="w-full"
-              placeholder="Difficulty"
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-0 md:flex-row md:gap-5 lg:gap-10">
-          <div className="relative">
-            <input
-              {...register("photo", {
-                required: {
-                  value: true,
-                  message: "Enter your photo url",
-                },
-                pattern: {
-                  value: /^(ftp|http|https):\/\/[^ "]+$/,
-                  message: "Enter a valid url",
-                },
-              })}
-              defaultValue={photoURL}
-              type="text"
-              placeholder="Photo Url"
-              className="mx-auto w-[16.6rem] rounded-xl border-2 border-primary bg-primary bg-opacity-25 px-4 py-3 pr-12 font-semibold text-secondary placeholder-secondary outline-none dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white dark:placeholder-white sm:w-[20rem]"
-            />
-            {errors.photo ? (
-              <div
-                role="alert"
-                className="flex h-[1.5rem] items-center gap-1 text-sm text-red-500"
-              >
-                <MdError />
-                <span>{errors.photo.message}</span>
-              </div>
-            ) : (
-              <div className="h-[1.5rem]"></div>
-            )}
-
-            <div className="absolute right-4 top-3">
-              <box-icon
-                name="link-alt"
-                color={`${theme ? "white" : "black"}`}
-              ></box-icon>
-            </div>
-          </div>
-
-          <div className="relative w-[16.6rem] sm:w-[20rem]">
-            <input
-              {...register("marks", {
-                required: {
-                  value: true,
-                  message: "Enter assignment marks",
-                },
-                pattern: {
-                  value: /^\d+$/,
-                  message: "Enter numbers only",
-                },
-              })}
-              defaultValue={marks}
-              type="text"
-              placeholder="Marks"
-              className="mx-auto w-[16.6rem] rounded-xl border-2 border-primary bg-primary bg-opacity-25 px-4 py-3 pr-12 font-semibold text-secondary placeholder-secondary outline-none dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white dark:placeholder-white sm:w-[20rem]"
-            />
-            {errors.marks ? (
-              <div
-                role="alert"
-                className="flex h-[1.5rem] items-center gap-1 text-sm text-red-500"
-              >
-                <MdError />
-                <span>{errors.marks.message}</span>
-              </div>
-            ) : (
-              <div className="h-[1.5rem]"></div>
-            )}
-            <div className="absolute right-4 top-3">
-              <HiOutlineDocumentChartBar
-                strokeWidth="1.9"
-                className="text-[25px] text-secondary dark:text-white"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="relative h-full">
-          <textarea
-            {...register("description", {
-              required: {
-                value: true,
-                message: "Enter assigment description",
-              },
-            })}
+        {/* Description & Content */}
+        <div className="grid gap-6">
+          <Textarea
+            label="Short Description"
+            required
             defaultValue={description}
-            className="mx-auto w-[16.5rem] rounded-xl border-2 border-primary bg-primary bg-opacity-25 px-4 py-3 pr-12 font-semibold text-secondary placeholder-secondary outline-none dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white dark:placeholder-white sm:w-[20rem] md:w-[41.3rem] lg:w-[42.5rem]"
-            placeholder="Description"
-          ></textarea>
-          {errors.description ? (
-            <div
-              role="alert"
-              className="flex h-[1.5rem] items-center gap-1 text-sm text-red-500"
-            >
-              <MdError />
-              <span>{errors.description.message}</span>
-            </div>
-          ) : (
-            <div className="h-[1.5rem]"></div>
-          )}
-          <div className="absolute right-4 top-3">
-            <box-icon
-              name="comment-dots"
-              color={`${theme ? "white" : "black"}`}
-            ></box-icon>
-          </div>
+            placeholder="Brief summary..."
+            rows={3}
+            icon={<box-icon name="comment-dots" color={theme ? "white" : "#1f2937"}></box-icon>}
+            error={errors.description?.message}
+            {...register("description", { required: "Description is required" })}
+          />
+
+          <Textarea
+            label="Detailed Content"
+            defaultValue={content}
+            placeholder="Full details..."
+            rows={5}
+            icon={<box-icon name="file" color={theme ? "white" : "#1f2937"}></box-icon>}
+            error={errors.content?.message}
+            {...register("content")}
+          />
         </div>
 
-        <div className="mt-3 flex w-[43.5rem] justify-center px-5 md:justify-end lg:w-full">
-          <div className="w-[16rem] sm:w-[20rem]">
-            <Button str={"Submit"} shadow={true}></Button>
+        <div className="mt-4 flex justify-center md:justify-end">
+          <div className="w-full sm:w-64">
+            <Button str={isLoading ? "Updating..." : "Update"} shadow={true} disabled={isLoading} />
           </div>
         </div>
       </form>
-    </motion.div >
+    </motion.div>
   );
 };
 
