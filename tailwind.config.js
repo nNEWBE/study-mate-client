@@ -7,6 +7,7 @@ export default {
         poppins: "'Poppins', sans-serif",
         dosis: "'Dosis', sans-serif",
         edu: "'Edu AU VIC WA NT Hand', cursive",
+        anta: "'Anta', sans-serif",
       },
       colors: {
         primary: "#00ffa5",

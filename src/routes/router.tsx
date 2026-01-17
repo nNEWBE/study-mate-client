@@ -20,6 +20,9 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import DashboardOverview from "../pages/dashboard/DashboardOverview";
 import DashboardSubmissions from "../pages/dashboard/DashboardSubmissions";
 import DashboardRole from "../pages/dashboard/DashboardRole";
+import DashboardProfile from "../pages/dashboard/DashboardProfile";
+import DashboardSettings from "../pages/dashboard/DashboardSettings";
+import DashboardAnalytics from "../pages/dashboard/DashboardAnalytics";
 
 const router = createBrowserRouter([
   {
@@ -123,8 +126,20 @@ const router = createBrowserRouter([
         element: <DashboardOverview />
       },
       {
+        path: "analytics",
+        element: <DashboardAnalytics />
+      },
+      {
         path: "submissions",
         element: <DashboardSubmissions />
+      },
+      {
+        path: "profile",
+        element: <DashboardProfile />
+      },
+      {
+        path: "settings",
+        element: <DashboardSettings />
       },
       {
         path: "role-request",
