@@ -23,6 +23,8 @@ import { useGetAssignmentByIdQuery } from "../redux/features/assignments/assignm
 import { getErrorMessage } from "../utils/errorHandler";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 // Swiper imports
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -337,9 +339,11 @@ const ViewDetails = () => {
                   <span className="ml-1 text-primary">.</span>
                 </h2>
                 <div className="rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent p-6 dark:from-white/5">
-                  <p className="whitespace-pre-wrap font-poppins leading-relaxed text-secondary/90 dark:text-white/90">
-                    {data.content}
-                  </p>
+                  <div className="prose prose-sm dark:prose-invert max-w-none prose-headings:font-dosis prose-headings:text-secondary dark:prose-headings:text-white prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-p:font-poppins prose-p:text-secondary/90 dark:prose-p:text-white/90 prose-strong:text-secondary dark:prose-strong:text-primary prose-code:rounded prose-code:bg-secondary/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-primary prose-code:before:content-none prose-code:after:content-none dark:prose-code:bg-white/10 prose-pre:bg-secondary prose-pre:rounded-xl dark:prose-pre:bg-secondary/80 prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-ul:text-secondary/90 dark:prose-ul:text-white/90 prose-ol:text-secondary/90 dark:prose-ol:text-white/90 prose-li:marker:text-primary prose-blockquote:border-l-primary prose-blockquote:text-secondary/80 dark:prose-blockquote:text-white/80">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {data.content}
+                    </ReactMarkdown>
+                  </div>
                 </div>
               </motion.div>
             )}

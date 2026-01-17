@@ -14,10 +14,10 @@ export default {
         secondary: "#0f172a",
       },
       clipPath: {
-        hexagon:"polygon(13% 0%, 87% 0%, 100% 50%,87% 100%,13% 100%,0% 50%)",
+        hexagon: "polygon(13% 0%, 87% 0%, 100% 50%,87% 100%,13% 100%,0% 50%)",
       },
     },
   },
-  plugins: [require("tailwind-scrollbar"), require("tailwind-clip-path")],
+  plugins: [require("tailwind-scrollbar"), require("tailwind-clip-path"), require("@tailwindcss/typography")],
   darkMode: "class",
 };

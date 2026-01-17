@@ -6,6 +6,8 @@ import TextReveal from "../animation/TextReveal";
 import TextScramble from "../animation/TextScramble";
 import Input from "../components/ui/Input";
 import Textarea from "../components/ui/Textarea";
+import TimePicker from "../components/ui/TimePicker";
+import MarkdownEditor from "../components/ui/MarkdownEditor";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
@@ -209,26 +211,17 @@ const UpdateAssignment = () => {
             {...register("marks", { required: "Marks are required", pattern: { value: /^\d+$/, message: "Numbers only" } })}
           />
 
-          {/* Due Time */}
-          <div>
-            <label className="mb-2 block font-edu font-semibold text-secondary dark:text-white">
-              Due Time <span className="text-primary">*</span>
-            </label>
-            <div className="relative">
-              <input
-                type="time"
-                value={selectedDueTime}
-                onChange={(e) => {
-                  setSelectedDueTime(e.target.value);
-                  setValue("dueTime", e.target.value, { shouldValidate: true });
-                }}
-                className="w-full rounded-xl border-2 border-primary/30 bg-primary/5 px-4 py-3 font-poppins text-secondary outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 dark:bg-white/5 dark:text-white"
-              />
-            </div>
-            <p className="mt-1 text-xs text-secondary/50 dark:text-white/50">
-              24-hour format
-            </p>
-          </div>
+          <TimePicker
+            label="Due Time"
+            required
+            placeholder="Select due time"
+            value={selectedDueTime}
+            onChange={(time) => {
+              setSelectedDueTime(time);
+              setValue("dueTime", time, { shouldValidate: true });
+            }}
+            error={errors.dueTime?.message}
+          />
         </div>
 
         {/* Difficulty */}
@@ -238,17 +231,17 @@ const UpdateAssignment = () => {
           </label>
           <div className="flex gap-2">
             {[
-              { value: "easy", label: "Easy", color: "bg-primary", shadow: "shadow-primary", border: "border-primary", hoverBg: "hover:bg-primary/40" },
-              { value: "medium", label: "Medium", color: "bg-blue-500", shadow: "shadow-blue-500", border: "border-blue-500", hoverBg: "hover:bg-blue-500/40" },
-              { value: "hard", label: "Hard", color: "bg-red-500", shadow: "shadow-red-500", border: "border-red-500", hoverBg: "hover:bg-red-500/40" },
+              { value: "easy", label: "Easy", selectedColor: "bg-primary", selectedShadow: "shadow-primary", selectedBorder: "border-secondary" },
+              { value: "medium", label: "Medium", selectedColor: "bg-blue-500", selectedShadow: "shadow-blue-500", selectedBorder: "border-secondary" },
+              { value: "hard", label: "Hard", selectedColor: "bg-red-500", selectedShadow: "shadow-red-500", selectedBorder: "border-secondary" },
             ].map((diff) => (
               <button
                 key={diff.value}
                 type="button"
                 onClick={() => setSelectedDifficulty(diff.value)}
                 className={`flex-1 rounded-xl border-2 px-3 py-2.5 font-dosis font-semibold transition-all ${selectedDifficulty === diff.value
-                  ? `border-secondary ${diff.color} text-white shadow-[0_0_5px_2px] ${diff.shadow}`
-                  : `${diff.border} ${diff.color} bg-opacity-10 text-secondary ${diff.hoverBg} dark:bg-opacity-20 dark:text-white`
+                  ? `${diff.selectedBorder} ${diff.selectedColor} text-secondary shadow-[0_0_5px_2px] ${diff.selectedShadow}`
+                  : `border-primary bg-primary/5 text-secondary hover:bg-primary/20 dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white`
                   }`}
               >
                 {diff.label}
@@ -263,18 +256,19 @@ const UpdateAssignment = () => {
             label="Short Description"
             required
             placeholder="Brief summary..."
-            rows={3}
+            autoExpand
+            minRows={2}
             icon={<box-icon name="comment-dots" color={theme ? "white" : "#1f2937"}></box-icon>}
             error={errors.description?.message}
             {...register("description", { required: "Description is required" })}
           />
 
-          <Textarea
+          <MarkdownEditor
             label="Detailed Content"
-            placeholder="Full details..."
-            rows={5}
-            icon={<box-icon name="file" color={theme ? "white" : "#1f2937"}></box-icon>}
+            placeholder="Full details with **markdown** formatting..."
             error={errors.content?.message}
+            helperText="Use markdown to format your content."
+            minRows={6}
             {...register("content")}
           />
         </div>

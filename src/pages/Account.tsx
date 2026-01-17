@@ -112,7 +112,7 @@ const Account = () => {
       <div className="pointer-events-none absolute -right-20 -top-20 h-96 w-96 rounded-full bg-primary/20 blur-3xl dark:bg-primary/10" />
       <div className="pointer-events-none absolute -bottom-20 -left-20 h-80 w-80 rounded-full bg-primary/15 blur-3xl dark:bg-primary/8" />
       <div className="flex mx-auto w-[90%] max-w-7xl h-[580px] items-center justify-center rounded-xl sm:h-[650px] sm:w-3/4">
-        <div className="flex size-full overflow-hidden rounded-3xl border-2 border-primary bg-primary bg-opacity-10 backdrop-blur-[20px] backdrop-filter dark:border-white dark:border-opacity-[0.3] dark:bg-transparent sm:size-[90%]">
+        <div className="flex size-full overflow-hidden rounded-3xl border-2 border-primary bg-transparent backdrop-blur-[20px] backdrop-filter dark:border-white dark:border-opacity-[0.3] dark:bg-transparent sm:size-[90%]">
           <div
             ref={loginLogoRef}
             className="animate__animated animate__fadeInLeft col-1 hidden h-full w-1/2 flex-col items-center justify-center rounded-[22.5px_30%_20%_22.5px] border-r-2 border-primary bg-primary bg-opacity-10 dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] lg:flex"

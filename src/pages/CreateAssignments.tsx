@@ -5,8 +5,10 @@ import Unhidden from "../animation/Unhidden";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import Textarea from "../components/ui/Textarea";
+import MarkdownEditor from "../components/ui/MarkdownEditor";
 import Select from "../components/ui/Select";
 import DatePicker from "../components/ui/DatePicker";
+import TimePicker from "../components/ui/TimePicker";
 import toast from "react-hot-toast";
 import { useForm, SubmitHandler, useWatch } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
@@ -172,7 +174,7 @@ const CreateAssignments = () => {
     >
       {/* Background glow effects */}
       <div className="pointer-events-none absolute -right-20 -top-20 h-96 w-96 rounded-full bg-primary/20 blur-3xl dark:bg-primary/10" />
-      <div className="pointer-events-none absolute -bottom-20 -left-20 h-80 w-80 rounded-full bg-primary/15 blur-3xl dark:bg-primary/8" />
+      <div className="pointer-events-none absolute -bottom-20 -left-20 h-80 w-80 rounded-full bg-primary/20 blur-3xl dark:bg-primary/8" />
 
       <div className="relative mx-auto w-[90%] max-w-4xl">
         {/* Header */}
@@ -194,7 +196,7 @@ const CreateAssignments = () => {
         {/* Main Form Card */}
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="overflow-hidden rounded-3xl border-2 border-primary bg-primary bg-opacity-10 p-6 backdrop-blur-[20px] backdrop-filter dark:border-white dark:border-opacity-[0.3] dark:bg-transparent sm:p-10"
+          className="overflow-hidden rounded-3xl border-2 border-primary bg-white p-6 backdrop-blur-[20px] backdrop-filter dark:border-white dark:border-opacity-[0.3] dark:bg-transparent sm:p-10"
         >
           {/* Form Title */}
           <p className="mb-12 text-center font-poppins text-3xl font-bold text-secondary dark:text-white">
@@ -244,26 +246,17 @@ const CreateAssignments = () => {
               error={errors.dueDate?.message}
             />
 
-            {/* Due Time */}
-            <div>
-              <label className="mb-2 block font-edu font-semibold text-secondary dark:text-white">
-                Due Time <span className="text-primary">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  type="time"
-                  value={selectedDueTime}
-                  onChange={(e) => {
-                    setSelectedDueTime(e.target.value);
-                    setValue("dueTime", e.target.value, { shouldValidate: true });
-                  }}
-                  className="w-full rounded-xl border-2 border-primary/30 bg-primary/5 px-4 py-3 font-poppins text-secondary outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 dark:bg-white/5 dark:text-white"
-                />
-              </div>
-              <p className="mt-1 text-xs text-secondary/50 dark:text-white/50">
-                24-hour format (e.g., 23:59)
-              </p>
-            </div>
+            <TimePicker
+              label="Due Time"
+              required
+              placeholder="Select due time"
+              value={selectedDueTime}
+              onChange={(time) => {
+                setSelectedDueTime(time);
+                setValue("dueTime", time, { shouldValidate: true });
+              }}
+              error={errors.dueTime?.message}
+            />
           </div>
 
           {/* Row 3: Difficulty & Category */}
@@ -275,9 +268,9 @@ const CreateAssignments = () => {
               </label>
               <div className="flex gap-2">
                 {[
-                  { value: "easy", label: "Easy", color: "bg-primary", shadow: "shadow-primary", border: "border-primary", hoverBg: "hover:bg-primary/40" },
-                  { value: "medium", label: "Medium", color: "bg-blue-500", shadow: "shadow-blue-500", border: "border-blue-500", hoverBg: "hover:bg-blue-500/40" },
-                  { value: "hard", label: "Hard", color: "bg-red-500", shadow: "shadow-red-500", border: "border-red-500", hoverBg: "hover:bg-red-500/40" },
+                  { value: "easy", label: "Easy", selectedColor: "bg-primary", selectedShadow: "shadow-primary", selectedBorder: "border-secondary" },
+                  { value: "medium", label: "Medium", selectedColor: "bg-blue-500", selectedShadow: "shadow-blue-500", selectedBorder: "border-secondary" },
+                  { value: "hard", label: "Hard", selectedColor: "bg-red-500", selectedShadow: "shadow-red-500", selectedBorder: "border-secondary" },
                 ].map((diff) => (
                   <button
                     key={diff.value}
@@ -287,8 +280,8 @@ const CreateAssignments = () => {
                       setValue("difficulty", diff.value, { shouldValidate: true });
                     }}
                     className={`flex-1 rounded-xl border-2 px-3 py-2.5 font-dosis font-semibold transition-all ${selectedDifficulty === diff.value
-                      ? `border-secondary ${diff.color} text-secondary shadow-[0_0_5px_2px] ${diff.shadow}`
-                      : `${diff.border} ${diff.color} bg-opacity-10 text-secondary ${diff.hoverBg} dark:bg-opacity-20 dark:text-white`
+                      ? `${diff.selectedBorder} ${diff.selectedColor} text-secondary shadow-[0_0_5px_2px] ${diff.selectedShadow}`
+                      : `border-primary bg-primary/5 text-secondary hover:bg-primary/20 dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white`
                       }`}
                   >
                     {diff.label}
@@ -399,7 +392,9 @@ const CreateAssignments = () => {
             label="Short Description"
             required
             placeholder="Brief summary of the assignment..."
-            rows={3}
+            autoExpand
+            minRows={2}
+            maxLength={MAX_DESCRIPTION_CHARS}
             icon={<box-icon name="comment-dots" color={theme ? "white" : "#1f2937"}></box-icon>}
             showCount
             maxCount={MAX_DESCRIPTION_CHARS}
@@ -408,19 +403,18 @@ const CreateAssignments = () => {
             className="mb-5"
             {...register("description", {
               required: "Description is required",
-              validate: (v) => (v?.length || 0) <= MAX_DESCRIPTION_CHARS || "Exceeds character limit"
             })}
           />
 
-          {/* Detailed Content */}
-          <Textarea
+          {/* Detailed Content with Markdown */}
+          <MarkdownEditor
             label="Detailed Instructions"
             required
-            placeholder="Comprehensive instructions, requirements, and guidelines..."
-            rows={5}
-            icon={<box-icon name="file" color={theme ? "white" : "#1f2937"}></box-icon>}
+            placeholder="Write detailed instructions using markdown..."
             error={errors.content?.message}
+            helperText="Use markdown to format your instructions. Minimum 50 characters required."
             className="mb-8"
+            minRows={6}
             {...register("content", {
               required: "Content is required",
               minLength: { value: 50, message: "At least 50 characters required" }

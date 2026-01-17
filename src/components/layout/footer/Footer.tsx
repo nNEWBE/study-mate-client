@@ -42,7 +42,7 @@ const Footer = () => {
             <input
               type="email"
               placeholder="Email"
-              className="w-[17rem] rounded-xl border-2 border-primary bg-primary bg-opacity-25 px-4 py-3 pr-12 font-semibold text-secondary placeholder-secondary outline-none dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white dark:placeholder-white"
+              className="w-[17rem] rounded-xl border-2 border-primary bg-primary/5 px-4 py-3 pr-12 font-semibold text-secondary placeholder-secondary outline-none dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white dark:placeholder-white"
             />
 
             <div className="absolute right-4 top-3">

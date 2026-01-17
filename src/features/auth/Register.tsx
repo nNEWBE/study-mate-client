@@ -148,7 +148,7 @@ const Register = ({ registerFormRef }: RegisterProps) => {
           type="text"
           placeholder="Username"
           disabled={isLoading}
-          className="w-full rounded-xl border-2 border-primary bg-primary bg-opacity-25 px-4 py-3 pr-12 font-semibold text-secondary placeholder-secondary outline-none disabled:opacity-60 dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white dark:placeholder-white"
+          className="w-full rounded-xl border-2 border-primary bg-primary/5 px-4 py-3 pr-12 font-semibold text-secondary placeholder-secondary outline-none disabled:opacity-60 dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white dark:placeholder-white"
         />
         {errors.name ? (
           <div
@@ -185,7 +185,7 @@ const Register = ({ registerFormRef }: RegisterProps) => {
           type="email"
           placeholder="Email"
           disabled={isLoading}
-          className="w-full rounded-xl border-2 border-primary bg-primary bg-opacity-25 px-4 py-3 pr-12 font-semibold text-secondary placeholder-secondary outline-none disabled:opacity-60 dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white dark:placeholder-white"
+          className="w-full rounded-xl border-2 border-primary bg-primary/5 px-4 py-3 pr-12 font-semibold text-secondary placeholder-secondary outline-none disabled:opacity-60 dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white dark:placeholder-white"
         />
         {errors.email ? (
           <div
@@ -226,7 +226,7 @@ const Register = ({ registerFormRef }: RegisterProps) => {
           type={see ? "text" : "password"}
           placeholder="Password"
           disabled={isLoading}
-          className="w-full rounded-xl border-2 border-primary bg-primary bg-opacity-25 px-4 py-3 pr-12 font-semibold text-secondary placeholder-secondary outline-none disabled:opacity-60 dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white dark:placeholder-white"
+          className="w-full rounded-xl border-2 border-primary bg-primary/5 px-4 py-3 pr-12 font-semibold text-secondary placeholder-secondary outline-none disabled:opacity-60 dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white dark:placeholder-white"
         />
         {errors.password ? (
           <div
@@ -261,7 +261,7 @@ const Register = ({ registerFormRef }: RegisterProps) => {
           type={seeConfirm ? "text" : "password"}
           placeholder="Confirm Password"
           disabled={isLoading}
-          className="w-full rounded-xl border-2 border-primary bg-primary bg-opacity-25 px-4 py-3 pr-12 font-semibold text-secondary placeholder-secondary outline-none disabled:opacity-60 dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white dark:placeholder-white"
+          className="w-full rounded-xl border-2 border-primary bg-primary/5 px-4 py-3 pr-12 font-semibold text-secondary placeholder-secondary outline-none disabled:opacity-60 dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white dark:placeholder-white"
         />
         {errors.confirmPassword ? (
           <div

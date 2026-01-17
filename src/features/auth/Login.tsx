@@ -158,7 +158,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
             type="email"
             placeholder="Email"
             disabled={isFormDisabled}
-            className="w-full rounded-xl border-2 border-primary bg-primary bg-opacity-25 px-4 py-3 pr-12 font-semibold text-secondary placeholder-secondary outline-none disabled:opacity-60 dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white dark:placeholder-white"
+            className="w-full rounded-xl border-2 border-primary bg-primary/5 px-4 py-3 pr-12 font-semibold text-secondary placeholder-secondary outline-none disabled:opacity-60 dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white dark:placeholder-white"
           />
           {errors.email ? (
             <div
@@ -195,7 +195,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
             type={see ? "text" : "password"}
             placeholder="Password"
             disabled={isFormDisabled}
-            className="w-full rounded-xl border-2 border-primary bg-primary bg-opacity-25 px-4 py-3 pr-12 font-semibold text-secondary placeholder-secondary outline-none disabled:opacity-60 dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white dark:placeholder-white"
+            className="w-full rounded-xl border-2 border-primary bg-primary/5 px-4 py-3 pr-12 font-semibold text-secondary placeholder-secondary outline-none disabled:opacity-60 dark:border-white dark:border-opacity-[0.3] dark:bg-[rgba(255,255,255,.2)] dark:text-white dark:placeholder-white"
           />
           {errors.password ? (
             <div
@@ -254,7 +254,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
             onClick={handleGoogleLogin}
             type="button"
             disabled={isFormDisabled}
-            className="flex items-center gap-2 rounded-xl border-2 border-primary bg-primary bg-opacity-10 px-6 py-2 pb-3 pt-3 font-semibold text-secondary transition-all dark:bg-[rgba(255,255,255,.2)] dark:border-white dark:border-opacity-[0.3] dark:text-white disabled:opacity-50"
+            className="flex items-center gap-2 rounded-xl border-2 border-primary bg-primary/5 px-6 py-2 pb-3 pt-3 font-semibold text-secondary transition-all dark:bg-[rgba(255,255,255,.2)] dark:border-white dark:border-opacity-[0.3] dark:text-white disabled:opacity-50"
           >
             <FaGoogle className="text-xl" />
             <span>Google</span>
@@ -263,7 +263,7 @@ const Login = ({ loginFormRef }: LoginProps) => {
             onClick={handleGithubLogin}
             type="button"
             disabled={isFormDisabled}
-            className="flex items-center gap-2 rounded-xl border-2 border-primary bg-primary bg-opacity-10 px-6 py-2 pb-3 pt-3 font-semibold text-secondary transition-all dark:bg-[rgba(255,255,255,.2)] dark:border-white dark:border-opacity-[0.3] dark:text-white disabled:opacity-50"
+            className="flex items-center gap-2 rounded-xl border-2 border-primary bg-primary/5 px-6 py-2 pb-3 pt-3 font-semibold text-secondary transition-all dark:bg-[rgba(255,255,255,.2)] dark:border-white dark:border-opacity-[0.3] dark:text-white disabled:opacity-50"
           >
             <FaGithub className="text-xl" />
             <span>GitHub</span>
