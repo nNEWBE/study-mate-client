@@ -78,8 +78,6 @@ const router = createBrowserRouter([
             <UpdateAssignment />
           </PrivateRoute>
         ),
-        loader: ({ params }) =>
-          fetch(`${import.meta.env.VITE_API_URL}/assignment/${params.id}`),
       },
       {
         path: "tasks/update/:id",
@@ -88,8 +86,6 @@ const router = createBrowserRouter([
             <UpdateAssignment />
           </PrivateRoute>
         ),
-        loader: ({ params }) =>
-          fetch(`${import.meta.env.VITE_API_URL}/assignment/${params.id}`),
       },
       {
         path: "assignment/:id",
@@ -98,8 +94,6 @@ const router = createBrowserRouter([
             <ViewDetails />
           </PrivateRoute>
         ),
-        loader: ({ params }) =>
-          fetch(`${import.meta.env.VITE_API_URL}/assignment/${params.id}`),
       },
       {
         path: "tasks/assignment/:id",
@@ -108,8 +102,6 @@ const router = createBrowserRouter([
             <ViewDetails />
           </PrivateRoute>
         ),
-        loader: ({ params }) =>
-          fetch(`${import.meta.env.VITE_API_URL}/assignment/${params.id}`),
       },
     ],
   },

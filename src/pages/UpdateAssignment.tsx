@@ -11,29 +11,11 @@ import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { useToggle } from "../context/ToggleProvider";
 import { HiOutlineDocumentChartBar } from "react-icons/hi2";
-import { useLoaderData, useNavigate } from "react-router-dom";
-import { useUpdateAssignmentMutation } from "../redux/features/assignments/assignmentApi";
+import { useParams, useNavigate } from "react-router-dom";
+import { useGetAssignmentByIdQuery, useUpdateAssignmentMutation } from "../redux/features/assignments/assignmentApi";
 import { getErrorMessage } from "../utils/errorHandler";
-import { MdCloudUpload, MdClose, MdImage } from "react-icons/md";
-
-interface AssignmentData {
-  _id: string;
-  title: string;
-  thumbnailUrl: string[]; // Updated to match array format
-  photoURL?: string; // Legacy support
-  description: string;
-  marks: string;
-  difficulty: string;
-  content?: string;
-  person: {
-    email: string;
-    name: string;
-    photo: string;
-  };
-  dueDate: string;
-  date?: string; // Legacy
-  categoryId?: string;
-}
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 interface UpdateFormInputs {
   title: string;
@@ -41,38 +23,56 @@ interface UpdateFormInputs {
   description: string;
   content: string;
   date: string;
+  dueTime: string;
 }
 
 const UpdateAssignment = () => {
-  const assignment = useLoaderData() as AssignmentData;
-  const { _id, title, description, marks, difficulty, person, content } = assignment;
-
-  // Handle legacy date field
-  const defaultDate = assignment.dueDate ? new Date(assignment.dueDate) :
-    assignment.date ? new Date(assignment.date) : new Date();
-
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { theme } = useToggle();
-  const [updateAssignment, { isLoading }] = useUpdateAssignmentMutation();
 
-  const [selectedDifficulty, setSelectedDifficulty] = useState(difficulty || "medium");
-  const [dueDate, setDueDate] = useState<string>(defaultDate.toISOString().split('T')[0]);
+  // RTK Query hooks
+  const { data: assignment, isLoading: isFetching, isError } = useGetAssignmentByIdQuery(id!, {
+    skip: !id,
+  });
+  const [updateAssignment, { isLoading: isUpdating }] = useUpdateAssignmentMutation();
+
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string>("medium");
+  const [selectedDueTime, setSelectedDueTime] = useState<string>("23:59");
+  const [isFormReady, setIsFormReady] = useState(false);
 
   const {
     register,
     handleSubmit,
     setValue,
+    reset,
     formState: { errors },
-  } = useForm<UpdateFormInputs>({
-    defaultValues: {
-      title,
-      marks,
-      description,
-      content: content || description, // Fallback
+  } = useForm<UpdateFormInputs>();
+
+  // Populate form when data is loaded
+  useEffect(() => {
+    if (assignment) {
+      const dueDate = assignment.dueDate
+        ? new Date(assignment.dueDate).toISOString().split('T')[0]
+        : new Date().toISOString().split('T')[0];
+
+      reset({
+        title: assignment.title,
+        marks: String(assignment.marks),
+        description: assignment.description,
+        content: assignment.content || assignment.description,
+        date: dueDate,
+        dueTime: assignment.dueTime || "23:59",
+      });
+      setSelectedDifficulty(assignment.difficulty || "medium");
+      setSelectedDueTime(assignment.dueTime || "23:59");
+      setIsFormReady(true);
     }
-  });
+  }, [assignment, reset]);
 
   const onSubmit = async (data: UpdateFormInputs) => {
+    if (!assignment?._id) return;
+
     const assignmentData = {
       title: data.title,
       marks: data.marks,
@@ -80,24 +80,61 @@ const UpdateAssignment = () => {
       content: data.content,
       difficulty: selectedDifficulty,
       dueDate: data.date,
-      // We don't update thumbnails/images here to simplify, or user should use Create for new ones
-      // But if we need to support it, it's more complex. 
-      // For now, let's keep the core text fields updateable.
-      person: {
-        email: person?.email,
-        name: person?.name,
-        photo: person?.photo,
-      },
+      dueTime: selectedDueTime,
     };
 
     try {
-      await updateAssignment({ id: _id, data: assignmentData }).unwrap();
+      await updateAssignment({ id: assignment._id, data: assignmentData }).unwrap();
       toast.success("Assignment updated successfully!");
       navigate("/tasks");
     } catch (err: any) {
       toast.error(getErrorMessage(err, "Failed to update assignment"));
     }
   };
+
+  // Loading state
+  if (isFetching) {
+    return (
+      <div className="min-h-screen bg-white py-32 dark:bg-secondary">
+        <div className="flex justify-center">
+          <Skeleton width={300} height={40} baseColor="#1f2937" highlightColor="#00ffa5" />
+        </div>
+        <div className="mx-auto mt-4 w-3/4 lg:w-[45%]">
+          <Skeleton count={1} baseColor="#1f2937" highlightColor="#00ffa5" />
+        </div>
+        <div className="mx-auto mt-10 max-w-4xl rounded-3xl border-2 border-primary/30 p-10">
+          <div className="grid gap-6 md:grid-cols-2">
+            <Skeleton height={50} borderRadius={12} baseColor="#1f2937" highlightColor="#00ffa5" />
+            <Skeleton height={50} borderRadius={12} baseColor="#1f2937" highlightColor="#00ffa5" />
+          </div>
+          <div className="mt-6 grid gap-6 md:grid-cols-2">
+            <Skeleton height={50} borderRadius={12} baseColor="#1f2937" highlightColor="#00ffa5" />
+            <Skeleton height={50} borderRadius={12} baseColor="#1f2937" highlightColor="#00ffa5" />
+          </div>
+          <div className="mt-6">
+            <Skeleton height={100} borderRadius={12} baseColor="#1f2937" highlightColor="#00ffa5" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (isError || !assignment) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-white dark:bg-secondary">
+        <h1 className="mb-4 font-dosis text-4xl font-bold text-red-500">
+          Assignment Not Found
+        </h1>
+        <p className="mb-8 font-edu text-secondary/70 dark:text-white/70">
+          The assignment you're trying to edit doesn't exist or has been removed.
+        </p>
+        <div className="w-40" onClick={() => navigate("/tasks")}>
+          <Button str="Back to Tasks" shadow={true} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -137,7 +174,6 @@ const UpdateAssignment = () => {
           <Input
             label="Title"
             required
-            defaultValue={title}
             placeholder="Assignment Title"
             icon={<box-icon name="text" color={theme ? "white" : "#1f2937"}></box-icon>}
             error={errors.title?.message}
@@ -147,18 +183,17 @@ const UpdateAssignment = () => {
           <Input
             label="Creator Email"
             disabled
-            defaultValue={person?.email}
+            defaultValue={assignment.createdBy?.email || ""}
             icon={<box-icon name="envelope" color={theme ? "white" : "#1f2937"}></box-icon>}
             variant="filled"
           />
         </div>
 
-        {/* Date & Marks */}
-        <div className="grid gap-6 md:grid-cols-2">
+        {/* Date, Marks & Time */}
+        <div className="grid gap-6 md:grid-cols-3">
           <Input
             label="Due Date"
             type="date"
-            defaultValue={dueDate}
             required
             error={errors.date?.message}
             {...register("date", { required: "Date is required" })}
@@ -168,12 +203,32 @@ const UpdateAssignment = () => {
             label="Marks"
             type="number"
             required
-            defaultValue={marks}
             placeholder="100"
             icon={<HiOutlineDocumentChartBar className="text-2xl" />}
             error={errors.marks?.message}
             {...register("marks", { required: "Marks are required", pattern: { value: /^\d+$/, message: "Numbers only" } })}
           />
+
+          {/* Due Time */}
+          <div>
+            <label className="mb-2 block font-edu font-semibold text-secondary dark:text-white">
+              Due Time <span className="text-primary">*</span>
+            </label>
+            <div className="relative">
+              <input
+                type="time"
+                value={selectedDueTime}
+                onChange={(e) => {
+                  setSelectedDueTime(e.target.value);
+                  setValue("dueTime", e.target.value, { shouldValidate: true });
+                }}
+                className="w-full rounded-xl border-2 border-primary/30 bg-primary/5 px-4 py-3 font-poppins text-secondary outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 dark:bg-white/5 dark:text-white"
+              />
+            </div>
+            <p className="mt-1 text-xs text-secondary/50 dark:text-white/50">
+              24-hour format
+            </p>
+          </div>
         </div>
 
         {/* Difficulty */}
@@ -192,8 +247,8 @@ const UpdateAssignment = () => {
                 type="button"
                 onClick={() => setSelectedDifficulty(diff.value)}
                 className={`flex-1 rounded-xl border-2 px-3 py-2.5 font-dosis font-semibold transition-all ${selectedDifficulty === diff.value
-                    ? `border-secondary ${diff.color} text-white shadow-[0_0_5px_2px] ${diff.shadow}`
-                    : `${diff.border} ${diff.color} bg-opacity-10 text-secondary ${diff.hoverBg} dark:bg-opacity-20 dark:text-white`
+                  ? `border-secondary ${diff.color} text-white shadow-[0_0_5px_2px] ${diff.shadow}`
+                  : `${diff.border} ${diff.color} bg-opacity-10 text-secondary ${diff.hoverBg} dark:bg-opacity-20 dark:text-white`
                   }`}
               >
                 {diff.label}
@@ -207,7 +262,6 @@ const UpdateAssignment = () => {
           <Textarea
             label="Short Description"
             required
-            defaultValue={description}
             placeholder="Brief summary..."
             rows={3}
             icon={<box-icon name="comment-dots" color={theme ? "white" : "#1f2937"}></box-icon>}
@@ -217,7 +271,6 @@ const UpdateAssignment = () => {
 
           <Textarea
             label="Detailed Content"
-            defaultValue={content}
             placeholder="Full details..."
             rows={5}
             icon={<box-icon name="file" color={theme ? "white" : "#1f2937"}></box-icon>}
@@ -228,7 +281,7 @@ const UpdateAssignment = () => {
 
         <div className="mt-4 flex justify-center md:justify-end">
           <div className="w-full sm:w-64">
-            <Button str={isLoading ? "Updating..." : "Update"} shadow={true} disabled={isLoading} />
+            <Button str={isUpdating ? "Updating..." : "Update"} shadow={true} disabled={isUpdating} />
           </div>
         </div>
       </form>

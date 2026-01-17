@@ -13,6 +13,13 @@ export const assignmentApi = baseApi.injectEndpoints({
             providesTags: ['Assignment'],
         }),
 
+        // GET /assignment/best - Get best assignments only
+        getBestAssignments: builder.query<Assignment[], void>({
+            query: () => '/assignment/best',
+            transformResponse: (response: ApiResponse<Assignment[]>) => response.data || [],
+            providesTags: ['Assignment'],
+        }),
+
         // GET /assignment/:id - Get single assignment (Authenticated)
         getAssignmentById: builder.query<Assignment, string>({
             query: (id) => `/assignment/${id}`,
@@ -48,13 +55,36 @@ export const assignmentApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: ['Assignment'],
         }),
+
+        // PATCH /assignment/:id/best - Toggle best assignment (Admin only)
+        toggleBestAssignment: builder.mutation<ApiResponse<Assignment>, { id: string; isBest: boolean }>({
+            query: ({ id, isBest }) => ({
+                url: `/assignment/${id}/best`,
+                method: 'PATCH',
+                body: { isBest },
+            }),
+            invalidatesTags: (result, error, { id }) => ['Assignment', { type: 'Assignment', id }],
+        }),
+
+        // POST /assignment/:id/review - Add review (Authenticated)
+        addReview: builder.mutation<ApiResponse<Assignment>, { id: string; rating: number; feedback: string }>({
+            query: ({ id, rating, feedback }) => ({
+                url: `/assignment/${id}/review`,
+                method: 'POST',
+                body: { rating, feedback },
+            }),
+            invalidatesTags: (result, error, { id }) => ['Assignment', { type: 'Assignment', id }],
+        }),
     }),
 });
 
 export const {
     useGetAssignmentsQuery,
+    useGetBestAssignmentsQuery,
     useGetAssignmentByIdQuery,
     useCreateAssignmentMutation,
     useUpdateAssignmentMutation,
     useDeleteAssignmentMutation,
+    useToggleBestAssignmentMutation,
+    useAddReviewMutation,
 } = assignmentApi;

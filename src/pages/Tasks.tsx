@@ -84,7 +84,7 @@ const Tasks = () => {
           <CardSkeleton cards={6} />
         ) : (
           assignments.map((d, index) => (
-            <Card handleDelete={handleDelete} d={d} key={index} />
+            <Card d={d} key={index} />
           ))
         )}
       </div>

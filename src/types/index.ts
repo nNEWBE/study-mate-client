@@ -43,27 +43,50 @@ export interface ChildrenProps {
 }
 
 // Assignment Types
+export interface Review {
+    userEmail: string;
+    userName: string;
+    rating: number;
+    feedback: string;
+    createdAt: string;
+}
+
 export interface Assignment {
     _id: string;
     title: string;
     description: string;
+    content?: string;
     marks: number | string;
     thumbnail?: string;
     thumbnailUrl?: string[];
     photoURL?: string;
     difficulty: "easy" | "medium" | "hard" | string;
     dueDate?: string;
+    dueTime?: string; // Format: "HH:mm" (24-hour format)
     date?: string;
+    isExpired?: boolean;
+    isBestAssignment?: boolean;
+    totalSubmissions?: number;
+    reviews?: Review[];
+    averageRating?: number;
     creatorEmail?: string;
     creatorName?: string;
     creatorPhoto?: string;
     categoryId?: string;
     status?: string;
+    createdBy?: {
+        name?: string;
+        email?: string;
+        role?: string;
+        profileImage?: string;
+    };
     person?: {
         name?: string | null;
         email?: string | null;
         photo?: string | null;
     };
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 // Submission Types

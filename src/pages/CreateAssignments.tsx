@@ -28,6 +28,7 @@ type FormInputs = {
   difficulty: string;
   categoryId: string;
   dueDate: string;
+  dueTime: string;
 };
 
 interface FilePreview {
@@ -48,6 +49,7 @@ const CreateAssignments = () => {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedDueDate, setSelectedDueDate] = useState<string>("");
+  const [selectedDueTime, setSelectedDueTime] = useState<string>("23:59");
   const [thumbnails, setThumbnails] = useState<FilePreview[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [thumbnailError, setThumbnailError] = useState(false);
@@ -139,6 +141,7 @@ const CreateAssignments = () => {
       difficulty: selectedDifficulty || 'medium',
       categoryId: selectedCategory,
       dueDate: data.dueDate,
+      dueTime: selectedDueTime || '23:59',
       createdBy: {
         name: user?.displayName || '',
         email: user?.email || '',
@@ -213,8 +216,8 @@ const CreateAssignments = () => {
             />
           </div>
 
-          {/* Row 2: Marks & Due Date */}
-          <div className="mb-5 grid gap-5 sm:grid-cols-2">
+          {/* Row 2: Marks, Due Date & Due Time */}
+          <div className="mb-5 grid gap-5 md:grid-cols-3">
             <Input
               label="Marks"
               required
@@ -240,6 +243,27 @@ const CreateAssignments = () => {
               minDate={new Date()}
               error={errors.dueDate?.message}
             />
+
+            {/* Due Time */}
+            <div>
+              <label className="mb-2 block font-edu font-semibold text-secondary dark:text-white">
+                Due Time <span className="text-primary">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  type="time"
+                  value={selectedDueTime}
+                  onChange={(e) => {
+                    setSelectedDueTime(e.target.value);
+                    setValue("dueTime", e.target.value, { shouldValidate: true });
+                  }}
+                  className="w-full rounded-xl border-2 border-primary/30 bg-primary/5 px-4 py-3 font-poppins text-secondary outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 dark:bg-white/5 dark:text-white"
+                />
+              </div>
+              <p className="mt-1 text-xs text-secondary/50 dark:text-white/50">
+                24-hour format (e.g., 23:59)
+              </p>
+            </div>
           </div>
 
           {/* Row 3: Difficulty & Category */}

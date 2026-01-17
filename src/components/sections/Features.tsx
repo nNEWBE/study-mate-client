@@ -82,7 +82,7 @@ const Features = () => {
             assignments
               .slice(0, 6)
               .map((d, index) => (
-                <Card handleDelete={handleDelete} d={d} key={index} />
+                <Card d={d} key={index} />
               ))
           )}
         </div>
@@ -104,7 +104,7 @@ const Features = () => {
                 assignments
                   .slice(0, 3)
                   .map((d, index) => (
-                    <Card handleDelete={handleDelete} d={d} key={index} />
+                    <Card d={d} key={index} />
                   ))
               )}
             </div>
